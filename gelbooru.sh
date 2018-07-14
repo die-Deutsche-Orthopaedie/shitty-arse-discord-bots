@@ -20,7 +20,7 @@ function nanako(){ # use webhooks
     curl -d "content=$1&username=$username&avatar_url=$avatarurl" "$magic"
 }
 
-function nanako2(){ # use your own accounts
+function futaba(){ # use your own accounts
   # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL" to get the cURL command and replace your message with a $1 and replace all '""' with '\"', then you're good to go! >
   # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
   curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"
@@ -78,7 +78,7 @@ do
             echo "Options: "
             echo "    -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
             echo "        and when you use this mode, you must use -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
-            echo "    -N or --natural-mode: use your own account to upload hentai, need to follow the instrucions in nanako2() function"
+            echo "    -N or --natural-mode: use your own account to upload hentai, need to follow the instrucions in futaba() function"
             echo "    -M or --message: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
             echo "    -H or -h or --help: this shit"
             echo
@@ -121,7 +121,7 @@ else
         nanako "$message"
         ;;
     1)
-        nanako2 "$message"
+        futaba "$message"
         ;;
     esac
     exit
@@ -136,7 +136,7 @@ case "$mode" in
         nanako "$message"
         ;;
     1)
-        nanako2 "$message"
+        futaba "$message"
         ;;
 esac
 
@@ -154,7 +154,7 @@ case "$mode" in
         nanako "$message"
         ;;
     1)
-        nanako2 "$message"
+        futaba "$message"
         ;;
 esac
 
@@ -170,7 +170,7 @@ do
                 sleep "$webhookinterval"
                 ;;
             1)
-                nanako2 "${hentaipic//%20/ }"
+                futaba "${hentaipic//%20/ }"
                 sleep "$naturalinterval"
                 ;;
         esac
@@ -183,6 +183,6 @@ case "$mode" in
         nanako "$message"
         ;;
     1)
-        nanako2 "$message"
+        futaba "$message"
         ;;
 esac
