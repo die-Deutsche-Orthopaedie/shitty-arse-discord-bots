@@ -1,5 +1,5 @@
 # copyrekt die deutsche Orthopädiespezialist 2018
-# gelbooru.com rule34 fully automatic masspostin' bot
+# paheal.net rule34 fully automatic paheal.net masspostin' bot
 # you can either use a webhook or your own account or alt account if you don't have perms to create webhooks
 # here we fockin' go
 
@@ -11,13 +11,19 @@ naturalinterval=2
 
 function nanako(){ # use webhooks
     magic="<paste your webhook url here>"
-    curl -d "content=$1&username=$cutie Hentai Bot&avatar_url=$avatarurl" "$magic"
+    if [ $messagemode ]
+    then
+        username="$cutie"
+    else
+        username="$cutie_name Hentai Bot"
+    fi
+    curl -d "content=$1&username=$username&avatar_url=$avatarurl" "$magic"
 }
 
 function nanako2(){ # use your own accounts
-    # <log in your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL" to get the cURL command and replace your message with a $1 and replace all '""' with '\"', then you're good to go! >
-    # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
-    curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"
+  # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL" to get the cURL command and replace your message with a $1 and replace all '""' with '\"', then you're good to go! >
+  # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
+  curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"
 }
 ######################################################################################################################################################################
 
@@ -25,7 +31,7 @@ function nanako2(){ # use your own accounts
 ######################################################################################################################################################################
 # DO NOT CHANGE UNLESS NECESSARY
 
-parameters=`getopt -o WNA:hH -a -l webhook,natural-mode,avatar-url:,help -- "$@"`
+parameters=`getopt -o WNA:M:hH -a -l webhook,natural-mode,avatar-url:,message:,help -- "$@"`
 
 if [ $? != 0 ]
 then  
@@ -52,6 +58,11 @@ do
 			mode=1
             shift
             ;;  
+        -M | --message)
+			messagemode=1
+            message=$2
+            shift 2
+            ;;  
 		-A | --avatar-url)
 			avatarurl=$2
             shift 2
@@ -68,6 +79,7 @@ do
             echo "    -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
             echo "        and when you use this mode, you must use -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
             echo "    -N or --natural-mode: use your own account to upload hentai, need to follow the instrucions in nanako2() function"
+            echo "    -M or --message: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
             echo "    -H or -h or --help: this shit"
             echo
             echo "Cutie: "
@@ -94,6 +106,25 @@ if [ $mode == 0 ] && [ ! $avatarurl ]
 then
     echo "Houston, we have an arsefockin' problem: Avatar url required when usin' Webhook mode" >&2  
     exit 3
+fi
+
+if [ ! $messagemode ]
+then
+    if [ ! "$cutie" ] || [ ! "$cutie_name" ]
+    then 
+        echo "Houston, we have an arsefockin' problem: Cutie required" >&2  
+        exit 4
+    fi
+else
+    case "$mode" in
+    0)
+        nanako "$message"
+        ;;
+    1)
+        nanako2 "$message"
+        ;;
+    esac
+    exit
 fi
 
 url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie"
