@@ -1,5 +1,5 @@
 # Shitty Arse Discord Bots
-Shitty Arse Discord Bots usin' bash, yep, **B A S H**
+Shitty Arse Discord Bots usin' bash, and yep, arsefockin' **B A S H**
 
 Other bots will not be updated any fockin' way, all of them are in **futaba.sh**
 
