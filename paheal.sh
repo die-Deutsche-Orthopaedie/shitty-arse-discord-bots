@@ -78,7 +78,7 @@ do
             echo "Options: "
             echo "    -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
             echo "        and when you use this mode, you must use -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
-            echo "    -N or --natural-mode: use your own account to upload hentai, need to follow the instrucions in futaba() function"
+            echo "    -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
             echo "    -M or --message: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
             echo "    -H or -h or --help: this shit"
             echo
