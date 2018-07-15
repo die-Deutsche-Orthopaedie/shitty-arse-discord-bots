@@ -12,7 +12,7 @@ naturalinterval=2
 # hentai update interval
 
 function nanako() { # use webhooks
-    if [ $configemode ]
+    if [ $configmode ]
     then
         magic=`cat "$configfile"`
     else
@@ -29,7 +29,7 @@ function nanako() { # use webhooks
 }
 
 function hifumi() { # use webhooks to upload files
-    if [ $configemode ]
+    if [ $configmode ]
     then
         magic=`cat "$configfile"`
     else
@@ -45,7 +45,7 @@ function hifumi() { # use webhooks to upload files
 }
 
 function futaba() { # use your own accounts
-    if [ $configemode ]
+    if [ $configmode ]
     then
         eval `cat "$configfile"`
     else
@@ -56,7 +56,7 @@ function futaba() { # use your own accounts
 }
 
 function makoto() { # use your own accounts to upload files
-    if [ $configemode ]
+    if [ $configmode ]
     then
         eval `cat "$configfile"`
     else
@@ -71,7 +71,7 @@ function makoto() { # use your own accounts to upload files
 ######################################################################################################################################################################
 # DO NOT CHANGE UNLESS NECESSARY
 
-parameters=`getopt -o S:s:WwA:a:NnM:m:C:c:DdhH -a -l site:,webhook,avatar-url:,natural-mode,message:,config-file:,troll:,silent,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,config-file:,download,link-only:,troll:,silent,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -112,13 +112,18 @@ do
             shift 2
             ;;
         -c | -C | --config-file)
-			configemode=1
+			configmode=1
             configfile=$2
             shift 2
             ;;
         -d | -D | --download)
 			downloadmode=1
             shift
+            ;;
+        -l | -L | --link-only)
+			linkonlymode=1
+            exportfile=$2
+            shift 2
             ;;
         --troll)
 			trollname=$2
@@ -138,12 +143,14 @@ do
             echo
             echo "Options: "
             echo "    -s or -S or --site: input site name, currently supported: paheal, gelbooru"
+            echo "        use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "    -w or -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
             echo "        and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
             echo "    -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
             echo "    -m or -M or --message: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
             echo "    -c or -C or --config-file: load a config file which contains one line of webhook link / account curl commands; if you don't load one it will use default values in the script"
             echo "    -d or -D or --download: download pics and upload to discord instead of just postin' links"
+            echo "    -l or -L or --link-only: only export hentai pics links to file"
             echo "    --troll: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
             echo "    --silent: omit all of messages except pics, may be useful in some cases"
             echo "    -h or -H or --help: this shit"
@@ -202,7 +209,140 @@ fi
 ######################################################################################################################################################################
 
 ######################################################################################################################################################################
+# info-mesage-realated functions start here
+function initmessage() {
+    if [ ! $silentmode ] && [ ! $linkonlymode ]
+    then
+        if [ "$trollname" ]
+        then
+            author="$trollname"
+        else
+            author="die deutsche Orthopädiespezialist"
+        fi
+        case "$site" in
+            paheal)
+                sitename="paheal.net"
+                ;;
+            gelbooru)
+                sitename="gelbooru.com"
+                ;;
+            localmachine)
+                sitename="idkwhatitis.com"
+                ;;
+            *)
+                echo "fock it" >&2
+                exit 6
+        esac
+        message="$sitename rule34 fully automatic masspostin' bot developed by **$author**"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+
+        case "$mode" in
+            0)
+                nein="$webhookinterval"
+                ;;
+            1)
+                nein="$naturalinterval"
+                ;;
+        esac
+        case "$site" in
+            paheal)
+                message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+                ;;
+            gelbooru)
+                message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+                ;;
+            localmachine)
+                message="FYI, the cutie's name is **$cutie_name**, and idk how many pics does this hentai have, and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+                ;;
+            *)
+                echo "fock it" >&2
+                exit 6
+        esac
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+    fi
+}
+
+function finalmessage() {
+    if [ ! $silentmode ] && [ ! $linkonlymode ]
+    then
+        message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+    fi
+}
+######################################################################################################################################################################
+
+######################################################################################################################################################################
 # site-related functions start here
+
+function localmachine() {
+    initmessage
+
+    for file in `cat "$cutie" | sed 's/ /|/g'`
+    do
+        hentai=`echo $file | sed 's/|/_/g'`
+        case "$mode" in
+            0)
+                if [ $downloadmode ]
+                then
+                    mkdir temp
+                    cd temp
+                    wget "$hentai"
+                    for file in `ls | sed 's/ /|/g'`
+                    do
+                        file=`echo $file | sed 's/|/ /g'`
+                        hifumi "" "$file"
+                    done
+                    rm *.* -f
+                    cd ..
+                else
+                    nanako "$hentai"
+                    sleep "$webhookinterval"
+                fi
+                ;;
+            1)
+                if [ $downloadmode ]
+                then
+                    mkdir temp
+                    cd temp
+                    wget "$hentai"
+                    for file in `ls | sed 's/ /|/g'`
+                    do
+                        file=`echo $file | sed 's/|/ /g'`
+                        makoto "" "$file"
+                    done
+                    rm *.* -f
+                    cd ..
+                else
+                    futaba "$hentai"
+                    sleep "$naturalinterval"
+                fi
+                ;;
+        esac
+    done
+    
+    finalmessage
+}
 
 function paheal() {
     url="https://rule34.paheal.net/post/list/$cutie/"
@@ -213,100 +353,59 @@ function paheal() {
         cutie_name=`echo $cutie | sed 's/_/ /g'`
     fi
 
-    if [ ! $silentmode ]
-    then
-        if [ "$trollname" ]
-        then
-            author="$trollname"
-        else
-            author="die deutsche Orthopädiespezialist"
-        fi
-        message="paheal.net rule34 fully automatic masspostin' bot developed by **$author**"
-        case "$mode" in
-            0)
-                nanako "$message"
-                ;;
-            1)
-                futaba "$message"
-                ;;
-        esac
-
-        case "$mode" in
-            0)
-                nein="$webhookinterval"
-                ;;
-            1)
-                nein="$naturalinterval"
-                ;;
-        esac
-        message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-        case "$mode" in
-            0)
-                nanako "$message"
-                ;;
-            1)
-                futaba "$message"
-                ;;
-        esac
-    fi
+    initmessage
 
     for fish in `seq 1 $totalfish`
     do 
         for hentai in `curl "$url/$fish" | sed 's/<br/\n/g' | grep "Image Only" | grep -Eo "http://.*>Image" | sed 's/">Image//g'`
-        do 
-            case "$mode" in
-                0)
-                    if [ $downloadmode ]
-                    then
-                        mkdir temp
-                        cd temp
-                        wget "$hentai"
-                        for file in `ls | sed 's/ /|/g'`
-                        do
-                            file=`echo $file | sed 's/|/ /g'`
-                            hifumi "" "$file"
-                        done
-                        rm *.* -f
-                        cd ..
-                    else
-                        nanako "$hentai"
-                        sleep "$webhookinterval"
-                    fi
-                    ;;
-                1)
-                    if [ $downloadmode ]
-                    then
-                        mkdir temp
-                        cd temp
-                        wget "$hentai"
-                        for file in `ls | sed 's/ /|/g'`
-                        do
-                            file=`echo $file | sed 's/|/ /g'`
-                            makoto "" "$file"
-                        done
-                        rm *.* -f
-                        cd ..
-                    else
-                        futaba "$hentai"
-                        sleep "$webhookinterval"
-                    fi
-                    ;;
-            esac
+        do
+            if [ ! $linkonlymode ]
+            then
+                case "$mode" in
+                    0)
+                        if [ $downloadmode ]
+                        then
+                            mkdir temp
+                            cd temp
+                            wget "$hentai"
+                            for file in `ls | sed 's/ /|/g'`
+                            do
+                                file=`echo $file | sed 's/|/ /g'`
+                                hifumi "" "$file"
+                            done
+                            rm *.* -f
+                            cd ..
+                        else
+                            nanako "$hentai"
+                            sleep "$webhookinterval"
+                        fi
+                        ;;
+                    1)
+                        if [ $downloadmode ]
+                        then
+                            mkdir temp
+                            cd temp
+                            wget "$hentai"
+                            for file in `ls | sed 's/ /|/g'`
+                            do
+                                file=`echo $file | sed 's/|/ /g'`
+                                makoto "" "$file"
+                            done
+                            rm *.* -f
+                            cd ..
+                        else
+                            futaba "$hentai"
+                            sleep "$naturalinterval"
+                        fi
+                        ;;
+                esac
+            else
+                echo "$hentai" >> "$exportfile"
+            fi
         done
     done
 
-    if [ ! $silentmode ]
-    then
-        message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-        case "$mode" in
-            0)
-                nanako "$message"
-                ;;
-            1)
-                futaba "$message"
-                ;;
-        esac
-    fi
+    finalmessage
 }
 
 function gelbooru() {
@@ -317,42 +416,7 @@ function gelbooru() {
         cutie_name=`echo $cutie | sed 's/_/ /g'`
     fi
 
-    if [ ! $silentmode ]
-    then
-        if [ "$trollname" ]
-        then
-            author="$trollname"
-        else
-            author="die deutsche Orthopädiespezialist"
-        fi
-        message="gelbooru.com rule34 fully automatic masspostin' bot developed by **$author**"
-        case "$mode" in
-            0)
-                nanako "$message"
-                ;;
-            1)
-                futaba "$message"
-                ;;
-        esac
-
-        case "$mode" in
-            0)
-                nein="$webhookinterval"
-                ;;
-            1)
-                nein="$naturalinterval"
-                ;;
-        esac
-        message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-        case "$mode" in
-            0)
-                nanako "$message"
-                ;;
-            1)
-                futaba "$message"
-                ;;
-        esac
-    fi
+    initmessage
 
     for fish in `seq 0 42 $finalfish`
     do
@@ -360,59 +424,53 @@ function gelbooru() {
         for hentai in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
         do
             hentaipic=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentai" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/<li><a href="//g' | sed 's/" style="font-weight: bold;">Original image//g' | sed 's/" target="_blank//g'`
-            case "$mode" in
-                0)
-                    if [ $downloadmode ]
-                    then
-                        mkdir temp
-                        cd temp
-                        wget "$hentaipic"
-                        for file in `ls | sed 's/ /|/g'`
-                        do
-                            file=`echo $file | sed 's/|/ /g'`
-                            hifumi "" "$file"
-                        done
-                        rm *.* -f
-                        cd ..
-                    else
-                        nanako "$hentaipic"
-                        sleep "$webhookinterval"
-                    fi
-                    ;;
-                1)
-                    if [ $downloadmode ]
-                    then
-                        mkdir temp
-                        cd temp
-                        wget "$hentaipic"
-                        for file in `ls | sed 's/ /|/g'`
-                        do
-                            file=`echo $file | sed 's/|/ /g'`
-                            makoto "" "$file"
-                        done
-                        rm *.* -f
-                        cd ..
-                    else
-                        futaba "$hentaipic"
-                        sleep "$webhookinterval"
-                    fi
-                    ;;
-            esac
+            if [ ! $linkonlymode ]
+            then
+                case "$mode" in
+                    0)
+                        if [ $downloadmode ]
+                        then
+                            mkdir temp
+                            cd temp
+                            wget "$hentaipic"
+                            for file in `ls | sed 's/ /|/g'`
+                            do
+                                file=`echo $file | sed 's/|/ /g'`
+                                hifumi "" "$file"
+                            done
+                            rm *.* -f
+                            cd ..
+                        else
+                            nanako "$hentaipic"
+                            sleep "$webhookinterval"
+                        fi
+                        ;;
+                    1)
+                        if [ $downloadmode ]
+                        then
+                            mkdir temp
+                            cd temp
+                            wget "$hentaipic"
+                            for file in `ls | sed 's/ /|/g'`
+                            do
+                                file=`echo $file | sed 's/|/ /g'`
+                                makoto "" "$file"
+                            done
+                            rm *.* -f
+                            cd ..
+                        else
+                            futaba "$hentaipic"
+                            sleep "$naturalinterval"
+                        fi
+                        ;;
+                esac
+            else
+                echo "$hentaipic" >> "$exportfile"
+            fi
         done
     done
 
-    if [ ! $silentmode ]
-    then
-        message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-        case "$mode" in
-            0)
-                nanako "$message"
-                ;;
-            1)
-                futaba "$message"
-                ;;
-        esac
-    fi
+    finalmessage
 }
 
 case "$site" in
@@ -421,6 +479,15 @@ case "$site" in
         ;;
     gelbooru)
         gelbooru
+        ;;
+    localmachine)
+        if [ $linkonlymode ]
+        then
+            echo "Houston, we have an arsefockin' problem: U cannot use link-only mode when usin' local pic source for arsefockin' obvious reason" >&2
+            exit 7
+        else
+            localmachine
+        fi
         ;;
     *)
         echo "Houston, we have an arsefockin' problem: Site currently not supported" >&2
