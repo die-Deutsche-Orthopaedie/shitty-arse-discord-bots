@@ -1,5 +1,5 @@
 # copyrekt die deutsche Orthopädiespezialist 2018
-# paheal.net rule34 fully automatic paheal.net masspostin' bot
+# gelbooru.com rule34 fully automatic paheal.net masspostin' bot
 # you can either use a webhook or your own account or alt account if you don't have perms to create webhooks
 # here we fockin' go
 
