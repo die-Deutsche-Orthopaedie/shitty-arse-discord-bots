@@ -1,11 +1,11 @@
 # Shitty Arse Discord Bots
 Shitty Arse Discord Bots usin' bash, yep, **B A S H**
 
-Other bots will not be updated anyway, all of them are in futaba.sh
+Other bots will not be updated any fockin' way, all of them are in **futaba.sh**
 
 Usage: 
 
-futaba.sh [options] cutie cutie_name
+`futaba.sh [options] cutie cutie_name`
 
 Options: 
 > *     -s or -S or --site: input site name, currently supported: paheal, gelbooru
@@ -21,9 +21,9 @@ Options:
 > *     -h or -H or --help: show help
 
 Cutie: 
-> * pls input an **ACTUALLY EXISTED** name or tag, you can look up by addin' "**site:\<your site\>**" on Google to make sure it exists. And pls include "_" if it has one
+> * pls input an **ACTUALLY EXISTED** search term or tag, you can look up by addin' "**site:\<your site\>**" on Google to make sure it exists. And pls include "_" if it has one
 > * * eg. **futaba**'s page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is "**sakura_futaba**"
-> * * the display name for your cutie (**$cutie_name**) can be different from the search name or tag (**$cutie**), but if you don't input one it will be automatically generated from the tag
+> * * the display name for your cutie (**$cutie_name**) can be different from the search term or tag (**$cutie**), but if you don't input one it will be automatically generated from the tag
 
 And you'll need to provide webhook url (webhook mode) or curl command for account ("natural" mode) to make this script work. It's not too hard to provide webhook url, but it needs extra efforts to form two curl commands for this script to use. 
 
