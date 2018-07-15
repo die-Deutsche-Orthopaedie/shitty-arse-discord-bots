@@ -295,50 +295,68 @@ function finalmessage() {
 ######################################################################################################################################################################
 # site-related functions start here
 
+function download() {
+    mkdir temp
+    cd temp
+    rm *.* -f
+    wget "$hentai"
+    for file in `ls | sed 's/ /|/g'`
+    do
+        file=`echo $file | sed 's/|/ /g'`
+        case "$mode" in
+            0)
+                hifumi "" "$file"
+                # sleep "$webhookinterval"
+                ;;
+            1)
+                makoto "" "$file"
+                # sleep "$naturalinterval"
+                ;;
+        esac
+    done
+    rm *.* -f
+    cd ..
+}
+
+function post2discord() {
+    case "$mode" in
+        0)
+            nanako "$hentai"
+            sleep "$webhookinterval"
+            ;;
+        1)
+            futaba "$hentai"
+            sleep "$naturalinterval"
+            ;;
+    esac
+}
+
+function processhentai() {
+    if [ ! $linkonlymode ]
+    then
+        if [ $downloadmode ]
+        then
+            download
+        else
+            post2discord
+        fi
+    else
+        echo "$hentai" >> "$exportfile"
+    fi
+}
+
 function localmachine() {
     initmessage
 
     for file in `cat "$cutie" | sed 's/ /|/g'`
     do
         hentai=`echo $file | sed 's/|/_/g'`
-        case "$mode" in
-            0)
-                if [ $downloadmode ]
-                then
-                    mkdir temp
-                    cd temp
-                    wget "$hentai"
-                    for file in `ls | sed 's/ /|/g'`
-                    do
-                        file=`echo $file | sed 's/|/ /g'`
-                        hifumi "" "$file"
-                    done
-                    rm *.* -f
-                    cd ..
-                else
-                    nanako "$hentai"
-                    sleep "$webhookinterval"
-                fi
-                ;;
-            1)
-                if [ $downloadmode ]
-                then
-                    mkdir temp
-                    cd temp
-                    wget "$hentai"
-                    for file in `ls | sed 's/ /|/g'`
-                    do
-                        file=`echo $file | sed 's/|/ /g'`
-                        makoto "" "$file"
-                    done
-                    rm *.* -f
-                    cd ..
-                else
-                    futaba "$hentai"
-                    sleep "$naturalinterval"
-                fi
-                ;;
-        esac
+        if [ $downloadmode ]
+        then
+            download
+        else
+            post2discord
+        fi
     done
     
     finalmessage
@@ -359,49 +377,7 @@ function paheal() {
     do 
         for hentai in `curl "$url/$fish" | sed 's/<br/\n/g' | grep "Image Only" | grep -Eo "http://.*>Image" | sed 's/">Image//g'`
         do
-            if [ ! $linkonlymode ]
-            then
-                case "$mode" in
-                    0)
-                        if [ $downloadmode ]
-                        then
-                            mkdir temp
-                            cd temp
-                            wget "$hentai"
-                            for file in `ls | sed 's/ /|/g'`
-                            do
-                                file=`echo $file | sed 's/|/ /g'`
-                                hifumi "" "$file"
-                            done
-                            rm *.* -f
-                            cd ..
-                        else
-                            nanako "$hentai"
-                            sleep "$webhookinterval"
-                        fi
-                        ;;
-                    1)
-                        if [ $downloadmode ]
-                        then
-                            mkdir temp
-                            cd temp
-                            wget "$hentai"
-                            for file in `ls | sed 's/ /|/g'`
-                            do
-                                file=`echo $file | sed 's/|/ /g'`
-                                makoto "" "$file"
-                            done
-                            rm *.* -f
-                            cd ..
-                        else
-                            futaba "$hentai"
-                            sleep "$naturalinterval"
-                        fi
-                        ;;
-                esac
-            else
-                echo "$hentai" >> "$exportfile"
-            fi
+            processhentai
         done
     done
 
@@ -421,52 +397,11 @@ function gelbooru() {
     for fish in `seq 0 42 $finalfish`
     do
         url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie&pid=$fish"
-        for hentai in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
+        url=${url%$'\r'}
+        for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
         do
-            hentaipic=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentai" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/<li><a href="//g' | sed 's/" style="font-weight: bold;">Original image//g' | sed 's/" target="_blank//g'`
-            if [ ! $linkonlymode ]
-            then
-                case "$mode" in
-                    0)
-                        if [ $downloadmode ]
-                        then
-                            mkdir temp
-                            cd temp
-                            wget "$hentaipic"
-                            for file in `ls | sed 's/ /|/g'`
-                            do
-                                file=`echo $file | sed 's/|/ /g'`
-                                hifumi "" "$file"
-                            done
-                            rm *.* -f
-                            cd ..
-                        else
-                            nanako "$hentaipic"
-                            sleep "$webhookinterval"
-                        fi
-                        ;;
-                    1)
-                        if [ $downloadmode ]
-                        then
-                            mkdir temp
-                            cd temp
-                            wget "$hentaipic"
-                            for file in `ls | sed 's/ /|/g'`
-                            do
-                                file=`echo $file | sed 's/|/ /g'`
-                                makoto "" "$file"
-                            done
-                            rm *.* -f
-                            cd ..
-                        else
-                            futaba "$hentaipic"
-                            sleep "$naturalinterval"
-                        fi
-                        ;;
-                esac
-            else
-                echo "$hentaipic" >> "$exportfile"
-            fi
+            hentai=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/<li><a href="//g' | sed 's/" style="font-weight: bold;">Original image//g' | sed 's/" target="_blank//g'`
+            processhentai
         done
     done
 
@@ -483,7 +418,7 @@ case "$site" in
     localmachine)
         if [ $linkonlymode ]
         then
-            echo "Houston, we have an arsefockin' problem: U cannot use link-only mode when usin' local pic source for arsefockin' obvious reason" >&2
+            echo "Houston, we have an arsefockin' problem: For arsefockin' obvious reason, you cannot use link-only mode when usin' local pic source " >&2
             exit 7
         else
             localmachine
