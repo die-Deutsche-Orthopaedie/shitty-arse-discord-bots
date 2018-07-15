@@ -6,48 +6,37 @@
 
 ######################################################################################################################################################################
 # need to be changed
-
 webhookinterval=3
 naturalinterval=2
 # hentai update interval
 
+webhook_url="<paste your webhook url here>"
+
 function nanako() { # use webhooks
-    if [ $configmode ]
-    then
-        magic=`cat "$configfile"`
-    else
-        magic="<paste your webhook url here>"
-    fi
     if [ $messagemode ]
     then
         username="$cutie"
     else
         username="$cutie_name Hentai Bot"
     fi
-    # curl -d "content=$1&username=$username&avatar_url=$avatarurl" "$magic"
-    curl -d "{\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" "$magic"
+    # curl -d "content=$1&username=$username&avatar_url=$avatarurl" "$webhook_url"
+    curl -d "{\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" "$webhook_url"
 }
 
 function hifumi() { # use webhooks to upload files
-    if [ $configmode ]
-    then
-        magic=`cat "$configfile"`
-    else
-        magic="<paste your webhook url here>"
-    fi
     if [ $messagemode ]
     then
         username="$cutie"
     else
         username="$cutie_name Hentai Bot"
     fi
-    curl -F "payload_json={\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" -F "filename=@$2" "$magic"
+    curl -F "payload_json={\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" -F "filename=@$2" "$webhook_url"
 }
 
 function futaba() { # use your own accounts
     if [ $configmode ]
     then
-        eval `cat "$configfile"`
+        eval $curl_command
     else
         # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command and replace your message with a $1 and replace all '""' with '\"', then you're good to go! >
         # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
@@ -58,7 +47,7 @@ function futaba() { # use your own accounts
 function makoto() { # use your own accounts to upload files
     if [ $configmode ]
     then
-        eval `cat "$configfile"`
+        eval $curl_command_upload
     else
         # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command, but this time you'll need to change the enitre --data into '-F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"', then you're good to go! >
         # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
@@ -91,49 +80,49 @@ while true
 do
     case "$1" in
         -s | -S | --site)
-			site=$2
+            site=$2
             shift 2
             ;;
         -w | -W | --webhook)
-			mode=0
+            mode=0
             shift
             ;;
-		-a | -A | --avatar-url)
-			avatarurl=$2
+        -a | -A | --avatar-url)
+            avatarurl=$2
             shift 2
             ;;
         -n | -N | --natural-mode)
-			mode=1
+            mode=1
             shift
             ;;
         -m | -M | --message)
-			messagemode=1
+            messagemode=1
             message=$2
             shift 2
             ;;
         -c | -C | --config-file)
-			configmode=1
+            configmode=1
             configfile=$2
             shift 2
             ;;
         -d | -D | --download)
-			downloadmode=1
+            downloadmode=1
             shift
             ;;
         -l | -L | --link-only)
-			linkonlymode=1
+            linkonlymode=1
             exportfile=$2
             shift 2
             ;;
         --troll)
-			trollname=$2
+            trollname=$2
             shift 2
             ;;
         --silent)
-			silentmode=1
+            silentmode=1
             shift
             ;;
-		-h | -H | --help)
+        -h | -H | --help)
             echo "copyrekt die deutsche Orthopädiespezialist 2018"
             echo "multi-site rule34 fully automatic masspostin' bot for discord"
             echo "you can either use a webhook or your own account or alt account if you don't have permissions to create webhooks"
@@ -148,7 +137,7 @@ do
             echo "        and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
             echo "    -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
             echo "    -m or -M or --message: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
-            echo "    -c or -C or --config-file: load a config file which contains one line of webhook link / account curl commands; if you don't load one it will use default values in the script"
+            echo "    -c or -C or --config-file: load a configuration file which contains three lines of webhook rul, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script"
             echo "    -d or -D or --download: download pics and upload to discord instead of just postin' links"
             echo "    -l or -L or --link-only: only export hentai pics links to file"
             echo "    --troll: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
@@ -159,7 +148,7 @@ do
             echo "    pls input an ACTUALLY EXISTED name or tag, you can look up by addin' \"site:<your site>\" on Google to make sure it exists. And pls include \"_\" if it has one"
             echo "    eg. futaba's page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
             echo "        the display name for your cutie (\$cutie_name) can be different from the search name or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
-			exit
+            exit
             shift
             ;;
         --)
@@ -183,7 +172,6 @@ fi
 
 if [ ! $messagemode ]
 then
-    # if [ ! "$cutie" ] || [ ! "$cutie_name" ]
     if [ ! "$cutie" ]
     then 
         echo "Houston, we have an arsefockin' problem: Cutie required" >&2
@@ -206,6 +194,14 @@ then
     echo "Houston, we have an arsefockin' problem: You need to input a hentai site" >&2
     exit 5
 fi
+
+if [ $configmode ]
+then
+    webhook_url=`sed -n 1p "$configfile"`
+    curl_command=`sed -n 2p "$configfile"`
+    curl_command_upload=`sed -n 3p "$configfile"`
+fi
+
 ######################################################################################################################################################################
 
 ######################################################################################################################################################################
@@ -290,6 +286,7 @@ function finalmessage() {
         esac
     fi
 }
+
 ######################################################################################################################################################################
 
 ######################################################################################################################################################################
