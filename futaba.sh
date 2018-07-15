@@ -137,7 +137,7 @@ do
             echo "        and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
             echo "    -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
             echo "    -m or -M or --message: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
-            echo "    -c or -C or --config-file: load a configuration file which contains three lines of webhook rul, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script"
+            echo "    -c or -C or --config-file: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script"
             echo "    -d or -D or --download: download pics and upload to discord instead of just postin' links"
             echo "    -l or -L or --link-only: only export hentai pics links to file"
             echo "    --troll: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
