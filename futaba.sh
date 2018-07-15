@@ -11,7 +11,7 @@ webhookinterval=3
 naturalinterval=2
 # hentai update interval
 
-function nanako(){ # use webhooks
+function nanako() { # use webhooks
     if [ $configemode ]
     then
         magic=`cat "$configfile"`
@@ -24,10 +24,27 @@ function nanako(){ # use webhooks
     else
         username="$cutie_name Hentai Bot"
     fi
-    curl -d "content=$1&username=$username&avatar_url=$avatarurl" "$magic"
+    # curl -d "content=$1&username=$username&avatar_url=$avatarurl" "$magic"
+    curl -d "{\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" "$magic"
 }
 
-function futaba(){ # use your own accounts
+function hifumi() { # use webhooks to upload files
+    if [ $configemode ]
+    then
+        magic=`cat "$configfile"`
+    else
+        magic="<paste your webhook url here>"
+    fi
+    if [ $messagemode ]
+    then
+        username="$cutie"
+    else
+        username="$cutie_name Hentai Bot"
+    fi
+    curl -F "payload_json={\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" -F "filename=@$2" "$magic"
+}
+
+function futaba() { # use your own accounts
     if [ $configemode ]
     then
         eval `cat "$configfile"`
@@ -37,13 +54,24 @@ function futaba(){ # use your own accounts
         curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"
     fi
 }
+
+function makoto() { # use your own accounts to upload files
+    if [ $configemode ]
+    then
+        eval `cat "$configfile"`
+    else
+        # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command, but this time you'll need to change the enitre --data into '-F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"', then you're good to go! >
+        # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
+        curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: multipart/form-data; boundary=---------------------------XXXXXXXXXXXXXXXXX" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"
+    fi
+}
 ######################################################################################################################################################################
 
 
 ######################################################################################################################################################################
 # DO NOT CHANGE UNLESS NECESSARY
 
-parameters=`getopt -o S:s:WwA:a:NnM:m:C:c:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,config-file:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:C:c:DdhH -a -l site:,webhook,avatar-url:,natural-mode,message:,config-file:,troll:,silent,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -88,6 +116,18 @@ do
             configfile=$2
             shift 2
             ;;
+        -d | -D | --download)
+			downloadmode=1
+            shift
+            ;;
+        --troll)
+			trollname=$2
+            shift 2
+            ;;
+        --silent)
+			silentmode=1
+            shift
+            ;;
 		-h | -H | --help)
             echo "copyrekt die deutsche Orthopädiespezialist 2018"
             echo "multi-site rule34 fully automatic masspostin' bot for discord"
@@ -103,6 +143,9 @@ do
             echo "    -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
             echo "    -m or -M or --message: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
             echo "    -c or -C or --config-file: load a config file which contains one line of webhook link / account curl commands; if you don't load one it will use default values in the script"
+            echo "    -d or -D or --download: download pics and upload to discord instead of just postin' links"
+            echo "    --troll: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
+            echo "    --silent: omit all of messages except pics, may be useful in some cases"
             echo "    -h or -H or --help: this shit"
             echo
             echo "Cutie: "
@@ -125,7 +168,7 @@ do
     esac
 done
 
-if [ $mode == 0 ] && [ ! $avatarurl ]
+if [ $mode == 0 ] && [ ! "$avatarurl" ]
 then
     echo "Houston, we have an arsefockin' problem: Avatar url required when usin' Webhook mode" >&2
     exit 3
@@ -161,7 +204,7 @@ fi
 ######################################################################################################################################################################
 # site-related functions start here
 
-function paheal(){
+function paheal() {
     url="https://rule34.paheal.net/post/list/$cutie/"
     totalfish=`curl "$url" | grep -Eo "Next.*Last" | grep -Eo "[0-9]*"`
     #totalfish=2 # in some cases you just can't use script to find out pages, you'll have to make it manually
@@ -169,34 +212,43 @@ function paheal(){
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
     fi
-    
-    message="paheal.net rule34 fully automatic masspostin' bot developed by **die deutsche Orthopädiespezialist**"
-    case "$mode" in
-        0)
-            nanako "$message"
-            ;;
-        1)
-            futaba "$message"
-            ;;
-    esac
 
-    case "$mode" in
-        0)
-            nein="$webhookinterval"
-            ;;
-        1)
-            nein="$naturalinterval"
-            ;;
-    esac
-    message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-    case "$mode" in
-        0)
-            nanako "$message"
-            ;;
-        1)
-            futaba "$message"
-            ;;
-    esac
+    if [ ! $silentmode ]
+    then
+        if [ "$trollname" ]
+        then
+            author="$trollname"
+        else
+            author="die deutsche Orthopädiespezialist"
+        fi
+        message="paheal.net rule34 fully automatic masspostin' bot developed by **$author**"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+
+        case "$mode" in
+            0)
+                nein="$webhookinterval"
+                ;;
+            1)
+                nein="$naturalinterval"
+                ;;
+        esac
+        message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+    fi
 
     for fish in `seq 1 $totalfish`
     do 
@@ -204,29 +256,60 @@ function paheal(){
         do 
             case "$mode" in
                 0)
-                    nanako "$hentai"
-                    sleep "$webhookinterval"
+                    if [ $downloadmode ]
+                    then
+                        mkdir temp
+                        cd temp
+                        wget "$hentai"
+                        for file in `ls | sed 's/ /|/g'`
+                        do
+                            file=`echo $file | sed 's/|/ /g'`
+                            hifumi "" "$file"
+                        done
+                        rm *.* -f
+                        cd ..
+                    else
+                        nanako "$hentai"
+                        sleep "$webhookinterval"
+                    fi
                     ;;
                 1)
-                    futaba "${hentai//%20/ }"
-                    sleep "$naturalinterval"
+                    if [ $downloadmode ]
+                    then
+                        mkdir temp
+                        cd temp
+                        wget "$hentai"
+                        for file in `ls | sed 's/ /|/g'`
+                        do
+                            file=`echo $file | sed 's/|/ /g'`
+                            makoto "" "$file"
+                        done
+                        rm *.* -f
+                        cd ..
+                    else
+                        futaba "$hentai"
+                        sleep "$webhookinterval"
+                    fi
                     ;;
             esac
         done
     done
 
-    message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-    case "$mode" in
-        0)
-            nanako "$message"
-            ;;
-        1)
-            futaba "$message"
-            ;;
-    esac
+    if [ ! $silentmode ]
+    then
+        message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+    fi
 }
 
-function gelbooru(){
+function gelbooru() {
     url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie"
     finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
     if [ ! "$cutie_name" ]
@@ -234,33 +317,42 @@ function gelbooru(){
         cutie_name=`echo $cutie | sed 's/_/ /g'`
     fi
 
-    message="gelbooru.com rule34 fully automatic masspostin' bot developed by **die deutsche Orthopädiespezialist**"
-    case "$mode" in
-        0)
-            nanako "$message"
-            ;;
-        1)
-            futaba "$message"
-            ;;
-    esac
+    if [ ! $silentmode ]
+    then
+        if [ "$trollname" ]
+        then
+            author="$trollname"
+        else
+            author="die deutsche Orthopädiespezialist"
+        fi
+        message="gelbooru.com rule34 fully automatic masspostin' bot developed by **$author**"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
 
-    case "$mode" in
-        0)
-            nein="$webhookinterval"
-            ;;
-        1)
-            nein="$naturalinterval"
-            ;;
-    esac
-    message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-    case "$mode" in
-        0)
-            nanako "$message"
-            ;;
-        1)
-            futaba "$message"
-            ;;
-    esac
+        case "$mode" in
+            0)
+                nein="$webhookinterval"
+                ;;
+            1)
+                nein="$naturalinterval"
+                ;;
+        esac
+        message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+    fi
 
     for fish in `seq 0 42 $finalfish`
     do
@@ -270,26 +362,57 @@ function gelbooru(){
             hentaipic=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentai" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/<li><a href="//g' | sed 's/" style="font-weight: bold;">Original image//g' | sed 's/" target="_blank//g'`
             case "$mode" in
                 0)
-                    nanako "$hentaipic"
-                    sleep "$webhookinterval"
+                    if [ $downloadmode ]
+                    then
+                        mkdir temp
+                        cd temp
+                        wget "$hentaipic"
+                        for file in `ls | sed 's/ /|/g'`
+                        do
+                            file=`echo $file | sed 's/|/ /g'`
+                            hifumi "" "$file"
+                        done
+                        rm *.* -f
+                        cd ..
+                    else
+                        nanako "$hentaipic"
+                        sleep "$webhookinterval"
+                    fi
                     ;;
                 1)
-                    futaba "${hentaipic//%20/ }"
-                    sleep "$naturalinterval"
+                    if [ $downloadmode ]
+                    then
+                        mkdir temp
+                        cd temp
+                        wget "$hentaipic"
+                        for file in `ls | sed 's/ /|/g'`
+                        do
+                            file=`echo $file | sed 's/|/ /g'`
+                            makoto "" "$file"
+                        done
+                        rm *.* -f
+                        cd ..
+                    else
+                        futaba "$hentaipic"
+                        sleep "$webhookinterval"
+                    fi
                     ;;
             esac
         done
     done
 
-    message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-    case "$mode" in
-        0)
-            nanako "$message"
-            ;;
-        1)
-            futaba "$message"
-            ;;
-    esac
+    if [ ! $silentmode ]
+    then
+        message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+        case "$mode" in
+            0)
+                nanako "$message"
+                ;;
+            1)
+                futaba "$message"
+                ;;
+        esac
+    fi
 }
 
 case "$site" in
