@@ -442,16 +442,22 @@ function processhentai_pixiv() {
 }
 
 function localmachine() {
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
     initmessage
 
+    if [ $pixivlogmode ]
+    then
+        cat "$cutie" | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > /dev/shm
+        cutie="/dev/shm"
+    fi
+    
+    
     for file in `cat "$cutie" | sed 's/ /|/g'`
     do
-        if [ $pixivlogmode ]
-        then
-            hentai=`echo $file | sed 's/|/_/g' | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g'`
-        else
-            hentai=`echo $file | sed 's/|/_/g'`
-        fi
+        hentai=`echo $file | sed 's/|/_/g'`
         if [ $downloadmode ]
         then
             download
@@ -464,6 +470,10 @@ function localmachine() {
 }
 
 function localmachine_pixiv() {
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
     initmessage
 
     for file in `cat "$cutie" | sed 's/ /|/g'`
