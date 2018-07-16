@@ -25,7 +25,7 @@ Options:
 > * * * and when you use this mode, you must use `-a or -A or --avatar-url` to set your avatar, you need to make one yourself and upload to discord and get the link via **Copy Link**
 > * * `-n or -N or --natural-mode`: use your own account to upload hentai, need to follow the instructions in `futaba()` function
 > * * `-m or -M or --message <message>`: send a message usin' either methods, in this mode `$cutie_name` will become your bot's name (if you use webhook)
-> * * * `-e or -E or --england-is-my-city`: spam nick crumpton's famous England is my City song in set channel (and get your arse banned soooooooon)
+> * * * `-e or -E or --england-is-my-city`: spam nick crumpton's famous *England is my City* song in set channel (and get your arse banned soooooooon)
 > * * * `--pingasland-is-my-pingas`: PINGAS version of the aforementioned song
 > * * `-u or -U or --upload <filepath> <message>`: upload a file usin' either methods, in this mode `$cutie_name` will become your bot's name (if you use webhook)
 > * * * and i've found a strange bug out here, now it would be better if you put `-u or -U or --upload` as the last parameter and all will be fine
