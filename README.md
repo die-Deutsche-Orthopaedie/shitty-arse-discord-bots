@@ -27,6 +27,7 @@ Options:
 > * * * use **localmachine** to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case `$cutie` will be your filename
 > * * * and **localmachine_pixiv** to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case `$cutie` will be your filename
 > * * `-c or -C or --config-file <configfilepath>`: load a configuration file which contains **three** lines of **webhook url**, **account curl command** and **account curl command (used to upload)**; if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means
+> * * * `--fast_webhook <webhook-link>`: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode
 > * * `--silent`: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases
 > * * `--webhookinterval <newinterval>`: override webhook mode hentei interval in the script
 > * * `--naturalinterval <newinterval>`: override natural mode hentei interval in the script
