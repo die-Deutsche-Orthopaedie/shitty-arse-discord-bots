@@ -231,6 +231,12 @@ then
     curl_command_upload=`sed -n 3p "$configfilepath"`
 fi
 
+if [ $downloadmode ] # for some cases upload speed is soooooooo fast that you would got ratelimited, so still needs to sleep in (re)upload mode
+then
+    webhookinterval=`expr $webhookinterval - 2`
+    naturalinterval=`expr $naturalinterval - 1`
+fi
+
 if [ ! $messagemode ] && [ ! $uploadmode ]
 then
     if [ ! "$cutie" ]
@@ -374,12 +380,10 @@ function download() {
         case "$mode" in
             0)
                 hifumi "" "$file"
-                webhookinterval=`expr $webhookinterval - 2`
                 sleep "$webhookinterval"
                 ;;
             1)
                 makoto "" "$file"
-                naturalinterval=`expr $naturalinterval - 1`
                 sleep "$naturalinterval"
                 ;;
         esac
@@ -429,12 +433,10 @@ function processhentai_pixiv() {
             case "$mode" in
                 0)
                     hifumi "$hentai" "$file"
-                    webhookinterval=`expr $webhookinterval - 2`
                     sleep "$webhookinterval"
                     ;;
                 1)
                     makoto "$hentai" "$file"
-                    naturalinterval=`expr $naturalinterval - 1`
                     sleep "$naturalinterval"
                     ;;
             esac >> "$currentdir/$cutie.pixivlog.txt"
@@ -493,11 +495,12 @@ function localmachine_pixiv() {
             case "$mode" in
                 0)
                     hifumi "" "$file"
-                    # sleep "$webhookinterval"
+                    webhookinterval=`expr $webhookinterval - 2`
+                    sleep "$webhookinterval"
                     ;;
                 1)
-                    makoto "" "$file"
-                    # sleep "$naturalinterval"
+                    naturalinterval=`expr $naturalinterval - 1`
+                    sleep "$naturalinterval"
                     ;;
             esac >> "$currentdir/$cutie.pixivlog.txt"
         done
