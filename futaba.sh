@@ -463,7 +463,7 @@ function pixiv_fast() {
 # DO NOT CHANGE UNLESS NECESSARY
 
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:U:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,upload:,config-file:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:U:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,upload:,config-file:,fast_webhook:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -514,6 +514,10 @@ do
         -c | -C | --config-file)
             configmode=1
             configfilepath=$2
+            shift 2
+            ;;
+        --fast_webhook
+            fast_webhook=$2
             shift 2
             ;;
         -d | -D | --download)
@@ -585,6 +589,7 @@ do
             echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
             echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
+            echo "            --fast_webhook <webhook-link>: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode"
             echo "        --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
             echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
@@ -640,6 +645,12 @@ then
     curl_command=`sed -n 2p "$configfilepath"`
     curl_command_upload=`sed -n 3p "$configfilepath"`
 fi
+
+if [ $fast_webhook ]
+then
+    webhook_url="$fast_webhook"
+fi
+
 
 if [ $channelid ] # it looks like shit but it works
 then
