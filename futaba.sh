@@ -595,7 +595,7 @@ do
             echo "            and currently this thing will either kill the script or make it stop, just forget about it"
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
             echo "            and i'm still not used to called discord chatroom \"server\", because what runs this script is the real server for me"
-            echo "        --join-chatroom <chatroom-invite-link>: the ability to join chatroom VIA CLI, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGEL you only need \"FEGEL\""
+            echo "        --join-chatroom <chatroom-invite-link>: the ability to join chatroom via ARSEFOCKIN' B A S H, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGEL you only need \"FEGEL\""
             echo
             echo "    Help: "
             echo "        -h or -H or --help: this shit"
