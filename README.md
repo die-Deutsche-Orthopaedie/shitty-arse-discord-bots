@@ -9,7 +9,7 @@ Now i've added cross channel messagin' and chatroom join functionality, one step
 
 **WARNING**: this script used soooooooo many `eval`s, **if you include a `rm / -rf` somewhere in the input (includin' from hentai sites), it may really be doin' `rm / -rf`; USE IT AT YOUR OWN ARSEFOCKIN' RISK**, and better not use it on your own computer xD
 
-actually it can run almost without issue in ovh's free host, or other free hosts with ssh access, except you'll need to use `bash futaba.sh` instead of `./futaba.sh`
+actually it can run almost without issue in ovh's free host (you'll need an UK ip to apply for one, because `ENGLAND IS MY CITY`), or other free hosts with ssh access, except you'll need to use `bash futaba.sh` instead of `./futaba.sh`
 
 Usage: 
 
