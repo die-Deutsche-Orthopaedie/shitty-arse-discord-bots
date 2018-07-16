@@ -3,7 +3,7 @@ Shitty Arse Discord Bots usin' bash, and yep, arsefockin' **B A S H**
 
 Other bots will not be updated any fockin' way, all of them are in **futaba.sh**
 
-And one more thing, i've completed the **Holy Grail of Hentai**, **pixiv.net**, with arsefockin' **B A S H**! How the fock will i celebrate? ~~bombard certain social justice worriors chatroom with futaba hentai? ~~
+And one more thing, i've completed the **Holy Grail of Hentai**, **pixiv.net**, with arsefockin' **B A S H**! How the fock will i celebrate? 
 
 Usage: 
 
