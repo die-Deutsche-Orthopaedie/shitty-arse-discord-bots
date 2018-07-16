@@ -571,7 +571,7 @@ do
             echo "you can either use a webhook or your own account or alt account if you don't have permissions to create webhooks"
             echo
             echo "Usage: "
-            echo "futaba.sh [options] cutie cutie_name"
+            echo "./futaba.sh [options] cutie cutie_name"
             echo
             echo "Options: "
             echo "    Modes: "
