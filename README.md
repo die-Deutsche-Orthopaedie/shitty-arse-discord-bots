@@ -7,7 +7,7 @@ And one more thing, i've completed the **Holy Grail of Hentai**, **pixiv.net**, 
 
 Now i've added cross channel messagin' and chatroom join functionality, one step closer to be discord: bash edition xD
 
-**WARNING**: this script used soooooooo many `eval`, **if you include a `rm / -rf` somewhere in the input (includin' from hentai sites), it may really be doin'** `rm / -rf`; **USE IT AT YOUR OWN FOCKIN' RISK\!\!\!\! **
+**WARNING**: this script used soooooooo many `eval`s, **if you include a `rm / -rf` somewhere in the input (includin' from hentai sites), it may really be doin' `rm / -rf`; USE IT AT YOUR OWN ARSEFOCKIN' RISK**, and better not use it on your own computer xD
 
 Usage: 
 
