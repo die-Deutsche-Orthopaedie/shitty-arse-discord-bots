@@ -15,6 +15,20 @@ shitty_arse_pixiv_parameter=${shitty_arse_pixiv_parameter//--compressed /} # oth
 
 webhook_url="<paste your webhook url here>"
 
+# <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command and replace your message with a $1 and replace all '""' with '\"', then you're good to go! >
+# it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
+curl_command='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"'
+
+
+# <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command, but this time you'll need to change the enitre --data into '-F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"', then you're good to go! >
+# it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
+curl_command_upload='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: multipart/form-data; boundary=---------------------------XXXXXXXXXXXXXXXXX" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"'
+
+######################################################################################################################################################################
+
+######################################################################################################################################################################
+# discord-related functions start here
+
 function nanako() { # use webhooks [ with one parameter <message> ]
     if [ $messagemode ]
     then
@@ -37,245 +51,12 @@ function hifumi() { # use webhooks to upload files [ with two parameters <messag
 }
 
 function futaba() { # use your own accounts [ with one parameter <message> ]
-    if [ $configmode ]
-    then
-        eval $curl_command
-    else
-        # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command and replace your message with a $1 and replace all '""' with '\"', then you're good to go! >
-        # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
-        curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"
-    fi
+    eval "$curl_command"
 }
 
 function makoto() { # use your own accounts to upload files [ with two parameters <message> <filepath> ]
-    if [ $configmode ]
-    then
-        eval $curl_command_upload
-    else
-        # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command, but this time you'll need to change the enitre --data into '-F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"', then you're good to go! >
-        # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
-        curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: multipart/form-data; boundary=---------------------------XXXXXXXXXXXXXXXXX" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"
-    fi
+    eval "$curl_command_upload"
 }
-######################################################################################################################################################################
-
-
-######################################################################################################################################################################
-# DO NOT CHANGE UNLESS NECESSARY
-
-currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:U:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,upload:,config-file:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,help -- "$@"`
-
-if [ $? != 0 ]
-then
-    echo "Houston, we have an arsefockin' problem: Unrecognized Option Detected, Terminating....." >&2
-    exit 2
-fi
-
-if [ $# -eq 0 ]
-then
-    echo "Houston, we have an arsefockin' problem: You MUST at least provide a parameter" >&2
-    exit 1
-fi
-
-eval set -- "$parameters"
-
-while true
-do
-    # echo $@
-    case "$1" in
-        -s | -S | --site)
-            site=$2
-            shift 2
-            ;;
-        -w | -W | --webhook)
-            mode=0
-            shift
-            ;;
-        -a | -A | --avatar-url)
-            avatarurl=$2
-            shift 2
-            ;;
-        -n | -N | --natural-mode)
-            mode=1
-            shift
-            ;;
-        -m | -M | --message)
-            messagemode=1
-            message=$2
-            shift 2
-            ;;
-        -u | -U | --upload)
-            uploadmode=1
-            filepath=$2
-            message=$4
-            echo "$filepath, $message"
-            shift 2
-            ;;
-        -c | -C | --config-file)
-            configmode=1
-            configfilepath=$2
-            shift 2
-            ;;
-        -d | -D | --download)
-            downloadmode=1
-            shift
-            ;;
-        -l | -L | --link-only)
-            linkonlymode=1
-            exportfilepath=$2
-            shift 2
-            ;;
-        --troll)
-            trollname=$2
-            shift 2
-            ;;
-        --silent)
-            silentmode=1
-            shift
-            ;;
-        --webhookinterval)
-            webhookinterval=$2
-            shift 2
-            ;;
-        --naturalinterval)
-            naturalinterval=$2
-            shift 2
-            ;;
-        --pixiv-fast-mode)
-            pixivmode=1
-            shift
-            ;;
-        --pixiv-halfspeed-mode)
-            pixivmode=0
-            shift
-            ;;
-        --pixiv-log)
-            pixivlogmode=1
-            shift
-            ;;    
-        -h | -H | --help)
-            echo "copyrekt die deutsche Orthopädiespezialist 2018"
-            echo "multi-site rule34 fully automatic masspostin' bot for discord"
-            echo "you can either use a webhook or your own account or alt account if you don't have permissions to create webhooks"
-            echo
-            echo "Usage: "
-            echo "futaba.sh [options] cutie cutie_name"
-            echo
-            echo "Options: "
-            echo "    Modes: "
-            echo "        -w or -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
-            echo "            and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
-            echo "        -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
-            echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
-            echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
-            echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
-            echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
-            echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
-            echo
-            echo "    Configurations: "
-            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, pixiv"
-            echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
-            echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
-            echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
-            echo "        --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
-            echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
-            echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
-            echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
-            echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
-            echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
-            echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
-            echo "            and currently this thing will either kill the script or make it stop, just forget about it"
-            echo
-            echo "    Help: "
-            echo "        -h or -H or --help: this shit"
-            echo
-            echo "Cutie: "
-            echo "    pls input an ACTUALLY EXISTED search term or tag, you can look up by addin' \"site:<your site>\" on Google to make sure it exists. And pls include \"_\" if it has one"
-            echo "        eg. futaba's page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is \"Futaba_Sakura\""
-            echo "        eg. futaba's page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
-            echo "        eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
-            echo "            the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
-            exit
-            shift
-            ;;
-        --)
-            cutie=$2
-            cutie_name=$3
-            shift 2
-            break
-            ;;
-        *)
-            echo "Internal error!"
-            exit 255
-            ;;
-    esac
-done
-
-if [ ! $mode ]
-then
-    echo "Houston, we have an arsefockin' problem: Webbook mode or Natural mode? " >&2
-    exit -1
-fi
-
-if [ $mode == 0 ] && [ ! "$avatarurl" ]
-then
-    echo "Houston, we have an arsefockin' problem: Avatar url required while usin' Webhook mode" >&2
-    exit 3
-fi
-
-if [ $configmode ]
-then
-    webhook_url=`sed -n 1p "$configfilepath"`
-    curl_command=`sed -n 2p "$configfilepath"`
-    curl_command_upload=`sed -n 3p "$configfilepath"`
-fi
-
-if [ $downloadmode ] # for some cases upload speed is soooooooo fast that you would got ratelimited, so still needs to sleep in (re)upload mode
-then
-    webhookinterval=`expr $webhookinterval - 2`
-    naturalinterval=`expr $naturalinterval - 1`
-fi
-
-if [ ! $messagemode ] && [ ! $uploadmode ]
-then
-    if [ ! "$cutie" ]
-    then 
-        echo "Houston, we have an arsefockin' problem: Cutie required" >&2
-        exit 4
-    fi
-else
-    if [ $messagemode ]
-    then
-        case "$mode" in
-        0)
-            nanako "$message"
-            ;;
-        1)
-            futaba "$message"
-            ;;
-        esac
-    exit
-    fi
-    if [ $uploadmode ]
-    then
-        case "$mode" in
-        0)
-            hifumi "$message" "$filepath"
-            ;;
-        1)
-            makoto "$message" "$filepath"
-            ;;
-        esac
-        exit
-    fi
-fi
-
-if [ ! $site ]
-then
-    echo "Houston, we have an arsefockin' problem: You need to input a hentai site" >&2
-    exit 5
-fi
 
 ######################################################################################################################################################################
 
@@ -676,7 +457,261 @@ function pixiv_fast() {
     finalmessage
 }
 
-echo $site
+######################################################################################################################################################################
+
+######################################################################################################################################################################
+# DO NOT CHANGE UNLESS NECESSARY
+
+currentdir=`pwd`
+parameters=`getopt -o S:s:WwA:a:NnM:m:U:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,upload:,config-file:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+
+if [ $? != 0 ]
+then
+    echo "Houston, we have an arsefockin' problem: Unrecognized Option Detected, Terminating....." >&2
+    exit 2
+fi
+
+if [ $# -eq 0 ]
+then
+    echo "Houston, we have an arsefockin' problem: You MUST at least provide a parameter" >&2
+    exit 1
+fi
+
+eval set -- "$parameters"
+
+while true
+do
+    # echo $@
+    case "$1" in
+        -s | -S | --site)
+            site=$2
+            shift 2
+            ;;
+        -w | -W | --webhook)
+            mode=0
+            shift
+            ;;
+        -a | -A | --avatar-url)
+            avatarurl=$2
+            shift 2
+            ;;
+        -n | -N | --natural-mode)
+            mode=1
+            shift
+            ;;
+        -m | -M | --message)
+            messagemode=1
+            message=$2
+            shift 2
+            ;;
+        -u | -U | --upload)
+            uploadmode=1
+            filepath=$2
+            message=$4
+            echo "$filepath, $message"
+            shift 2
+            ;;
+        -c | -C | --config-file)
+            configmode=1
+            configfilepath=$2
+            shift 2
+            ;;
+        -d | -D | --download)
+            downloadmode=1
+            shift
+            ;;
+        -l | -L | --link-only)
+            linkonlymode=1
+            exportfilepath=$2
+            shift 2
+            ;;
+        --troll)
+            trollname=$2
+            shift 2
+            ;;
+        --silent)
+            silentmode=1
+            shift
+            ;;
+        --webhookinterval)
+            webhookinterval=$2
+            shift 2
+            ;;
+        --naturalinterval)
+            naturalinterval=$2
+            shift 2
+            ;;
+        --pixiv-fast-mode)
+            pixivmode=1
+            shift
+            ;;
+        --pixiv-halfspeed-mode)
+            pixivmode=0
+            shift
+            ;;
+        --pixiv-log)
+            pixivlogmode=1
+            shift
+            ;;    
+        --channel-id)
+            channelid=$2
+            shift 2
+            ;;
+        --join-chatroom)
+            chatroom=$2
+            shift 2
+            ;;
+        -h | -H | --help)
+            echo "copyrekt die deutsche Orthopädiespezialist 2018"
+            echo "multi-site rule34 fully automatic masspostin' bot for discord"
+            echo "you can either use a webhook or your own account or alt account if you don't have permissions to create webhooks"
+            echo
+            echo "Usage: "
+            echo "futaba.sh [options] cutie cutie_name"
+            echo
+            echo "Options: "
+            echo "    Modes: "
+            echo "        -w or -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
+            echo "            and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
+            echo "        -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
+            echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
+            echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
+            echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
+            echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
+            echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
+            echo
+            echo "    Configurations: "
+            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, pixiv"
+            echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
+            echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
+            echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
+            echo "        --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
+            echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
+            echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
+            echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
+            echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
+            echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
+            echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
+            echo "            and currently this thing will either kill the script or make it stop, just forget about it"
+            echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
+            echo "            and i'm still not used to called discord chatroom \"server\", because what runs this script is the real server for me"
+            echo "        --join-chatroom <chatroom-invite-link>: the ability to join chatroom VIA CLI, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGEL you only need \"FEGEL\""
+            echo
+            echo "    Help: "
+            echo "        -h or -H or --help: this shit"
+            echo
+            echo "Cutie: "
+            echo "    pls input an ACTUALLY EXISTED search term or tag, you can look up by addin' \"site:<your site>\" on Google to make sure it exists. And pls include \"_\" if it has one"
+            echo "        eg. futaba's page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is \"Futaba_Sakura\""
+            echo "        eg. futaba's page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
+            echo "        eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
+            echo "            the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
+            exit
+            shift
+            ;;
+        --)
+            cutie=$2
+            cutie_name=$3
+            shift 2
+            break
+            ;;
+        *)
+            echo "Internal error!"
+            exit 255
+            ;;
+    esac
+done
+
+if [ ! $mode ]
+then
+    echo "Houston, we have an arsefockin' problem: Webbook mode or Natural mode? " >&2
+    exit -1
+fi
+
+if [ $mode == 0 ] && [ ! "$avatarurl" ]
+then
+    echo "Houston, we have an arsefockin' problem: Avatar url required while usin' Webhook mode" >&2
+    exit 3
+fi
+
+if [ $configmode ]
+then
+    webhook_url=`sed -n 1p "$configfilepath"`
+    curl_command=`sed -n 2p "$configfilepath"`
+    curl_command_upload=`sed -n 3p "$configfilepath"`
+fi
+
+if [ $channelid ] # it looks like shit but it works
+then
+    echo $curl_command
+    echo
+    curl_command=${curl_command//`echo $curl_command | grep -Eo "channels/[0-9]*/messages"`/channels/`echo $channelid | cut -f2 -d/`/messages}
+    curl_command=${curl_command//`echo $curl_command | grep -Eo "channels/[0-9]*/[0-9]*\""`/channels/$channelid\"}
+    curl_command_upload=${curl_command_upload//`echo $curl_command_upload | grep -Eo "channels/[0-9]*/messages"`/channels/`echo $channelid | cut -f2 -d/`/messages}
+    curl_command_upload=${curl_command_upload//`echo $curl_command_upload | grep -Eo "channels/[0-9]*/[0-9]*\""`/channels/$channelid\"}
+    echo $curl_command
+    echo
+fi
+
+if [ $chatroom ]
+then
+    if [ $mode == 1 ]
+    then
+        curl_command=${curl_command//`echo $curl_command | grep -Eo "channels/[0-9]*/messages"`/invite/$chatroom}
+        echo $curl_command
+        eval "$curl_command"
+        exit
+    else
+        echo "Houston, we have an arsefockin' problem: You cannot join chatrooms with webhook" >&2
+        exit 8
+    fi
+fi
+
+if [ $downloadmode ] # for some cases upload speed is soooooooo fast that you would got ratelimited, so still needs to sleep in (re)upload mode
+then
+    webhookinterval=`expr $webhookinterval - 2`
+    naturalinterval=`expr $naturalinterval - 1`
+fi
+
+if [ ! $messagemode ] && [ ! $uploadmode ]
+then
+    if [ ! "$cutie" ]
+    then 
+        echo "Houston, we have an arsefockin' problem: Cutie required" >&2
+        exit 4
+    fi
+else
+    if [ $messagemode ]
+    then
+        case "$mode" in
+        0)
+            nanako "$message"
+            ;;
+        1)
+            futaba "$message"
+            ;;
+        esac
+    exit
+    fi
+    if [ $uploadmode ]
+    then
+        case "$mode" in
+        0)
+            hifumi "$message" "$filepath"
+            ;;
+        1)
+            makoto "$message" "$filepath"
+            ;;
+        esac
+        exit
+    fi
+fi
+
+if [ ! $site ]
+then
+    echo "Houston, we have an arsefockin' problem: You need to input a hentai site" >&2
+    exit 5
+fi
 
 case "$site" in
     paheal)
