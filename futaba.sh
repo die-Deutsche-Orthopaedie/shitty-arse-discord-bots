@@ -463,7 +463,7 @@ function pixiv_fast() {
 # DO NOT CHANGE UNLESS NECESSARY
 
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:U:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,upload:,config-file:,fast_webhook:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,upload:,config-file:,fast_webhook:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -503,6 +503,10 @@ do
             messagemode=1
             message=$2
             shift 2
+            ;;
+        -e | -E | --england-is-my-city)
+            englandmode=1
+            shift
             ;;
         -u | -U | --upload)
             uploadmode=1
@@ -579,6 +583,7 @@ do
             echo "            and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
             echo "        -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
             echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
+            echo "            -e or -E or --england-is-my-city: spam nick crumpton's famous England is my City song in set channel (and get your arse banned soooooooon)"
             echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
             echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
@@ -684,7 +689,12 @@ then
     naturalinterval=`expr $naturalinterval - 1`
 fi
 
-if [ ! $messagemode ] && [ ! $uploadmode ]
+if [ $englandmode ] # ENGLAND IS MY CITY
+then
+    webhookinterval=`expr $webhookinterval - 1`
+fi
+
+if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ]
 then
     if [ ! "$cutie" ]
     then 
@@ -692,6 +702,129 @@ then
         exit 4
     fi
 else
+    
+    function england() { # [ with one parameter <message> ] # it looks like message_general(), but it's optimized for england is my city spam
+        case "$mode" in
+            0)
+                nanako "$1"
+                sleep "$webhookinterval"
+                ;;
+            1)
+                futaba "$1"
+                sleep "$naturalinterval"
+                ;;
+        esac
+    }
+
+    if [ $englandmode ]
+    then
+        england "https://www.youtube.com/watch?v=hSlb1ezRqfA"
+        england "[Intro: Jake Paul]"
+        england "Y'all can't handle this"
+        england "Y'all don't know what's about to happen, baby"
+        england "Team 10"
+        england "Los Angeles, Cali boy"
+        england "But I'm from Ohio though, white boy"
+        england "[Verse 1: Jake Paul]"
+        england "It's everyday bro, with the Disney Channel flow"
+        england "5 mill on YouTube in 6 months, never done before"
+        england "Passed all the competition man, PewDiePie is next"
+        england "Man I'm poppin' all these checks, got the brand new Rolex"
+        england "And I met a Lambo too and I'm coming with the crew"
+        england "This is Team 10, bitch, who the hell are flippin' you?"
+        england "And you know I kick them out if they ain't with the crew"
+        england "Yeah, I'm talking about you, you beggin' for attention"
+        england "Talking shit on Twitter too but you still hit my phone last night"
+        england "It was 4:52 and I got the text to prove"
+        england "And all the recordings too, don't make me tell them the truth"
+        england "And I just dropped some new merch and it's selling like a god, church"
+        england "Ohio's where I'm from, we chew 'em like it's gum"
+        england "We shooting with a gun, the tattoo just for fun"
+        england "I Usain Bolt and run, catch me at game one"
+        england "I cannot be outdone, Jake Paul is number one"
+        england "[Chorus: Jake Paul]"
+        england "It's everyday bro"
+        england "It's everyday bro"
+        england "It's everyday bro"
+        england "I said it's everyday bro!"
+        england "[Verse 2: Nick Crompton]"
+        england "You know it's Nick Crompton and my collar stay poppin'"
+        england "Yes, I can rap and no, I am not from Compton"
+        england "**ENGLAND IS MY CITY**"
+        england "**England is my city**"
+        england "**England Is My City**"
+        england "**England is my city**"
+        england "**ENGLAND IS MY CITY**"
+        england "And if it weren't for Team 10, then the US would be shitty"
+        england "I'll pass it to Chance 'cause you know he stay litty"
+        england "[Verse 3: Chance Sutton]"
+        england "Two months ago you didn't know my name"
+        england "And now you want my fame?"
+        england "Bitch I'm blowin' up, I'm only going up"
+        england "Now I'm going off, I'm never fallin' off"
+        england "Like Mag, who? Digi who? Who are you?"
+        england "All these beefs I just ran through, hit a milli in a month"
+        england "Where were you? Hatin' on me back in West Fake"
+        england "Think you need to get your shit straight"
+        england "Jakey brought me to the top, now we really poppin' off"
+        england "Number 1 and number 4, that's why these fans all at our door"
+        england "It's lonely at the top so we all going"
+        england "We left Ohio, now the trio is all rollin'"
+        england "It's Team 10, bitch"
+        england "We back again, always first, never last"
+        england "We the future, we'll see you in the past"
+        england "[Chorus: Jake Paul]"
+        england "It's everyday bro"
+        england "It's everyday bro"
+        england "It's everyday bro"
+        england "I said it's everyday bro!"
+        england "[Interlude: Martinez Twins]"
+        england "Hold on, hold on, hold on (espera)"
+        england "Can we switch the language? (ha, ya tú sabe')"
+        england "We 'bout to hit it (dale)"
+        england "[Verse 4: Martinez Twins]"
+        england "Sí, lo único que quiero es dinero"
+        england "Trabajando en YouTube todo el día entero (dale)"
+        england "Viviendo en U.S.A, el sueño de cualquiera (ha)"
+        england "Enviando dólares a mi familia entera (pasta)"
+        england "Tenemos una persona por encima"
+        england "Se llama Donald Trump y está en la cima (la cima)"
+        england "Desde aquí te cantamos, can I get my VISA?"
+        england "Martinez Twins, representando España"
+        england "Desde la pobreza a la fama"
+        england "[Chorus: Jake Paul]"
+        england "It's everyday bro"
+        england "It's everyday bro"
+        england "It's everyday bro"
+        england "I said it's everyday bro!"
+        england "[Verse 5: Tessa Brooks]"
+        england "Yo, it's Tessa Brooks"
+        england "The competition shook"
+        england "These guys up on me"
+        england "I got 'em with the hook"
+        england "Lemme educate ya"
+        england "And I ain't talking book"
+        england "Panera is your home?"
+        england "So, stop calling my phone"
+        england "I'm flyin' like a drone"
+        england "They buying like a loan"
+        england "Yeah, I smell good"
+        england "Is that your boy's cologne?"
+        england "[Verse 6: Jake Paul]"
+        england "Is that your boy's cologne?"
+        england "Started balling', quicken Loans"
+        england "Now I'm in my flippin' zone"
+        england "Yes, they all copy me"
+        england "But, that's some shitty clones"
+        england "Stay in all designer clothes"
+        england "And they ask me what I make"
+        england "I said it's 10 with six zeros"
+        england "Always plug, merch link in bio"
+        england "And I will see you tomorrow 'cause"
+        england "It's everyday bro"
+        england "Peace"
+        exit
+    fi
     if [ $messagemode ]
     then
         case "$mode" in
@@ -702,7 +835,7 @@ else
             futaba "$message"
             ;;
         esac
-    exit
+        exit
     fi
     if [ $uploadmode ]
     then
