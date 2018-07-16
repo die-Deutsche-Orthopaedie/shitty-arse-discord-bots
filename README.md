@@ -7,8 +7,6 @@ And one more thing, i've completed the **Holy Grail of Hentai**, **pixiv.net**, 
 
 Now i've added cross channel messagin' and chatroom join functionality, it's one step closer to discord bash edition xD
 
-BTW in its typical uses one can monitor the channel with another account, so i don't think it's necessary to make it receive messages
-
 Usage: 
 
 `futaba.sh [options] cutie cutie_name`
