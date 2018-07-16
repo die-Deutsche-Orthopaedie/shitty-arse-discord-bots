@@ -826,6 +826,7 @@ else
         england "And I will see you to **PINGAS** 'cause"
         england "It's **PINGAS** day bro"
         england "**P I N G A S**"
+        exit
     fi
     if [ $englandmode ]
     then
