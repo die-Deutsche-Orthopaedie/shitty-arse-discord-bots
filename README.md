@@ -37,7 +37,7 @@ Options:
 > * * * or you can just use `cat <logfile> | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > <newfile>` to process beforehand, then use normal method
 > * * `--channel-id <chatroom-id/channel-id>`: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id
 > * * * and i'm still not used to called discord chatroom "server", because what runs this script is the real server for me
-> * * `--join-chatroom <chatroom-invite-link>`: the ability to join chatroom VIA CLI, you just need to provide the last few letters of the invite link, for https://discord.gg/**FEGELEIN** you only need "**FEGELEIN**"
+> * * `--join-chatroom <chatroom-invite-link>`: the ability to join chatroom VIA CLI, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGELEIN you only need "**FEGELEIN**"
 >
 > * Help: 
 > * * `-h or -H or --help`: show help
