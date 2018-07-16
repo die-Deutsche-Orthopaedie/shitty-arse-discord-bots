@@ -167,8 +167,8 @@ do
             echo "        -w or -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
             echo "            and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
             echo "        -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
-            echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
-            echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
+            echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
+            echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
             echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
             echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
@@ -179,22 +179,23 @@ do
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
             echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
             echo "        --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
-            echo "        --silent: omit all of messages except pics, may be useful in some cases"
+            echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
             echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
             echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
             echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
             echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
+            echo "            and currently this things will either kill the script and make it stop, just forget about it"
             echo
             echo "    Help: "
             echo "        -h or -H or --help: this shit"
             echo
             echo "Cutie: "
             echo "    pls input an ACTUALLY EXISTED search term or tag, you can look up by addin' \"site:<your site>\" on Google to make sure it exists. And pls include \"_\" if it has one"
-            echo "    eg. futaba's page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is \"Futaba_Sakura\""
-            echo "    eg. futaba's page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
-            echo "    eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
-            echo "        the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
+            echo "        eg. futaba's page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is \"Futaba_Sakura\""
+            echo "        eg. futaba's page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
+            echo "        eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
+            echo "            the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
             exit
             shift
             ;;
@@ -373,11 +374,13 @@ function download() {
         case "$mode" in
             0)
                 hifumi "" "$file"
-                # sleep "$webhookinterval"
+                webhookinterval=`expr $webhookinterval - 2`
+                sleep "$webhookinterval"
                 ;;
             1)
                 makoto "" "$file"
-                # sleep "$naturalinterval"
+                naturalinterval=`expr $naturalinterval - 1`
+                sleep "$naturalinterval"
                 ;;
         esac
     done
@@ -426,11 +429,13 @@ function processhentai_pixiv() {
             case "$mode" in
                 0)
                     hifumi "$hentai" "$file"
-                    # sleep "$webhookinterval"
+                    webhookinterval=`expr $webhookinterval - 2`
+                    sleep "$webhookinterval"
                     ;;
                 1)
                     makoto "$hentai" "$file"
-                    # sleep "$naturalinterval"
+                    naturalinterval=`expr $naturalinterval - 1`
+                    sleep "$naturalinterval"
                     ;;
             esac >> "$currentdir/$cutie.pixivlog.txt"
         done
