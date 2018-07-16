@@ -31,9 +31,9 @@ curl_command_upload='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXX
 function nanako() { # use webhooks [ with one parameter <message> ]
     if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
     then
-        username="$cutie"
-    else
         username="$cutie_name Hentai Bot"
+    else
+        username="$cutie"
     fi
     # curl -d "content=$1&username=$username&avatar_url=$avatarurl" "$webhook_url"
     curl -d "{\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" "$webhook_url"
@@ -42,9 +42,9 @@ function nanako() { # use webhooks [ with one parameter <message> ]
 function hifumi() { # use webhooks to upload files [ with two parameters <message> <filepath> ]
     if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
     then
-        username="$cutie"
-    else
         username="$cutie_name Hentai Bot"
+    else
+        username="$cutie"
     fi
     curl -F "payload_json={\"content\":\"$1\",\"username\":\"$username\",\"avatar_url\":\"$avatarurl\"}" -F "filename=@$2" "$webhook_url"
 }
