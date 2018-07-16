@@ -64,8 +64,7 @@ function makoto() { # use your own accounts to upload files [ with two parameter
 # DO NOT CHANGE UNLESS NECESSARY
 
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:U:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,upload:,config-file:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,help -- "$@"`
-# parameters=`getopt -o S:s:WwA:a:NnM:m:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,config-file:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:U:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,upload:,config-file:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -151,6 +150,10 @@ do
             pixivmode=0
             shift
             ;;
+        --pixiv-log)
+            pixivlogmode=1
+            shift
+            ;;    
         -h | -H | --help)
             echo "copyrekt die deutsche Orthopädiespezialist 2018"
             echo "multi-site rule34 fully automatic masspostin' bot for discord"
@@ -160,26 +163,31 @@ do
             echo "futaba.sh [options] cutie cutie_name"
             echo
             echo "Options: "
-            echo "    -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, pixiv"
-            echo "        use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
-            echo "        and localmachine_pixiv to download and reupload pics in local file generated in link-only mode to discord, in this case \$cutie will be your filename"
-            echo "    -w or -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
-            echo "        and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
-            echo "    -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
-            echo "    -m or -M or --message <message>: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
-            echo "    -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
-            echo "        and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
-            echo "    -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script"
-            echo "    -d or -D or --download: download pics and upload to discord instead of just postin' links"
-            echo "    -l or -L or --link-only <exportfilepath>: only export hentai pics links to file"
-            echo "    --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
-            echo "    --silent: omit all of messages except pics, may be useful in some cases"
-            echo "    --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
-            echo "    --naturalinterval <newinterval>: override natural mode hentei interval in the script"
-            echo "    --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
-            echo "    --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
-
-            echo "    -h or -H or --help: this shit"
+            echo "    Modes: "
+            echo "        -w or -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
+            echo "            and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
+            echo "        -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
+            echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
+            echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode the cutie name will become your bot's name (if you use webhook)"
+            echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
+            echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
+            echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
+            echo
+            echo "    Configurations: "
+            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, pixiv"
+            echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
+            echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
+            echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
+            echo "        --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
+            echo "        --silent: omit all of messages except pics, may be useful in some cases"
+            echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
+            echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
+            echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
+            echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
+            echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
+            echo
+            echo "    Help: "
+            echo "        -h or -H or --help: this shit"
             echo
             echo "Cutie: "
             echo "    pls input an ACTUALLY EXISTED search term or tag, you can look up by addin' \"site:<your site>\" on Google to make sure it exists. And pls include \"_\" if it has one"
@@ -438,7 +446,12 @@ function localmachine() {
 
     for file in `cat "$cutie" | sed 's/ /|/g'`
     do
-        hentai=`echo $file | sed 's/|/_/g'`
+        if [ $pixivlogmode ]
+        then
+            hentai=`echo $file | sed 's/|/_/g' | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g'`
+        else
+            hentai=`echo $file | sed 's/|/_/g'`
+        fi
         if [ $downloadmode ]
         then
             download
