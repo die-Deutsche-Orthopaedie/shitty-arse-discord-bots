@@ -516,7 +516,7 @@ do
             configfilepath=$2
             shift 2
             ;;
-        --fast_webhook
+        --fast_webhook)
             fast_webhook=$2
             shift 2
             ;;
