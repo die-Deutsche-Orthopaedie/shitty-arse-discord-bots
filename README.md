@@ -5,7 +5,7 @@ Other bots will not be updated any fockin' way, all of them are in **futaba.sh**
 
 And one more thing, i've completed the **Holy Grail of Hentai**, **pixiv.net**, with arsefockin' **B A S H**! How the fock will i celebrate? 
 
-Now i've added cross channel messagin' and chatroom join functionality, it's one step closer to discord bash edition xD
+Now i've added cross channel messagin' and chatroom join functionality, one step closer to discord: bash edition xD
 
 Usage: 
 
