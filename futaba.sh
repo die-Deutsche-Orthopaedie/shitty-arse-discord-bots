@@ -185,7 +185,7 @@ do
             echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
             echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
             echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
-            echo "            and currently this things will either kill the script and make it stop, just forget about it"
+            echo "            and currently this things will either kill the script or make it stop, just forget about it"
             echo
             echo "    Help: "
             echo "        -h or -H or --help: this shit"
