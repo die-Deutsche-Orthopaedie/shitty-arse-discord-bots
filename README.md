@@ -11,6 +11,8 @@ Now i've added cross channel messagin' and chatroom join functionality, one step
 
 actually it can run almost without issue in ovh's free host (you'll need an UK ip to apply for one, because `ENGLAND IS MY CITY`), or other free hosts with ssh access, except you'll need to use `bash futaba.sh` instead of `./futaba.sh`
 
+**wait an arsefockin' minute**, i really need to make a command to spam "`ENGLAND IS MY CITY`" xDDDD
+
 Usage: 
 
 `./futaba.sh [options] cutie cutie_name`
