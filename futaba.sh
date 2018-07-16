@@ -613,7 +613,7 @@ function pixiv_half() {
         do
             hentaiid=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"illustId":"[0-9]*"' | grep -Eo [0-9]*`
             hentaipages=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"pageCount":[0-9]*' | grep -Eo [0-9]*`
-            message_general "Analyin' https://www.pixiv.net/member_illust.php?mode=manga&illust_id=$hentaiid"
+            message_general "Analyin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid"
             message_general "Found **$hentaipages** pic(s)"
             message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
             if [ $hentaipages -eq 1 ]
@@ -658,7 +658,7 @@ function pixiv_fast() {
             hentaiid=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"illustId":"[0-9]*"' | grep -Eo [0-9]*`
             hentaipages=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"pageCount":[0-9]*' | grep -Eo [0-9]*`
             hentaitemp="https://i.pximg.net/img-original/`echo "$hentaiinfo" | sed 's/|/ /g' | sed 's/\\\//g' | sed 's/,/\n/g' | grep -Eo '"url":".*"' | sed 's/"/\n/g' | grep "http" | grep -Eo "img/.*p[0-9]" | grep -Eo "img/.*p"`"
-            message_general "Analyin' https://www.pixiv.net/member_illust.php?mode=manga&illust_id=$hentaiid"
+            message_general "Analyin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid"
             message_general "Found **$hentaipages** pic(s)"
             message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
             hentaipages=`expr $hentaipages - 1`
