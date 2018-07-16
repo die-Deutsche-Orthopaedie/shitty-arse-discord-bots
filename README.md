@@ -31,7 +31,7 @@ Options:
 > * * `--pixiv-fast-mode`: only use the list page info to dump pixiv pics, but will generate too much 404
 > * * `--pixiv-halfspeed-mode`: use id page info to dump pixiv pics, but faster than full mode
 > * * `--pixiv-log`: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself
-> * * * and currently this things will either kill the script or make it stop, just forget about it 
+> * * * and currently this thing will either kill the script or make it stop, just forget about it 
 > * * * or you can just use `cat <logfile> | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > <newfile>` to process beforehand, then use normal method
 >
 > * Help: 
