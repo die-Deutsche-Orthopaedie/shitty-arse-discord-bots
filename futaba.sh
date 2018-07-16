@@ -160,8 +160,9 @@ do
             echo "futaba.sh [options] cutie cutie_name"
             echo
             echo "Options: "
-            echo "    -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru"
+            echo "    -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, pixiv"
             echo "        use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
+            echo "        and localmachine_pixiv to download and reupload pics in local file generated in link-only mode to discord, in this case \$cutie will be your filename"
             echo "    -w or -W or --webhook: use discord webhook to upload hentai, need to paste webhook url into nanako() function"
             echo "        and when you use this mode, you must use -a or -A or --avatar-url to set your avatar, you need to make one yourself and upload to discord and get the link via \"Copy Link\""
             echo "    -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
@@ -175,14 +176,16 @@ do
             echo "    --silent: omit all of messages except pics, may be useful in some cases"
             echo "    --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
             echo "    --naturalinterval <newinterval>: override natural mode hentei interval in the script"
-            echo "    --pixiv-fast-mode: only use the list page info to dump pixiv pics"
+            echo "    --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
             echo "    --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
 
             echo "    -h or -H or --help: this shit"
             echo
             echo "Cutie: "
             echo "    pls input an ACTUALLY EXISTED search term or tag, you can look up by addin' \"site:<your site>\" on Google to make sure it exists. And pls include \"_\" if it has one"
+            echo "    eg. futaba's page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is \"Futaba_Sakura\""
             echo "    eg. futaba's page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
+            echo "    eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
             echo "        the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
             exit
             shift
