@@ -13,6 +13,8 @@ actually it can run almost without issue in ovh's free host (you'll need an UK i
 
 **wait an arsefockin' minute**, i really need to make a command to spam "`ENGLAND IS MY CITY`" xDDDD
 
+UPDATE: `ENGLAND IS MY CITY`spam functionality finished
+
 Usage: 
 
 `./futaba.sh [options] cutie cutie_name`
@@ -23,6 +25,7 @@ Options:
 > * * * and when you use this mode, you must use `-a or -A or --avatar-url` to set your avatar, you need to make one yourself and upload to discord and get the link via **Copy Link**
 > * * `-n or -N or --natural-mode`: use your own account to upload hentai, need to follow the instructions in `futaba()` function
 > * * `-m or -M or --message <message>`: send a message usin' either methods, in this mode `$cutie_name` will become your bot's name (if you use webhook)
+> * * * -e or -E or --england-is-my-city: spam nick crumpton's famous England is my City song in set channel (and get your arse banned soooooooon)"
 > * * `-u or -U or --upload <filepath> <message>`: upload a file usin' either methods, in this mode `$cutie_name` will become your bot's name (if you use webhook)
 > * * * and i've found a strange bug out here, now it would be better if you put `-u or -U or --upload` as the last parameter and all will be fine
 > * * `-d or -D or --download`: download pics and reupload to discord instead of just postin' links, required for pixiv
