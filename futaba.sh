@@ -19,7 +19,6 @@ webhook_url="<paste your webhook url here>"
 # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
 curl_command='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"'
 
-
 # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command, but this time you'll need to change the enitre --data into '-F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"', then you're good to go! >
 # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
 curl_command_upload='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: multipart/form-data; boundary=---------------------------XXXXXXXXXXXXXXXXX" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"'
@@ -755,6 +754,10 @@ else
         england "[Verse 2: Nick **PINGAS**]"
         england "You know it's Nick **PINGAS** and my collar stay **PINGAS**"
         england "Yes, I can **PINGAS** and no, I am not from **PINGAS**"
+        england "**PINGAS**land is my **PINGAS**"
+        england "**PINGAS**land is my **PINGAS**"
+        england "**PINGAS**land is my **PINGAS**"
+        england "**PINGAS**land is my **PINGAS**"
         england "**PINGAS**land is my **PINGAS**"
         england "And if it weren't for Team **PINGAS**, then the **PINGAS** would be **PINGAS**"
         england "I'll pass it to **PINGAS** 'cause you know he stay **PINGAS**"
