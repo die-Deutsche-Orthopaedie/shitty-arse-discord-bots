@@ -30,7 +30,7 @@ curl_command_upload='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXX
 # discord-related functions start here
 
 function nanako() { # use webhooks [ with one parameter <message> ]
-    if [ $messagemode ]
+    if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
     then
         username="$cutie"
     else
@@ -41,7 +41,7 @@ function nanako() { # use webhooks [ with one parameter <message> ]
 }
 
 function hifumi() { # use webhooks to upload files [ with two parameters <message> <filepath> ]
-    if [ $messagemode ]
+    if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
     then
         username="$cutie"
     else
@@ -463,7 +463,7 @@ function pixiv_fast() {
 # DO NOT CHANGE UNLESS NECESSARY
 
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,upload:,config-file:,fast_webhook:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast_webhook:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -506,6 +506,10 @@ do
             ;;
         -e | -E | --england-is-my-city)
             englandmode=1
+            shift
+            ;;
+        --pingasland-is-my-pingas)
+            pingasmode=1
             shift
             ;;
         -u | -U | --upload)
@@ -584,6 +588,7 @@ do
             echo "        -n or -N or --natural-mode: use your own account to upload hentai, need to follow the instructions in futaba() function"
             echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            -e or -E or --england-is-my-city: spam nick crumpton's famous England is my City song in set channel (and get your arse banned soooooooon)"
+            echo "            --pingasland-is-my-pingas: PINGAS version of the aforementioned song"
             echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
             echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
@@ -694,7 +699,7 @@ then
     webhookinterval=`expr $webhookinterval - 1`
 fi
 
-if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ]
+if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
 then
     if [ ! "$cutie" ]
     then 
@@ -702,7 +707,6 @@ then
         exit 4
     fi
 else
-    
     function england() { # [ with one parameter <message> ] # it looks like message_general(), but it's optimized for england is my city spam
         case "$mode" in
             0)
@@ -716,6 +720,110 @@ else
         esac
     }
 
+    if [ $pingasmode ]
+    then
+        england "https://www.youtube.com/watch?v=9_mgU0VbqBw"
+        england "[Intro: Jake **PINGAS**]"
+        england "**PINGAS**"
+        england "Y'all can't **PINGAS** this"
+        england "Y'all don't know what's about to happen baby"
+        england "Team **PINGAS**"
+        england "Los **PINGAS**les, **PINGAS** boy"
+        england "But I'm from **PINGAS**io though, **PINGAS** boy"
+        england "[Verse 1: Jake **PINGAS**]"
+        england "It's **PINGAS**day bro, with the **PINGAS** Channel flow"
+        england "5 **PINGAS** on YouTube in 6 months, never done before"
+        england "Passed all the **PINGAS**tition man, **PINGAS**Pie is next"
+        england "Man I'm poppin' all these **PINGAS**, got a brand new **PINGAS**"
+        england "And I met a **PINGAS** too and I'm **PINGAS** with the **PINGAS**"
+        england "This is Team **PINGAS**, bitch, who the hell are **PINGAS** you?"
+        england "And you know I **PINGAS** them out if they ain't with the **PINGAS**"
+        england "Yeah, I'm talking about you, you beggin' for **PINGAS**"
+        england "Talking shit on **PINGAS** too but you still hit my **PINGAS** last night"
+        england "It was 4:**PINGAS**2 and I got the **PINGAS** to prove"
+        england "And all the **PINGAS** too, don't make me tell them the **PINGAS**"
+        england "And I just dropped some new **PINGAS** and it's selling like a **PINGAS**, church"
+        england "**PINGAS**io's where I'm from, we chew 'em like it's **PINGAS**"
+        england "We shooting with a **PINGAS**, the **PINGAS** just for fun"
+        england "I **PINGAS** Bolt and run, catch me at **PINGAS**"
+        england "I cannot be **PINGAS**, Jake **PINGAS** is number one"
+        england "[Chorus: Jake **PINGAS**]"
+        england "It's **PINGAS**day bro"
+        england "It's **PINGAS**day bro"
+        england "It's **PINGAS**day bro"
+        england "I said it is **PINGAS**day bro!"
+        england "[Verse 2: Nick **PINGAS**]"
+        england "You know it's Nick **PINGAS** and my collar stay **PINGAS**"
+        england "Yes, I can **PINGAS** and no, I am not from **PINGAS**"
+        england "**PINGAS**land is my **PINGAS**"
+        england "And if it weren't for Team **PINGAS**, then the **PINGAS** would be **PINGAS**"
+        england "I'll pass it to **PINGAS** 'cause you know he stay **PINGAS**"
+        england "[Verse 3: **PINGAS** Sutton]"
+        england "Two months ago you didn't know my **PINGAS**"
+        england "And now you want my **PINGAS**? Bitch I'm blowin' up"
+        england "I'm only **PINGAS** up, now I'm **PINGAS** off, I'm never **PINGAS** off"
+        england "Like Mag, who? Digi who? Who are you?"
+        england "All these **PINGAS** I just ran through, hit a **PINGAS** in a month"
+        england "Where were you? Hatin' on me back in **PINGAS** Fake"
+        england "Think you need to get your **PINGAS** straight"
+        england "Jakey brought me to the **PINGAS**, now we're really **PINGAS** off"
+        england "**PINGAS** 1 and **PINGAS** 4, that's why these **PINGAS** all at our door"
+        england "It's **PINGAS** at the top so we all **PINGAS**"
+        england "We left **PINGAS**io, now the trio is all **PINGAS**"
+        england "It's Team **PINGAS**, bitch"
+        england "We back again, always **PINGAS**, never **PINGAS**"
+        england "We the **PINGAS**, we'll see you in the **PINGAS**"
+        england "[Chorus: Jake **PINGAS**]"
+        england "It's **PINGAS**day bro"
+        england "It's **PINGAS**day bro"
+        england "It's **PINGAS**day bro"
+        england "I said it is **PINGAS**day bro!"
+        england "[Verse 4: Martinez **PINGAS**]"
+        england "Hold on, hold on, hold on"
+        england "Can we switch the **PINGAS**?"
+        england "We 'bout to **PINGAS**"
+        england "Sí, lo único que quiero es **PINGAS**"
+        england "Trabajando en YouTube todo el día **PINGAS**"
+        england "Viviendo en **PINGAS**A, el sueño de **PINGAS**"
+        england "Enviando dólares a mi familia **PINGAS**"
+        england "Tenemos una **PINGAS** por encima"
+        england "Se llama **PINGAS** Trump y está en la cima"
+        england "Desde aquí te **PINGAS** - can I get my **PINGAS**?"
+        england "Martinez **PINGAS**, representando **PINGAS**"
+        england "Desde la pobreza a la fama"
+        england "[Chorus: Jake **PINGAS**]"
+        england "It's **PINGAS**day bro"
+        england "It's **PINGAS**day bro"
+        england "It's **PINGAS**day bro"
+        england "I said it is **PINGAS**day bro!"
+        england "[Verse 5: **PINGAS** Brooks]"
+        england "Yo, it's **PINGAS** Brooks"
+        england "The competition **PINGAS**"
+        england "These guys up on me"
+        england "I got 'em with the **PINGAS**"
+        england "Lemme edu**PINGAS**"
+        england "And I ain't talking **PINGAS**"
+        england "**PINGAS** is your home?"
+        england "So, stop calling my **PINGAS**"
+        england "I'm flyin' like a **PINGAS**"
+        england "They buying like a **PINGAS**"
+        england "Yeah, I smell like a **PINGAS**"
+        england "Is that your boy's **PINGAS**?"
+        england "[Verse 6: Jake **PINGAS**]"
+        england "Is that your boy's **PINGAS**?"
+        england "Started **PINGAS**"
+        england "Quicken Loans"
+        england "Now I'm in my **PINGAS** zone"
+        england "Yes, they all **PINGAS** me"
+        england "But, that's some **PINGAS** clones"
+        england "Stay in all designer **PINGAS**"
+        england "And they ask me what I **PINGAS**"
+        england "I said is 10 with six **PINGAS**"
+        england "Always plug, merch link in **PINGAS**"
+        england "And I will see you to **PINGAS** 'cause"
+        england "It's **PINGAS** day bro"
+        england "**P I N G A S**"
+    fi
     if [ $englandmode ]
     then
         england "https://www.youtube.com/watch?v=hSlb1ezRqfA"
