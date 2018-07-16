@@ -5,6 +5,10 @@ Other bots will not be updated any fockin' way, all of them are in **futaba.sh**
 
 And one more thing, i've completed the **Holy Grail of Hentai**, **pixiv.net**, with arsefockin' **B A S H**! How the fock will i celebrate? 
 
+Now i've added cross channel messagin' and chatroom join functionality, it's one step closer to discord bash edition xD
+
+BTW in its typical uses one can monitor the channel with another account, so i don't think it's necessary to make it receive messages
+
 Usage: 
 
 `futaba.sh [options] cutie cutie_name`
@@ -33,6 +37,9 @@ Options:
 > * * `--pixiv-log`: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself
 > * * * and currently this thing will either kill the script or make it stop, just forget about it 
 > * * * or you can just use `cat <logfile> | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > <newfile>` to process beforehand, then use normal method
+> * * `--channel-id <chatroom-id/channel-id>`: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id
+> * * * and i'm still not used to called discord chatroom "server", because what runs this script is the real server for me
+> * * `--join-chatroom <chatroom-invite-link>`: the ability to join chatroom VIA CLI, you just need to provide the last few letters of the invite link, for https://discord.gg/**FEGELEIN** you only need "**FEGELEIN**"
 >
 > * Help: 
 > * * `-h or -H or --help`: show help
