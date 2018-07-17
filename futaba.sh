@@ -156,6 +156,10 @@ function finalmessage() {
 
 function download() {
     mkdir temp
+    if [ $preserve_pics ]
+    then
+        mkdir pics
+    fi
     cd temp
     rm *.* -f
     wget "$hentai"
@@ -173,7 +177,12 @@ function download() {
                 ;;
         esac
     done
-    rm *.* -f
+    if [ $preserve_pics ]
+    then
+        mv *.* ../pics -f
+    else
+        rm *.* -f
+    fi
     cd ..
 }
 
@@ -208,6 +217,10 @@ function processhentai_pixiv() {
     if [ ! $linkonlymode ]
     then
         mkdir temp
+        if [ $preserve_pics ]
+        then
+            mkdir pics
+        fi
         cd temp
         rm *.* -f
         message_general "uploadin' $hentai"
@@ -239,7 +252,12 @@ function processhentai_pixiv() {
                     ;;
             esac >> "$currentdir/$cutie.pixivlog$ext.txt"
         done
-        rm *.* -f
+        if [ $preserve_pics ]
+        then
+            mv *.* ../pics -f
+        else
+            rm *.* -f
+        fi
         cd ..
     else
         echo "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'" >> "$exportfilepath" # just an example, idk if it's useful any fockin' way
@@ -543,7 +561,7 @@ function pixiv_favourite() {
 # DO NOT CHANGE UNLESS NECESSARY
 
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast_webhook:,download,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -604,12 +622,16 @@ do
             configfilepath=$2
             shift 2
             ;;
-        --fast_webhook)
+        --fast-webhook)
             fast_webhook=$2
             shift 2
             ;;
         -d | -D | --download)
             downloadmode=1
+            shift
+            ;;
+        --preserve-pics)
+            preserve_pics=1
             shift
             ;;
         -l | -L | --link-only)
@@ -672,6 +694,7 @@ do
             echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
             echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
+            echo "            --preserve-pics: move downloaded pics in pics folder other than removin' them"
             echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
             echo
             echo "    Configurations: "
@@ -679,7 +702,7 @@ do
             echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
             echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
-            echo "            --fast_webhook <webhook-link>: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode"
+            echo "            --fast-webhook <webhook-link>: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode"
             echo "        --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
             echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
