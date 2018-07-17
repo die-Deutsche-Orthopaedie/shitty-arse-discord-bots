@@ -375,8 +375,8 @@ function gelbooru() {
 function pixiv_hentai() {
     case "$site" in
         pixiv)
-            hentaiid=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"illustId":"[0-9]*"' | grep -Eo [0-9]*`
-            hentaipages=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"pageCount":[0-9]*' | grep -Eo [0-9]*`
+            hentaiid=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"illustId":"[0-9]*"' | grep -Eo "[0-9]*"`
+            hentaipages=`echo "$hentaiinfo" | sed 's/|/ /g' | grep -Eo '"pageCount":[0-9]*' | grep -Eo "[0-9]*"`
             if [ $pixivmode ] && [ $pixivmode == 1 ]
             then
                 hentaitemp="https://i.pximg.net/img-original/`echo "$hentaiinfo" | sed 's/|/ /g' | sed 's/\\\//g' | sed 's/,/\n/g' | grep -Eo '"url":".*"' | sed 's/"/\n/g' | grep "http" | grep -Eo "img/.*p[0-9]" | grep -Eo "img/.*p"`"
@@ -456,8 +456,8 @@ function pixiv_fast_subprocess() {
 }
 
 function pixiv() {
-    url="https://www.pixiv.net/search.php?word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword
-    totalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep "og.*に関する作品は[0-9]*件投稿" | grep -Eo [0-9]*`
+    url="https://www.pixiv.net/search.php?s_mode=s_tag_full&word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword
+    totalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -469,7 +469,8 @@ function pixiv() {
     antics=0
     for fish in `seq 1 $finalfish`
     do
-        url="https://www.pixiv.net/search.php?word=$cutie&order=date_d&mode=r18&p=$fish"
+        url="https://www.pixiv.net/search.php?s_mode=s_tag_full&word=$cutie&order=date_d&mode=r18&p=$fish"
+        echo $url
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/&quot;/"/g' | sed 's/{"illustId"/\n{"illustId"/g' | grep "illustId"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
