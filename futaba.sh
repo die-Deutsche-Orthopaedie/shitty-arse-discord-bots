@@ -399,7 +399,7 @@ function pixiv_hentai() {
 
 function pixiv_subprocess() {
     pixiv_hentai
-    message_general "Analyin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
+    message_general "Analysin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
     message_general "Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
@@ -418,7 +418,7 @@ function pixiv_subprocess() {
 
 function pixiv_half_subprocess() {
     pixiv_hentai
-    message_general "Analyin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
     message_general "Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
@@ -441,7 +441,7 @@ function pixiv_half_subprocess() {
 
 function pixiv_fast_subprocess() {
     pixiv_hentai
-    message_general "Analyin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
     message_general "Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     hentaipages=`expr $hentaipages - 1`
