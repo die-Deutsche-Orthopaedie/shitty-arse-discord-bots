@@ -729,6 +729,7 @@ do
             echo "        eg. futaba's page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is \"Futaba_Sakura\""
             echo "        eg. futaba's page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
             echo "        eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
+            echo "        this time it's not futaba, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=7847900 or https://www.pixiv.net/member_illust.php?id=7847900 and the number \"7847900\" is user id that can be used in either pixiv_author or pixiv_favourite; actually they're not too different in processin'"
             echo "            the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
             exit
             shift
