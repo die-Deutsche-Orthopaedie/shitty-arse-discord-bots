@@ -9,11 +9,13 @@ Now i've added cross channel messagin' and chatroom join functionality, one step
 
 **WARNING**: this script used soooooooo many `eval`s, **if you include a `rm / -rf` somewhere in the input (includin' from hentai sites), it may really be doin' `rm / -rf`; USE IT AT YOUR OWN ARSEFOCKIN' RISK**, and better not use it on your own computer xD
 
-actually it can run almost without issue in ovh's free host (you'll need an UK ip to apply for one, because `ENGLAND IS MY CITY`), or other free hosts with ssh access, except you'll need to use `bash futaba.sh` instead of `./futaba.sh`
+actually it can run almost without issue on ovh's free host (you'll need an UK ip to apply for one, because `ENGLAND IS MY CITY`), or other free hosts with ssh access, except you'll need to use `bash futaba.sh` instead of `./futaba.sh`
 
 **wait an arsefockin' minute**, i really need to make a command to spam "`ENGLAND IS MY CITY`" xDDDD
 
-UPDATE: `ENGLAND IS MY CITY`spam functionality finished
+UPDATE: `ENGLAND IS MY CITY`and its parody version, `PINGASLAND IS MY PINGAS` spam functionality finished, if you really wanna get your arse banned soooooooon, just use them! 
+
+UPDATE: now added pixiv author and user's favourite dump support, actually there're 3 * 3 = NEIN cases for pixiv processin'; but i don't write nein funcions, i only write seven of them
 
 Usage: 
 
@@ -30,14 +32,15 @@ Options:
 > * * `-u or -U or --upload <filepath> <message>`: upload a file usin' either methods, in this mode `$cutie_name` will become your bot's name (if you use webhook)
 > * * * and i've found a strange bug out here, now it would be better if you put `-u or -U or --upload` as the last parameter and all will be fine
 > * * `-d or -D or --download`: download pics and reupload to discord instead of just postin' links, required for pixiv
+> * * * `--preserve-pics`: move downloaded pics in pics folder other than removin' them
 > * * `-l or -L or --link-only <exportfilepath>`: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later
 >
 > * Configurations: 
-> * * `-s or -S or --site <sitename>`: input site name, currently supported: **paheal**, **gelbooru**, **pixiv**
+> * * `-s or -S or --site <sitename>`: input site name, currently supported: **paheal**, **gelbooru**, **pixiv**, **pixiv_author**, **pixiv_favourite**
 > * * * use **localmachine** to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case `$cutie` will be your filename
 > * * * and **localmachine_pixiv** to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case `$cutie` will be your filename
 > * * `-c or -C or --config-file <configfilepath>`: load a configuration file which contains **three** lines of **webhook url**, **account curl command** and **account curl command (used to upload)**; if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means
-> * * * `--fast_webhook <webhook-link>`: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode
+> * * * `--fast-webhook <webhook-link>`: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode
 > * * `--silent`: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases
 > * * `--webhookinterval <newinterval>`: override webhook mode hentei interval in the script
 > * * `--naturalinterval <newinterval>`: override natural mode hentei interval in the script
@@ -58,6 +61,7 @@ Cutie:
 > * * eg. **futaba**'s page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is "**Futaba_Sakura**"
 > * * eg. **futaba**'s page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is "**sakura_futaba**"
 > * * eg. **futaba**'s page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is "**佐倉双葉**"
+> * * eg. this time it's not **futaba**, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=7847900 or https://www.pixiv.net/member_illust.php?id=7847900 and the number "**7847900**" is user id that can be used in either **pixiv_author** or **pixiv_favourite**; actually they're not too different in processin'
 > * * * the display name for your cutie (`$cutie_name`) can be different from the search term or tag (`$cutie`), but if you don't input one it will be automatically generated from the tag
 
 And you'll need to provide webhook url (webhook mode) or curl command for account ("natural" mode) to make this script work. It's not too hard to provide webhook url, but it needs extra efforts to form two curl commands for this script to use. 
