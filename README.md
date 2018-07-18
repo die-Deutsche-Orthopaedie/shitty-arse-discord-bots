@@ -17,6 +17,8 @@ UPDATE: `ENGLAND IS MY CITY`and its parody version, `PINGASLAND IS MY PINGAS` sp
 
 UPDATE: now added pixiv author and user's favourite dump support, actually there're 3 * 3 = NEIN cases for pixiv processin'; but i don't write nein funcions, i only write seven of them
 
+UPDATE: idk that sometimes resolvin' `i.pixiv.com`, `ptb.discordapp.com` and `discordapp.com` will slow the script down, and even make some of the results NOT posted on discord. if that thing happened, pls consider to `ping` them and add them to `/etc/hosts` manually. i thought dns problems would not be a problem in the developed world, but i'm arsefockin' fockin' wrong
+
 Usage: 
 
 `./futaba.sh [options] cutie cutie_name`
