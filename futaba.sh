@@ -99,6 +99,9 @@ function initmessage() {
         rule34xxx)
             sitename="rule34.xxx"
             ;;
+        yandere)
+            sitename="yande.re"
+            ;;
         pixiv | pixiv_author | pixiv_favourite)
             sitename="pixiv.net"
             ;;
@@ -131,6 +134,9 @@ function initmessage() {
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
         rule34xxx)
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+                ;;
+        yandere)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
         pixiv)
@@ -231,7 +237,7 @@ function processhentai_pixiv() {
         fi
         cd temp
         rm *.* -f
-        message_general "uploadin' $hentai"
+        # message_general "uploadin' $hentai"
         eval "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'"
 
         case "$site" in
@@ -338,6 +344,10 @@ function localmachine_pixiv() {
 function paheal() {
     url="https://rule34.paheal.net/post/list/$cutie/"
     totalfish=`curl "$url" | grep -Eo "Next.*Last" | grep -Eo "[0-9]*"`
+    if [ ! $totalfish ]
+    then
+        totalfish=1
+    fi
     #totalfish=2 # in some cases you just can't use script to find out pages, you'll have to make it manually
     if [ ! "$cutie_name" ]
     then
@@ -360,6 +370,10 @@ function paheal() {
 function gelbooru() {
     url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie"
     finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
+    if [ ! $finalfish ]
+    then
+        finalfish=20
+    fi
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -383,6 +397,10 @@ function gelbooru() {
 function rule34xxx() {
     url="https://rule34.xxx/index.php?page=post&s=list&tags=$cutie"
     finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
+    if [ ! $finalfish ]
+    then
+        finalfish=20
+    fi
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -393,6 +411,33 @@ function rule34xxx() {
     for fish in `seq 0 42 $finalfish`
     do
         url="https://rule34.xxx/index.php?page=post&s=list&tags=$cutie&pid=$fish"
+        for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
+        do
+            hentai=`curl "https://rule34.xxx/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
+            processhentai
+        done
+    done
+
+    finalmessage
+}
+
+function yandere() {
+    url="https://yande.re/post?tags=$cutie"
+    finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
+    if [ ! $finalfish ]
+    then
+        finalfish=20
+    fi
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
+
+    initmessage
+
+    for fish in `seq 0 42 $finalfish`
+    do
+        url="https://yande.re/post?tags=$cutie&pid=$fish"
         for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
         do
             hentai=`curl "https://rule34.xxx/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
@@ -430,8 +475,7 @@ function pixiv_hentai() {
 
 function pixiv_subprocess() {
     pixiv_hentai
-    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
-    message_general "Found **$hentaipages** pic(s)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)... Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
     then # single-pic page cumfirmed
@@ -449,8 +493,7 @@ function pixiv_subprocess() {
 
 function pixiv_half_subprocess() {
     pixiv_hentai
-    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
-    message_general "Found **$hentaipages** pic(s)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)... Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
     then # single-pic page cumfirmed
@@ -472,8 +515,7 @@ function pixiv_half_subprocess() {
 
 function pixiv_fast_subprocess() {
     pixiv_hentai
-    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
-    message_general "Found **$hentaipages** pic(s)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)... Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     hentaipages=`expr $hentaipages - 1`
     for fegelein in `seq 0 $hentaipages`
@@ -502,7 +544,6 @@ function pixiv() {
     initmessage
 
     finalfish=`expr $totalfish / 40 + 1`
-    echo $finalfish
     antics=0
     for fish in `seq 1 $finalfish`
     do
@@ -1127,6 +1168,9 @@ case "$site" in
         ;;
     rule34xxx)
         rule34xxx
+        ;;
+    yandere)
+        yandere
         ;;
     pixiv)
         if [ ! $downloadmode ]
