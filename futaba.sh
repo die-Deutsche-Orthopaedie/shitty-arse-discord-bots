@@ -67,10 +67,12 @@ function message_general() { # [ with one parameter <message> ]
     then
         case "$mode" in
             0)
+                echo -e "\e[36m$1\e[0m"
                 nanako "$1"
                 sleep 2
                 ;;
             1)
+                echo -e "\e[36m$1\e[0m"
                 futaba "$1"
                 sleep 2
                 ;;
