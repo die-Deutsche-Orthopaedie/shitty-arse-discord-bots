@@ -94,6 +94,9 @@ function initmessage() {
         gelbooru)
             sitename="gelbooru.com"
             ;;
+        rule34xxx)
+            sitename="rule34.xxx"
+            ;;
         pixiv | pixiv_author | pixiv_favourite)
             sitename="pixiv.net"
             ;;
@@ -123,6 +126,9 @@ function initmessage() {
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
             ;;
         gelbooru)
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+                ;;
+        rule34xxx)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
         pixiv)
@@ -364,7 +370,30 @@ function gelbooru() {
         url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie&pid=$fish"
         for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
         do
-            hentai=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/<li><a href="//g' | sed 's/" style="font-weight: bold;">Original image//g' | sed 's/" target="_blank//g'`
+            hentai=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
+            processhentai
+        done
+    done
+
+    finalmessage
+}
+
+function rule34xxx() {
+    url="https://rule34.xxx/index.php?page=post&s=list&tags=$cutie"
+    finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
+
+    initmessage
+
+    for fish in `seq 0 42 $finalfish`
+    do
+        url="https://rule34.xxx/index.php?page=post&s=list&tags=$cutie&pid=$fish"
+        for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
+        do
+            hentai=`curl "https://rule34.xxx/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
             processhentai
         done
     done
@@ -1087,6 +1116,9 @@ case "$site" in
         ;;
     gelbooru)
         gelbooru
+        ;;
+    rule34xxx)
+        rule34xxx
         ;;
     pixiv)
         if [ ! $downloadmode ]
