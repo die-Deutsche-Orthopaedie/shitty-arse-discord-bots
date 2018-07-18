@@ -428,7 +428,7 @@ function pixiv_hentai() {
 
 function pixiv_subprocess() {
     pixiv_hentai
-    message_general "Analysin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)"
     message_general "Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
@@ -485,8 +485,13 @@ function pixiv_fast_subprocess() {
 }
 
 function pixiv() {
-    url="https://www.pixiv.net/search.php?s_mode=s_tag_full&word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword
-    totalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
+    url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword
+    totalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
+    if [ $totalfish == 0 ]
+    then
+        echo "Cutie not found"
+        exit
+    fi
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -495,11 +500,11 @@ function pixiv() {
     initmessage
 
     finalfish=`expr $totalfish / 40 + 1`
+    echo $finalfish
     antics=0
     for fish in `seq 1 $finalfish`
     do
-        url="https://www.pixiv.net/search.php?s_mode=s_tag_full&word=$cutie&order=date_d&mode=r18&p=$fish"
-        echo $url
+        url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18&p=$fish"
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/&quot;/"/g' | sed 's/{"illustId"/\n{"illustId"/g' | grep "illustId"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
