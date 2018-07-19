@@ -137,13 +137,13 @@ function initmessage() {
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
         yandere)
-            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
         pixiv)
-            message="FYI, the cutie's name is **$cutie_name**, and this hentai has exactly **$totalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
         pixiv_author | pixiv_favourite)
-            message="FYI, the author's id is **$cutie**, and this hentai has exactly **$totalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the author's id is **$cutie**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;        
         localmachine)
             message="FYI, the cutie's name is **$cutie_name**, and idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
@@ -384,7 +384,7 @@ function gelbooru() {
     for fish in `seq 0 42 $finalfish`
     do
         url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie&pid=$fish"
-        for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
+        for hentailink in `curl "$url" | sed 's/>/\n/g' | grep -Eo "view&amp;id=[0-9]*" | grep -Eo "[0-9]*"` # find id's
         do
             hentai=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
             processhentai
@@ -411,7 +411,7 @@ function rule34xxx() {
     for fish in `seq 0 42 $finalfish`
     do
         url="https://rule34.xxx/index.php?page=post&s=list&tags=$cutie&pid=$fish"
-        for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
+        for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" | grep -Eo "[0-9]*"` # find id's
         do
             hentai=`curl "https://rule34.xxx/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
             processhentai
@@ -423,10 +423,10 @@ function rule34xxx() {
 
 function yandere() {
     url="https://yande.re/post?tags=$cutie"
-    finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
+    totalfish=`curl "$url" | grep -Eo "[0-9]*</a> <a class=\"next_page" | grep -Eo "[0-9]*"`
     if [ ! $finalfish ]
     then
-        finalfish=20
+        totalfish=1
     fi
     if [ ! "$cutie_name" ]
     then
@@ -435,12 +435,12 @@ function yandere() {
 
     initmessage
 
-    for fish in `seq 0 42 $finalfish`
+    for fish in `seq 1 $totalfish`
     do
-        url="https://yande.re/post?tags=$cutie&pid=$fish"
-        for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" |  sed 's/view&amp;id=//g'` # find id's
+        url="https://yande.re/post?page=$fish&tags=$cutie"
+        for hentailink in `curl "$url" | grep -Eo "a class=\"thumb\" href="\"/post/show/[0-9]*\" | grep -Eo "[0-9]*"` # find id's
         do
-            hentai=`curl "https://rule34.xxx/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
+            hentai=`curl "https://yande.re/post/show/$hentailink" | grep "a class=\"highres-show\" href=\".*\">View" | sed 's/"/\n/g' | grep "http"`
             processhentai
         done
     done
@@ -475,7 +475,7 @@ function pixiv_hentai() {
 
 function pixiv_subprocess() {
     pixiv_hentai
-    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)... Found **$hentaipages** pic(s)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$finalfish)... Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
     then # single-pic page cumfirmed
@@ -493,7 +493,7 @@ function pixiv_subprocess() {
 
 function pixiv_half_subprocess() {
     pixiv_hentai
-    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)... Found **$hentaipages** pic(s)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$finalfish)... Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
     then # single-pic page cumfirmed
@@ -507,7 +507,7 @@ function pixiv_half_subprocess() {
         for fegelein in `seq 0 $hentaipages`
         do
             hentai="$hentaitemp$fegelein.$extension"
-            processhentai_pixiv # needs $hentai AND $hentaiid to work
+            processhentai_pixiv
         done
     fi
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
@@ -515,23 +515,23 @@ function pixiv_half_subprocess() {
 
 function pixiv_fast_subprocess() {
     pixiv_hentai
-    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$totalfish)... Found **$hentaipages** pic(s)"
+    message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$finalfish)... Found **$hentaipages** pic(s)"
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     hentaipages=`expr $hentaipages - 1`
     for fegelein in `seq 0 $hentaipages`
     do
         hentai="$hentaitemp$fegelein.jpg"
-        processhentai_pixiv # needs $hentai AND $hentaiid to work
+        processhentai_pixiv
         hentai="$hentaitemp$fegelein.png"
-        processhentai_pixiv # needs $hentai AND $hentaiid to work
+        processhentai_pixiv
     done
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
 }
 
 function pixiv() {
     url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword
-    totalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
-    if [ $totalfish == 0 ]
+    finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
+    if [ ! $finalfish ] || [ $finalfish == "0" ]
     then
         echo "Cutie not found"
         exit
@@ -543,9 +543,9 @@ function pixiv() {
 
     initmessage
 
-    finalfish=`expr $totalfish / 40 + 1`
+    totalfish=`expr $finalfish / 40 + 1`
     antics=0
-    for fish in `seq 1 $finalfish`
+    for fish in `seq 1 $totalfish`
     do
         url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18&p=$fish"
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/&quot;/"/g' | sed 's/{"illustId"/\n{"illustId"/g' | grep "illustId"` # find id's and pagecounts
@@ -556,10 +556,10 @@ function pixiv() {
                     pixiv_fast_subprocess
                     ;;
                 0)
-                    pixiv_half_subprocess
+                    pixiv_subprocess
                     ;;
                 *)
-                    pixiv_subprocess
+                    pixiv_half_subprocess
                     ;;
             esac
         done
@@ -570,7 +570,12 @@ function pixiv() {
 
 function pixiv_author() {
     url="https://www.pixiv.net/member_illust.php?id=$cutie" # author id
-    totalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
+    finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
+    if [ ! $finalfish ] || [ $finalfish == "0" ]
+    then
+        echo "Cutie not found"
+        exit
+    fi
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -578,9 +583,9 @@ function pixiv_author() {
 
     initmessage
 
-    finalfish=`expr $totalfish / 20 + 1`
+    totalfish=`expr $finalfish / 20 + 1`
     antics=0
-    for fish in `seq 1 $finalfish`
+    for fish in `seq 1 $totalfish`
     do
         url="https://www.pixiv.net/member_illust.php?id=$cutie&p=$fish"
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
@@ -591,10 +596,10 @@ function pixiv_author() {
                     pixiv_fast_subprocess
                     ;;
                 0)
-                    pixiv_half_subprocess
+                    pixiv_subprocess
                     ;;
                 *)
-                    pixiv_subprocess
+                    pixiv_half_subprocess
                     ;;
             esac
         done
@@ -606,7 +611,12 @@ function pixiv_author() {
 
 function pixiv_favourite() {
     url="https://www.pixiv.net/bookmark.php?id=$cutie" # author id
-    totalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
+    finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
+    if [ ! $finalfish ] || [ $finalfish == "0" ]
+    then
+        echo "Cutie not found"
+        exit
+    fi
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -614,9 +624,9 @@ function pixiv_favourite() {
 
     initmessage
 
-    finalfish=`expr $totalfish / 40 + 1`
+    totalfish=`expr $finalfish / 40 + 1`
     antics=0
-    for fish in `seq 1 $finalfish`
+    for fish in `seq 1 $totalfish`
     do
         url="https://www.pixiv.net/bookmark.php?id=$cutie&order=date_d&mode=r18&p=$fish"
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
@@ -627,10 +637,10 @@ function pixiv_favourite() {
                     pixiv_fast_subprocess
                     ;;
                 0)
-                    pixiv_half_subprocess
+                    pixiv_subprocess
                     ;;
                 *)
-                    pixiv_subprocess
+                    pixiv_half_subprocess
                     ;;
             esac
         done
@@ -645,7 +655,7 @@ function pixiv_favourite() {
 # DO NOT CHANGE UNLESS NECESSARY
 
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-halfspeed-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -743,7 +753,7 @@ do
             pixivmode=1
             shift
             ;;
-        --pixiv-halfspeed-mode)
+        --pixiv-fullscan-mode)
             pixivmode=0
             shift
             ;;
@@ -792,7 +802,8 @@ do
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
             echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
             echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
-            echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode"
+            echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode (default and you don't need to use this)"
+            echo "        --pixiv-fullscan-mode: use all page info to dump pixiv pics, slowest"
             echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
             echo "            and currently this thing will either kill the script or make it stop, just forget about it"
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
