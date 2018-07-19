@@ -38,7 +38,7 @@ Options:
 > * * `-l or -L or --link-only <exportfilepath>`: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later
 >
 > * Configurations: 
-> * * `-s or -S or --site <sitename>`: input site name, currently supported: **paheal**, **gelbooru**, **rule34xxx**, **pixiv**, **pixiv_author**, **pixiv_favourite**
+> * * `-s or -S or --site <sitename>`: input site name, currently supported: **paheal**, **gelbooru**, **rule34xxx**, **yandere**, **pixiv**, **pixiv_author**, **pixiv_favourite**
 > * * * use **localmachine** to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case `$cutie` will be your filename
 > * * * and **localmachine_pixiv** to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case `$cutie` will be your filename
 > * * `-c or -C or --config-file <configfilepath>`: load a configuration file which contains **three** lines of **webhook url**, **account curl command** and **account curl command (used to upload)**; if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means
@@ -46,8 +46,9 @@ Options:
 > * * `--silent`: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases
 > * * `--webhookinterval <newinterval>`: override webhook mode hentei interval in the script
 > * * `--naturalinterval <newinterval>`: override natural mode hentei interval in the script
-> * * `--pixiv-fast-mode`: only use the list page info to dump pixiv pics, but will generate too much 404
-> * * `--pixiv-halfspeed-mode`: use id page info to dump pixiv pics, but faster than full mode
+> * * `--pixiv-fast-mode`: only use the list page info to dump pixiv pics, but will generate too much 404"
+> * * `--pixiv-halfspeed-mode`: use id page info to dump pixiv pics, but faster than full mode (default and you don't need to use this)"
+> * * `--pixiv-fullscan-mode`: use all page info to dump pixiv pics, slowest"
 > * * `--pixiv-log`: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself
 > * * * and currently this thing will either kill the script or make it stop, just forget about it 
 > * * * or you can just use `cat <logfile> | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > <newfile>` to process beforehand, then use normal method
@@ -62,7 +63,8 @@ Cutie:
 > * pls input an **ACTUALLY EXISTED** search term or tag, you can look up by addin' "**site:\<your site\>**" on Google to make sure it exists. And pls include "_" if it has one
 > * * eg. **futaba**'s page on paheal.net is https://rule34.paheal.net/post/list/Futaba_Sakura and what you need to input is "**Futaba_Sakura**"
 > * * eg. **futaba**'s page on gelbooru.com is https://gelbooru.com/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is "**sakura_futaba**"
-> * * eg. **futaba**'s page on rule34.xxx is https://rule34.xxx/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is "**sakura_futaba**
+> * * eg. **futaba**'s page on rule34.xxx is https://rule34.xxx/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is "**sakura_futaba**"
+> * * eg. **futaba**'s page on yande.re is https://yande.re/post?tags=sakura_futaba and what you need to input is "**sakura_futaba**"
 > * * eg. **futaba**'s page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is "**佐倉双葉**"
 > * * eg. this time it's not **futaba**, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=7847900 or https://www.pixiv.net/member_illust.php?id=7847900 and the number "**7847900**" is user id that can be used in either **pixiv_author** or **pixiv_favourite**; actually they're not too different in processin'
 > * * * the display name for your cutie (`$cutie_name`) can be different from the search term or tag (`$cutie`), but if you don't input one it will be automatically generated from the tag
