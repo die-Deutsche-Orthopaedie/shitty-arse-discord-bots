@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 # copyrekt die deutsche Orthopädiespezialist 2018
 # multi-site rule34 fully automatic masspostin' bot for discord
 # you can either use a webhook or your own account or alt account if you don't have permissions to create webhooks
