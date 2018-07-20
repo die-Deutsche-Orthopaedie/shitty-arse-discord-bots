@@ -145,8 +145,8 @@ function initmessage() {
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
         pixiv_author | pixiv_favourite)
-            message="FYI, the author's id is **$cutie**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;        
+            message="FYI, the author's id is **${cutie//&tag=/** and tag is **}**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+                ;;
         localmachine)
             message="FYI, the cutie's name is **$cutie_name**, and idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
                 ;;
@@ -273,7 +273,7 @@ function processhentai_pixiv() {
                     makoto "$hentai" "$file"
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/${cutie//&tag=/.}.pixivlog$ext.txt"
+            esac >> "$currentdir/`cutie2=${cutie//&tag=/.}; echo ${cutie2//%20/ }`.pixivlog$ext.txt"
         done
         if [ $preserve_pics ]
         then
@@ -341,7 +341,7 @@ function localmachine_pixiv() {
                     naturalinterval=`expr $naturalinterval - 1`
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/$cutie.pixivlog.txt"
+            esac >> "$currentdir/${cutie%.*}.pixivlog.txt"
         done
         rm *.* -f
         cd ..
@@ -581,6 +581,7 @@ function pixiv() {
 }
 
 function pixiv_author() {
+    cutie=${cutie// /%20}
     url="https://www.pixiv.net/member_illust.php?id=$cutie" # author id ## theoretically you can still apply tags in this mode, just add "&tag=<your tags>" after the author id
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
     if [ ! $finalfish ] || [ $finalfish == "0" ]
@@ -622,6 +623,7 @@ function pixiv_author() {
 }
 
 function pixiv_favourite() {
+    cutie=${cutie// /%20}
     url="https://www.pixiv.net/bookmark.php?id=$cutie" # author id
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
     if [ ! $finalfish ] || [ $finalfish == "0" ]
