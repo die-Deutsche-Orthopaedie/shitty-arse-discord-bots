@@ -10,7 +10,8 @@ webhookinterval=3
 naturalinterval=2
 # hentai update interval
 
-shitty_arse_pixiv_parameter='<get it yourself>'
+shitty_arse_pixiv_parameter='-H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" -H "Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" --compressed -H "Referer: https://www.pixiv.net/search.php?word="%"E4"%"BD"%"90"%"E5"%"80"%"89"%"E5"%"8F"%"8C"%"E8"%"91"%"89&order=date&mode=r18" -H "Cookie: first_visit_datetime_pc=2018-07-20+13"%"3A08"%"3A30; p_ab_id=7; p_ab_id_2=6; yuid=VISYRoA34; PHPSESSID=33032341_5b6769a9622c271dbf7fd258a2a07f96; device_token=f34e4bd6d47058cfa80e682da07aac4d; c_type=24; a_type=0; b_type=1; privacy_policy_agreement=0; module_orders_mypage="%"5B"%"7B"%"22name"%"22"%"3A"%"22sketch_live"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22tag_follow"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22recommended_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22showcase"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22everyone_new_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22following_new_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22mypixiv_new_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22fanbox"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22featured_tags"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22contests"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22user_events"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22sensei_courses"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22spotlight"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22booth_follow_items"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"5D; is_sensei_service_user=1; login_ever=yes; user_language=zh; tag_view_ranking=0xsDLqCEW6~c66SdTL_2i~nJAGknuD4K~l015P5ziIS~rR_Hcj7E5k~Ck8wmf-5yb~u8McsBs7WV~ZTBAtZUDtQ~_hSAdpN9rx~xrGEf6ML2S" -H "DNT: 1" -H "Connection: keep-alive" -H "Upgrade-Insecure-Requests: 1" -H "Cache-Control: max-age=0"' # i'll let you use this temp account for a while
+# shitty_arse_pixiv_parameter='<get it yourself>'
 shitty_arse_pixiv_parameter=${shitty_arse_pixiv_parameter//--compressed /} # otherwise you cannot use it on wget
 
 webhook_url="<paste your webhook url here>"
@@ -541,7 +542,11 @@ function pixiv_fast_subprocess() {
 
 function pixiv() {
     cutie=${cutie// /%20}
-    url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword ## some shitty arse hosts will not support you to input non-latin characters, you might need to have a way to deal with it like encodin' your url or just not use them to dump pixiv
+    if [ ! $pixivorder ]
+    then
+        pixivorder="date_d" # default order: newest to oldest
+    fi
+    url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=$pixivorder&mode=r18" # it would be better if use japanese keyword ## some shitty arse hosts will not support you to input non-latin characters, you might need to have a way to deal with it like encodin' your url or just not use them to dump pixiv
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
     if [ ! $finalfish ] || [ $finalfish == "0" ]
     then
@@ -559,7 +564,7 @@ function pixiv() {
     antics=0
     for fish in `seq 1 $totalfish`
     do
-        url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18&p=$fish"
+        url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=$pixivorder&mode=r18&p=$fish"
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/&quot;/"/g' | sed 's/{"illustId"/\n{"illustId"/g' | grep "illustId"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
@@ -624,7 +629,11 @@ function pixiv_author() {
 
 function pixiv_favourite() {
     cutie=${cutie// /%20}
-    url="https://www.pixiv.net/bookmark.php?id=$cutie" # author id
+    if [ ! $pixivorder ]
+    then
+        pixivorder="desc" # default order: latest to add to favourite to oldest
+    fi
+    url="https://www.pixiv.net/bookmark.php?id=$cutie&order=$pixivorder" # author id
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
     if [ ! $finalfish ] || [ $finalfish == "0" ]
     then
@@ -642,7 +651,7 @@ function pixiv_favourite() {
     antics=0
     for fish in `seq 1 $totalfish`
     do
-        url="https://www.pixiv.net/bookmark.php?id=$cutie&rest=show&order=desc&p=$fish"
+        url="https://www.pixiv.net/bookmark.php?id=$cutie&order=$pixivorder&p=$fish"
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
@@ -677,7 +686,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -779,6 +788,10 @@ do
             pixivmode=0
             shift
             ;;
+        --pixiv-order)
+            pixivorder=$2
+            shift 2
+            ;;
         --pixiv-log)
             pixivlogmode=1
             shift
@@ -826,6 +839,9 @@ do
             echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
             echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode (default and you don't need to use this)"
             echo "        --pixiv-fullscan-mode: use all page info to dump pixiv pics, slowest"
+            echo "        --pixiv-order <pixivorder>: use custom order to search through pixiv; currently available orders: "
+            echo "            main mode: date_d (default, from latest to oldest), date (from oldest to latest), popularity (idk if this one actually exists)"
+            echo "            favourite mode: desc(default, from latest added to favourite to oldest), asc(from oldest added to favourite to latest), date_d (from latest posted to oldest), date(from oldest posted to latest)"
             echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
             echo "            and currently this thing will either kill the script or make it stop, just forget about it"
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
@@ -842,7 +858,7 @@ do
             echo "        eg. futaba's page on rule34.xxx is https://rule34.xxx/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
             echo "        eg. futaba's page on yande.re is https://yande.re/post?tags=sakura_futaba and what you need to input is \"sakura_futaba\""
             echo "        eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
-            echo "        this time it's not futaba, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=7847900 or https://www.pixiv.net/member_illust.php?id=5758362 and the number \"5758362\" is user id that can be used in either pixiv_author or pixiv_favourite; actually they're not too different in processin'"
+            echo "        this time it's not futaba, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=5758362 or https://www.pixiv.net/member_illust.php?id=5758362 and the number \"5758362\" is user id that can be used in either pixiv_author or pixiv_favourite; actually they're not too different in processin'"
             echo "            if you wanna apply tags in this mode, just add \"&tag=<your tags>\" after the author id, eg. for such tagged search like https://www.pixiv.net/member_illust.php?id=5758362&tag=久慈川りせ what you need to input is \"5758362&tag=久慈川りせ\""
             echo "    the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
             exit
