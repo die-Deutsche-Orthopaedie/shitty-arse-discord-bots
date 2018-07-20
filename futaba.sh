@@ -841,7 +841,7 @@ do
             echo "        --pixiv-fullscan-mode: use all page info to dump pixiv pics, slowest"
             echo "        --pixiv-order <pixivorder>: use custom order to search through pixiv; currently available orders: "
             echo "            main mode: date_d (default, from latest to oldest), date (from oldest to latest), popularity (idk if this one actually exists)"
-            echo "            favourite mode: desc(default, from latest added to favourite to oldest), asc(from oldest added to favourite to latest), date_d (from latest posted to oldest), date(from oldest posted to latest)"
+            echo "            favourite mode: desc (default, from latest added to favourite to oldest), asc (from oldest added to favourite to latest), date_d (from latest posted to oldest), date (from oldest posted to latest)"
             echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
             echo "            and currently this thing will either kill the script or make it stop, just forget about it"
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
