@@ -576,7 +576,7 @@ function pixiv() {
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/&quot;/"/g' | sed 's/{"illustId"/\n{"illustId"/g' | grep "illustId"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
-            if [ $antics >= $start_from ] && [ $antics <= $end_with ]
+            if [ "$antics" -ge "$start_from" ] && [ "$antics" -le "$end_with" ]
             then
                 case "$pixivmode" in
                     1)
@@ -628,7 +628,7 @@ function pixiv_author() {
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
-            if [ $antics >= $start_from ] && [ $antics <= $end_with ]
+            if [ "$antics" -ge "$start_from" ] && [ "$antics" -le "$end_with" ]
             then
                 case "$pixivmode" in
                     1)
@@ -685,7 +685,7 @@ function pixiv_favourite() {
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
-            if [ $antics >= $start_from ] && [ $antics <= $end_with ]
+            if [ "$antics" -ge "$start_from" ] && [ "$antics" -le "$end_with" ]
             then
                 case "$pixivmode" in
                     1)
