@@ -62,6 +62,10 @@ Options:
 > * * `--pixiv-log`: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself
 > * * * and currently this thing will either kill the script or make it stop, just forget about it 
 > * * * or you can just use `cat <logfile> | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > <newfile>` to process beforehand, then use normal method
+> * * `--start-from <postnumber>`: start from certain number of post, and skip all posts before it
+> * * `--end-with <postnumber>`: end with certain number of post, and skip all posts after it
+>
+> * Antics: 
 > * * `--channel-id <chatroom-id/channel-id>`: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id
 > * * * and i'm still not used to called discord chatroom "server", because what runs this script is the real server for me
 > * * `--join-chatroom <chatroom-invite-link>`: the ability to join chatroom **via ARSEFOCKIN' B A S H**, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGELEIN you only need "**FEGELEIN**"
