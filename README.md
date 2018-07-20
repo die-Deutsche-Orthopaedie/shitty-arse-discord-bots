@@ -21,7 +21,7 @@ UPDATE: idk that sometimes resolvin' `i.pximg.net`, `www.pixiv.net`, `ptb.discor
 
 UPDATE: i finally fixed pixiv's bug on url, it seems that you'll have to at least convert space into `%20` before usin' union tags (like `AA AND BB`) on curl; and if you can't paste japanese characters into console or php shell, you can try to visit the original pixiv link in firefox, and copy the link to somewhere else, and get the entirely url-encoded tags, then you're good to go! 
 
-UPDATE: and one more thing, you can still use tagged search in pixiv_author and pixiv_favourite mode, but you'll need to add `&tag=<your tags>` after the author id
+UPDATE: and one more thing, you can still use tagged search in pixiv_author and pixiv_favourite mode, but you'll need to add `&tag=<your tags>` after the author id， and you can use union tags as well
 
 Usage: 
 
