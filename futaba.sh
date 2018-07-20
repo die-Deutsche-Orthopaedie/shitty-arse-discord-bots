@@ -274,7 +274,7 @@ function processhentai_pixiv() {
                     makoto "$hentai" "$file"
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/`cutie2=${cutie//&tag=/.}; echo ${cutie2//%20/ }`.pixivlog$ext.txt"
+            esac >> "$currentdir/`cutie2=${cutie//&tag=/.}; echo ${cutie2//%20/ }`.pixivlog$ext$ext2.txt"
         done
         if [ $preserve_pics ]
         then
@@ -553,13 +553,17 @@ function pixiv() {
         echo "Cutie not found"
         exit
     fi
-    if [ !$start_from ]
+    if [ ! $start_from ]
     then
-        start_from=0
+        start_from=1
+    else
+        ext2=".$start_from-$end_with"
     fi
-    if [ !$end_with ]
+    if [ ! $end_with ]
     then
         end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
+    else
+        ext2=".$start_from-$end_with"
     fi
     if [ ! "$cutie_name" ]
     then
@@ -576,6 +580,7 @@ function pixiv() {
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/&quot;/"/g' | sed 's/{"illustId"/\n{"illustId"/g' | grep "illustId"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
+            echo "$start_from - $end_with"
             if [ "$antics" -ge "$start_from" ] && [ "$antics" -le "$end_with" ]
             then
                 case "$pixivmode" in
@@ -589,6 +594,10 @@ function pixiv() {
                         pixiv_half_subprocess
                         ;;
                 esac
+            fi
+            if [ "$antics" -gt "$end_with" ]
+            then
+                finalmessage
             fi
         done
     done
@@ -605,13 +614,17 @@ function pixiv_author() {
         echo "Cutie not found"
         exit
     fi
-    if [ !$start_from ]
+    if [ ! $start_from ]
     then
-        start_from=0
+        start_from=1
+    else
+        ext2=".$start_from-$end_with"
     fi
-    if [ !$end_with ]
+    if [ ! $end_with ]
     then
         end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
+    else
+        ext2=".$start_from-$end_with"
     fi
     if [ ! "$cutie_name" ]
     then
@@ -642,6 +655,10 @@ function pixiv_author() {
                         ;;
                 esac
             fi
+            if [ "$antics" -gt "$end_with" ]
+            then
+                finalmessage
+            fi
         done
     done
     
@@ -662,13 +679,17 @@ function pixiv_favourite() {
         echo "Cutie not found"
         exit
     fi
-    if [ !$start_from ]
+    if [ ! $start_from ]
     then
-        start_from=0
+        start_from=1
+    else
+        ext2=".$start_from-$end_with"
     fi
-    if [ !$end_with ]
+    if [ ! $end_with ]
     then
         end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
+    else
+        ext2=".$start_from-$end_with"
     fi
     if [ ! "$cutie_name" ]
     then
@@ -698,6 +719,10 @@ function pixiv_favourite() {
                         pixiv_half_subprocess
                         ;;
                 esac
+            fi
+            if [ "$antics" -gt "$end_with" ]
+            then
+                finalmessage
             fi
         done
     done
