@@ -553,6 +553,14 @@ function pixiv() {
         echo "Cutie not found"
         exit
     fi
+    if [ !$start_from ]
+    then
+        start_from=0
+    fi
+    if [ !$end_with ]
+    then
+        end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
+    fi
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -568,17 +576,20 @@ function pixiv() {
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/&quot;/"/g' | sed 's/{"illustId"/\n{"illustId"/g' | grep "illustId"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
-            case "$pixivmode" in
-                1)
-                    pixiv_fast_subprocess
-                    ;;
-                0)
-                    pixiv_subprocess
-                    ;;
-                *)
-                    pixiv_half_subprocess
-                    ;;
-            esac
+            if [ $antics >= $start_from ] && [ $antics <= $end_with ]
+            then
+                case "$pixivmode" in
+                    1)
+                        pixiv_fast_subprocess
+                        ;;
+                    0)
+                        pixiv_subprocess
+                        ;;
+                    *)
+                        pixiv_half_subprocess
+                        ;;
+                esac
+            fi
         done
     done
     
@@ -593,6 +604,14 @@ function pixiv_author() {
     then
         echo "Cutie not found"
         exit
+    fi
+    if [ !$start_from ]
+    then
+        start_from=0
+    fi
+    if [ !$end_with ]
+    then
+        end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
     fi
     if [ ! "$cutie_name" ]
     then
@@ -609,17 +628,20 @@ function pixiv_author() {
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
-            case "$pixivmode" in
-                1)
-                    pixiv_fast_subprocess
-                    ;;
-                0)
-                    pixiv_subprocess
-                    ;;
-                *)
-                    pixiv_half_subprocess
-                    ;;
-            esac
+            if [ $antics >= $start_from ] && [ $antics <= $end_with ]
+            then
+                case "$pixivmode" in
+                    1)
+                        pixiv_fast_subprocess
+                        ;;
+                    0)
+                        pixiv_subprocess
+                        ;;
+                    *)
+                        pixiv_half_subprocess
+                        ;;
+                esac
+            fi
         done
     done
     
@@ -640,6 +662,14 @@ function pixiv_favourite() {
         echo "Cutie not found"
         exit
     fi
+    if [ !$start_from ]
+    then
+        start_from=0
+    fi
+    if [ !$end_with ]
+    then
+        end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
+    fi
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -655,17 +685,20 @@ function pixiv_favourite() {
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
-            case "$pixivmode" in
-                1)
-                    pixiv_fast_subprocess
-                    ;;
-                0)
-                    pixiv_subprocess
-                    ;;
-                *)
-                    pixiv_half_subprocess
-                    ;;
-            esac
+            if [ $antics >= $start_from ] && [ $antics <= $end_with ]
+            then
+                case "$pixivmode" in
+                    1)
+                        pixiv_fast_subprocess
+                        ;;
+                    0)
+                        pixiv_subprocess
+                        ;;
+                    *)
+                        pixiv_half_subprocess
+                        ;;
+                esac
+            fi
         done
     done
     
@@ -686,7 +719,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -795,7 +828,15 @@ do
         --pixiv-log)
             pixivlogmode=1
             shift
-            ;;    
+            ;;
+        --start-from)
+            start_from=$2
+            shift 2
+            ;;
+        --end-with)
+            end_with=$2
+            shift 2
+            ;;
         --channel-id)
             channelid=$2
             shift 2
@@ -836,6 +877,8 @@ do
             echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
             echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
+            echo
+            echo "    pixiv.net Related Configurations: "
             echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
             echo "        --pixiv-halfspeed-mode: use id page info to dump pixiv pics, but faster than full mode (default and you don't need to use this)"
             echo "        --pixiv-fullscan-mode: use all page info to dump pixiv pics, slowest"
@@ -845,6 +888,10 @@ do
             echo "            favourite mode: desc (default, from latest added to favourite to oldest), asc (from oldest added to favourite to latest), date_d (from latest posted to oldest), date (from oldest posted to latest)"
             echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
             echo "            and currently this thing will either kill the script or make it stop, just forget about it"
+            echo "        --start-from <postnumber>: start from certain number of post"
+            echo "        --end-with <postnumber>: end with certain number of post"
+            echo
+            echo "    Antics: "
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
             echo "            and i'm still not used to called discord chatroom \"server\", because what runs this script is the real server for me"
             echo "        --join-chatroom <chatroom-invite-link>: the ability to join chatroom via ARSEFOCKIN' B A S H, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGEL you only need \"FEGEL\""
