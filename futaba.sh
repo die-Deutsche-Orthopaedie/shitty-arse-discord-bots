@@ -167,7 +167,7 @@ function finalmessage() {
     finaltime=`date +%s%N`
     # usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
     usedtime=`awk -v x=$finaltime -v y=$starttime 'BEGIN{printf "%.3f",(x-y)/1000000000}'`
-    message="Thanks for usin' this shitty arse bot, this bot has finished dumpin' hentais for **$usedtime** second(s), see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+    message="Thanks for usin' this shitty arse bot, this bot has finished dumpin' hentais in **$usedtime** second(s), see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
     message_general "$message"
     exit
 }
