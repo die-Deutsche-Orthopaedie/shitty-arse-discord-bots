@@ -23,6 +23,8 @@ UPDATE: i finally fixed pixiv's bug on url, it seems that you'll have to at leas
 
 UPDATE: and one more thing, you can still use tagged search in pixiv_author and pixiv_favourite mode, but you'll need to add `&tag=<your tags>` after the author id， and you can use union tags as well
 
+UPDATE: pls make sure your shitty arse pixiv parameter has a header called `Referer: `, otherwise you can't download any pixiv pic; if you get your curl command from a post visitin' from search results page (instead of just visit its link directly), it will usually have this header
+
 Usage: 
 
 `./futaba.sh [options] cutie cutie_name`
