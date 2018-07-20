@@ -165,7 +165,8 @@ function initmessage() {
 
 function finalmessage() {
     finaltime=`date +%s%N`
-    usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
+    # usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
+    usedtime=`awk -v x=$finaltime -v y=$starttime 'BEGIN{printf "%.3f",(x-y)/1000000000}'`
     message="Thanks for usin' this shitty arse bot, this bot has finished dumpin' hentais for **$usedtime** second(s), see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
     message_general "$message"
     exit
@@ -272,7 +273,7 @@ function processhentai_pixiv() {
                     makoto "$hentai" "$file"
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/$cutie.pixivlog$ext.txt"
+            esac >> "$currentdir/${cutie//&tag=/.}.pixivlog$ext.txt"
         done
         if [ $preserve_pics ]
         then
@@ -839,8 +840,9 @@ do
             echo "        eg. futaba's page on rule34.xxx is https://rule34.xxx/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is \"sakura_futaba\""
             echo "        eg. futaba's page on yande.re is https://yande.re/post?tags=sakura_futaba and what you need to input is \"sakura_futaba\""
             echo "        eg. futaba's page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is \"佐倉双葉\""
-            echo "        this time it's not futaba, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=7847900 or https://www.pixiv.net/member_illust.php?id=7847900 and the number \"7847900\" is user id that can be used in either pixiv_author or pixiv_favourite; actually they're not too different in processin'"
-            echo "            the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
+            echo "        this time it's not futaba, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=7847900 or https://www.pixiv.net/member_illust.php?id=5758362 and the number \"5758362\" is user id that can be used in either pixiv_author or pixiv_favourite; actually they're not too different in processin'"
+            echo "            if you wanna apply tags in this mode, just add \"&tag=<your tags>\" after the author id, eg. for such tagged search like https://www.pixiv.net/member_illust.php?id=5758362&tag=久慈川りせ what you need to input is \"5758362&tag=久慈川りせ\""
+            echo "    the display name for your cutie (\$cutie_name) can be different from the search term or tag (\$cutie), but if you don't input one it will be automatically generated from the tag"
             exit
             shift
             ;;
