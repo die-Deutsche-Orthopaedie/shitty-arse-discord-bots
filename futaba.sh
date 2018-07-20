@@ -177,6 +177,7 @@ function finalmessage() {
 
 ######################################################################################################################################################################
 # site-related functions start here
+function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 function download() {
     mkdir temp
@@ -274,7 +275,7 @@ function processhentai_pixiv() {
                     makoto "$hentai" "$file"
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/`cutie2=${cutie//&tag=/.}; echo ${cutie2//%20/ }`.pixivlog$ext$ext2.txt"
+            esac >> "$currentdir/`urldecode ${cutie//&tag=/.}`.pixivlog$ext$ext2.txt"
         done
         if [ $preserve_pics ]
         then
