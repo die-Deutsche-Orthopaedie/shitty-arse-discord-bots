@@ -53,6 +53,9 @@ Options:
 > * * `--pixiv-fast-mode`: only use the list page info to dump pixiv pics, but will generate too much 404"
 > * * `--pixiv-halfspeed-mode`: use id page info to dump pixiv pics, but faster than full mode (default and you don't need to use this)"
 > * * `--pixiv-fullscan-mode`: use all page info to dump pixiv pics, slowest"
+> * * `--pixiv-order <pixivorder>`: use custom order to search through pixiv; currently available orders: "
+> * * * main mode: **date_d** (default, from latest to oldest), **date** (from oldest to latest), **popularity** (idk if this one actually exists)"
+> * * * favourite mode: **desc** (default, from latest added to favourite to oldest), **asc** (from oldest added to favourite to latest), **date_d** (from latest posted to oldest), **date** (from oldest posted to latest)"
 > * * `--pixiv-log`: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself
 > * * * and currently this thing will either kill the script or make it stop, just forget about it 
 > * * * or you can just use `cat <logfile> | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > <newfile>` to process beforehand, then use normal method
