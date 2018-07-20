@@ -19,6 +19,10 @@ UPDATE: now added pixiv author and user's favourite dump support, actually there
 
 UPDATE: idk that sometimes resolvin' `i.pximg.net`, `www.pixiv.net`, `ptb.discordapp.com` and `discordapp.com` would slow the script down by 2x, and even make some of the results NOT posted on discord. if that thing happened, pls consider to `ping` them and add the ip address to `/etc/hosts` manually. i thought dns problems would never be a problem in the developed world, but i'm arsefockin' wrong
 
+UPDATE: i finally fixed pixiv's bug on url, it seems that you'll have to at least convert space into `%20` before usin' union tags (like `AA AND BB`) on curl; and if you can't paste japanese characters into console or php shell, you can try to visit the original pixiv link in firefox, and copy the link to somewhere else, and get the entirely url-encoded tags, then you're good to go! 
+
+UPDATE: and one more thing, you can still use tagged search in pixiv_author and pixiv_favourite mode, but you'll need to add `&tag=<your tags>` after the author id
+
 Usage: 
 
 `./futaba.sh [options] cutie cutie_name`
@@ -66,8 +70,9 @@ Cutie:
 > * * eg. **futaba**'s page on rule34.xxx is https://rule34.xxx/index.php?page=post&s=list&tags=sakura_futaba and what you need to input is "**sakura_futaba**"
 > * * eg. **futaba**'s page on yande.re is https://yande.re/post?tags=sakura_futaba and what you need to input is "**sakura_futaba**"
 > * * eg. **futaba**'s page on pixiv.net is https://www.pixiv.net/search.php?word=佐倉双葉&order=date_d&mode=r18 and what you need to input is "**佐倉双葉**"
-> * * eg. this time it's not **futaba**, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=7847900 or https://www.pixiv.net/member_illust.php?id=7847900 and the number "**7847900**" is user id that can be used in either **pixiv_author** or **pixiv_favourite**; actually they're not too different in processin'
-> * * * the display name for your cutie (`$cutie_name`) can be different from the search term or tag (`$cutie`), but if you don't input one it will be automatically generated from the tag
+> * * this time it's not **futaba**, but you just find user id in links like https://www.pixiv.net/bookmark.php?id=5758362 or https://www.pixiv.net/member_illust.php?id=5758362 and the number "**5758362**" is user id that can be used in either **pixiv_author** or **pixiv_favourite**; actually they're not too different in processin'"
+> * * * if you wanna apply tags in this mode, just add "`&tag=<your tags>`" after the author id, eg. for such tagged search like https://www.pixiv.net/member_illust.php?id=5758362&tag=久慈川りせ what you need to input is "**5758362&tag=久慈川りせ**"
+> * the display name for your cutie (`$cutie_name`) can be different from the search term or tag (`$cutie`), but if you don't input one it will be automatically generated from the tag
 
 And you'll need to provide webhook url (webhook mode) or curl command for account ("natural" mode) to make this script work. It's not too hard to provide webhook url, but it needs extra efforts to form two curl commands for this script to use. 
 
