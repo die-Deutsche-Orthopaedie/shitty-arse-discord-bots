@@ -483,6 +483,31 @@ function pixiv_hentai() {
     esac
 }
 
+function pixiv_det() {
+    if [ ! $finalfish ] || [ $finalfish == "0" ]
+    then
+        echo "Cutie not found"
+        exit
+    fi
+    if [ ! $start_from ]
+    then
+        start_from=1
+    else
+        ext2=".$start_from-$end_with"
+    fi
+    if [ ! $end_with ]
+    then
+        end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
+    else
+        ext2=".$start_from-$end_with"
+    fi
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
+}
+
+
 function pixiv_subprocess() {
     pixiv_hentai
     message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$finalfish)... Found **$hentaipages** pic(s)"
@@ -548,27 +573,8 @@ function pixiv() {
     fi
     url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=$pixivorder&mode=r18" # it would be better if use japanese keyword ## some shitty arse hosts will not support you to input non-latin characters, you might need to have a way to deal with it like encodin' your url or just not use them to dump pixiv
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
-    if [ ! $finalfish ] || [ $finalfish == "0" ]
-    then
-        echo "Cutie not found"
-        exit
-    fi
-    if [ ! $start_from ]
-    then
-        start_from=1
-    else
-        ext2=".$start_from-$end_with"
-    fi
-    if [ ! $end_with ]
-    then
-        end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
-    else
-        ext2=".$start_from-$end_with"
-    fi
-    if [ ! "$cutie_name" ]
-    then
-        cutie_name=`echo $cutie | sed 's/_/ /g'`
-    fi
+
+    pixiv_det
 
     initmessage
 
@@ -609,27 +615,8 @@ function pixiv_author() {
     cutie=${cutie// /%20}
     url="https://www.pixiv.net/member_illust.php?id=$cutie" # author id ## theoretically you can still apply tags in this mode, just add "&tag=<your tags>" after the author id
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
-    if [ ! $finalfish ] || [ $finalfish == "0" ]
-    then
-        echo "Cutie not found"
-        exit
-    fi
-    if [ ! $start_from ]
-    then
-        start_from=1
-    else
-        ext2=".$start_from-$end_with"
-    fi
-    if [ ! $end_with ]
-    then
-        end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
-    else
-        ext2=".$start_from-$end_with"
-    fi
-    if [ ! "$cutie_name" ]
-    then
-        cutie_name=`echo $cutie | sed 's/_/ /g'`
-    fi
+
+    pixiv_det
 
     initmessage
 
@@ -674,27 +661,8 @@ function pixiv_favourite() {
     fi
     url="https://www.pixiv.net/bookmark.php?id=$cutie&order=$pixivorder" # author id
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
-    if [ ! $finalfish ] || [ $finalfish == "0" ]
-    then
-        echo "Cutie not found"
-        exit
-    fi
-    if [ ! $start_from ]
-    then
-        start_from=1
-    else
-        ext2=".$start_from-$end_with"
-    fi
-    if [ ! $end_with ]
-    then
-        end_with=999999999999999999 # "NEIN NEIN NEIN NEIN NEIN NEIN" ---- Adolf Shitler
-    else
-        ext2=".$start_from-$end_with"
-    fi
-    if [ ! "$cutie_name" ]
-    then
-        cutie_name=`echo $cutie | sed 's/_/ /g'`
-    fi
+
+    pixiv_det
 
     initmessage
 
@@ -913,8 +881,8 @@ do
             echo "            favourite mode: desc (default, from latest added to favourite to oldest), asc (from oldest added to favourite to latest), date_d (from latest posted to oldest), date (from oldest posted to latest)"
             echo "        --pixiv-log: an extra procedure to use pixiv log just like normal local pic file, so you don't need to grep it yourself"
             echo "            and currently this thing will either kill the script or make it stop, just forget about it"
-            echo "        --start-from <postnumber>: start from certain number of post"
-            echo "        --end-with <postnumber>: end with certain number of post"
+            echo "        --start-from <postnumber>: start from certain number of post, and skip all posts before it"
+            echo "        --end-with <postnumber>: end with certain number of post, and skip all posts after it"
             echo
             echo "    Antics: "
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
