@@ -159,7 +159,7 @@ function initmessage() {
     esac
     message_general "$message"
     
-    message="And FYTI, the original command is\n\`\`\`bash\n$original_parameters\n\`\`\`"
+    message="And **FYTI**, the original command is: \n\`\`\`bash\n$original_parameters\n\`\`\`"
     message_general "$message"
 }
 
