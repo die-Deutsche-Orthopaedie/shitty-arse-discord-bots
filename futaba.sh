@@ -117,6 +117,8 @@ function initmessage() {
     esac
     message="$sitename rule34 fully automatic masspostin' bot developed by **$author**"
     message_general "$message"
+    message="**Legal Disclaimer**: this bot's result is completely generated from the target site, so either the author or users of this bot has **ABSOLUTELY NO LIABILITY** for its behaviors, or **WOULD YOU JUST KINDLY GO DIDDLE YOURSELF YOU SOCIAL JUSTICE ARSEFOCKIN' WORRIORS**? <:funny_v1:449451139063218177>"
+    message_general "$message"
 
     case "$mode" in
         0)
@@ -156,11 +158,17 @@ function initmessage() {
             exit 6
     esac
     message_general "$message"
+    
+    message="And FYTI, the original command is\n\`\`\`bash\n$original_parameters\n\`\`\`"
+    message_general "$message"
 }
 
 function finalmessage() {
-    message="Thanks for usin' this shitty arse bot, see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+    finaltime=`date +%s%N`
+    usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
+    message="Thanks for usin' this shitty arse bot, this bot has finished dumpin' hentais for **$usedtime** second(s), see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
     message_general "$message"
+    exit
 }
 
 ######################################################################################################################################################################
@@ -494,7 +502,7 @@ function pixiv_subprocess() {
 function pixiv_half_subprocess() {
     pixiv_hentai
     message_general "Analyzin' https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid (**$antics**/$finalfish)... Found **$hentaipages** pic(s)"
-    message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
+    # message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid processin' started"
     if [ $hentaipages -eq 1 ]
     then # single-pic page cumfirmed
         hentai=`eval "curl 'https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid' $shitty_arse_pixiv_parameter" | sed 's/,/\n/g' | grep -Eo "original.*" | sed 's/\\\//g' | grep -Eo "https.*" | sed 's/"}//g'`
@@ -510,7 +518,7 @@ function pixiv_half_subprocess() {
             processhentai_pixiv
         done
     fi
-    message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
+    # message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
 }
 
 function pixiv_fast_subprocess() {
@@ -528,8 +536,11 @@ function pixiv_fast_subprocess() {
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
 }
 
+# https://www.pixiv.net/search.php?word=%E5%87%A6%E5%A5%B3%E5%96%AA%E5%A4%B1%20OR%20%E7%A0%B4%E7%93%9C&order=date_d&mode=r18&p=2
+
 function pixiv() {
-    url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword
+    cutie=${cutie// /%20}
+    url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=date_d&mode=r18" # it would be better if use japanese keyword ## some shitty arse hosts will not support you to input non-latin characters, you might need to have a way to deal with it like encodin' your url or just not use them to dump pixiv
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
     if [ ! $finalfish ] || [ $finalfish == "0" ]
     then
@@ -569,7 +580,7 @@ function pixiv() {
 }
 
 function pixiv_author() {
-    url="https://www.pixiv.net/member_illust.php?id=$cutie" # author id
+    url="https://www.pixiv.net/member_illust.php?id=$cutie" # author id ## theoretically you can still apply tags in this mode, just add "&tag=<your tags>" after the author id
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "[0-9]+件" | grep -Eo "[0-9]*"`
     if [ ! $finalfish ] || [ $finalfish == "0" ]
     then
@@ -624,11 +635,11 @@ function pixiv_favourite() {
 
     initmessage
 
-    totalfish=`expr $finalfish / 40 + 1`
+    totalfish=`expr $finalfish / 20 + 1`
     antics=0
     for fish in `seq 1 $totalfish`
     do
-        url="https://www.pixiv.net/bookmark.php?id=$cutie&order=date_d&mode=r18&p=$fish"
+        url="https://www.pixiv.net/bookmark.php?id=$cutie&rest=show&order=desc&p=$fish"
         for hentaiinfo in `eval "curl '$url' $shitty_arse_pixiv_parameter" | sed 's/ /|/g' | sed 's/<\/li>/\n/g' | grep "image-item"` # find id's and pagecounts
         do
             antics=`expr $antics + 1`
@@ -654,6 +665,14 @@ function pixiv_favourite() {
 ######################################################################################################################################################################
 # DO NOT CHANGE UNLESS NECESSARY
 
+original_parameters="$0"
+
+for parameter in "$@"
+do
+    original_parameters="$original_parameters '$parameter'"
+done
+
+starttime=`date +%s%N`
 currentdir=`pwd`
 parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-log,channel-id:,join-chatroom:,help -- "$@"`
 
