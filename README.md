@@ -25,6 +25,8 @@ UPDATE: and one more thing, you can still use tagged search in pixiv_author and 
 
 UPDATE: pls make sure your shitty arse pixiv parameter has a header called `Referer: `, otherwise you can't download any pixiv pic; if you get your curl command from a post visitin' from search results page (instead of just visit its link directly), it will usually have this header
 
+UPDATE: found a url decode function here: https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell, now you don't need to convert pixiv dumplog's filename back yourself if you used url encoded tags in pixiv dumpin'
+
 Usage: 
 
 `./futaba.sh [options] cutie cutie_name`
