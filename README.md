@@ -19,7 +19,7 @@ UPDATE: now added pixiv author and user's favourite dump support, actually there
 
 UPDATE: idk that sometimes resolvin' `i.pximg.net`, `www.pixiv.net`, `ptb.discordapp.com` and `discordapp.com` would slow the script down by 2x, and even make some of the results NOT posted on discord. if that thing happened, pls consider to `ping` them and add the ip address to `/etc/hosts` manually. i thought dns problems would never be a problem in the developed world, but i'm arsefockin' wrong
 
-UPDATE: i finally fixed pixiv's bug on url, it seems that you'll have to at least convert space into `%20` before usin' union tags (like `AA AND BB`) on curl; and if you can't paste japanese characters into console or php shell, you can try to visit the original pixiv link in firefox, and copy the link to somewhere else, and get the entirely url-encoded tags, then you're good to go! 
+UPDATE: i finally fixed pixiv's bug on url, it seems that you'll have to at least replace space with `%20` before usin' union tags (like `AA AND BB`) on curl; and if you can't paste japanese characters into console or php shell, you can try to visit the original pixiv link in firefox, and copy the link to somewhere else, and get the entirely url-encoded tags, then you're good to go! 
 
 UPDATE: and one more thing, you can still use tagged search in pixiv_author and pixiv_favourite mode, but you'll need to add `&tag=<your tags>` after the author id， and you can use union tags as well
 
