@@ -5,7 +5,7 @@ You'll need a computer / server / VPS / anythin' that can run **bash** to run th
 
 > Free: 
 
-> * IMB Blurmix: https://console.bluemix.net/catalog/starters/php (it can run on 64 MB instance, that means you can run four `futaba.sh` per account)
+> * IBM Bluemix: https://console.bluemix.net/catalog/starters/php (it can run on 64 MB instance, that means you can run four `futaba.sh` per account)
 
 > Paid: 
 
@@ -38,6 +38,8 @@ UPDATE: and one more thing, you can still use tagged search in pixiv_author and 
 UPDATE: pls make sure your shitty arse pixiv parameter has a header called `Referer: `, otherwise you can't download any pixiv pic; if you get your curl command from a post visitin' from search results page (instead of just visit its link directly), it will usually have this header
 
 UPDATE: found a url decode function here: https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell, now you don't need to convert pixiv dumplog's filename back yourself if you used url encoded tags in pixiv dumpin'
+
+UPDATE: now with run time display and most importantly, progress control (pixiv only), you can set which pic to start and which pic to end, or both
 
 Usage: 
 
