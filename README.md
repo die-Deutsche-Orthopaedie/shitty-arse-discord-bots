@@ -7,6 +7,10 @@ You'll need a computer / server / VPS / anythin' that can run **bash** to run th
 
 > * IBM Bluemix: https://console.bluemix.net/catalog/starters/php (it can run on 64 MB instance, that means you can run four `futaba.sh` per account)
 
+> * * if you don't wanna use its web console you can install this into its `/app/htdocs`: https://github.com/Arrexel/phpbash
+
+> * * same with any free php host that supports `shell_exec` function
+
 > Paid: 
 
 > * Cloudcone: https://app.cloudcone.com/compute/283/create ($1.75/mo)
