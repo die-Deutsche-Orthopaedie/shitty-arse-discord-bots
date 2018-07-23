@@ -5,7 +5,7 @@ You'll need a computer / server / VPS / anythin' that can run **bash** to run th
 
 > Free: 
 
-> * IMB Blurmix: https://console.bluemix.net/catalog/starters/php (it can run on 64 MB instance, that means you can run run four `futaba.sh` per account)
+> * IMB Blurmix: https://console.bluemix.net/catalog/starters/php (it can run on 64 MB instance, that means you can run four `futaba.sh` per account)
 
 > Paid: 
 
