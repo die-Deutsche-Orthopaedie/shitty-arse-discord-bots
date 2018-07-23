@@ -23,6 +23,9 @@ then
     if [ $? = 0 ]
     then
         parameters="$parameters -A '$avatarurl'"
+    else
+        whiptail --title "Houston" --msgbox "Houston, we have an arsefockin' problem: WE NEED AN AVATAR URL" 10 60
+        exit
     fi
     avatarname=$(whiptail --title "Question 0.2" --inputbox "(Optional) provide your webhook's avatar nickname: " 10 60 3>&1 1>&2 2>&3)
     if [ $? != 0 ]
@@ -38,9 +41,57 @@ then
     fi
 fi
 
+# antics
+if (whiptail --title "Question 1" --yes-button "FEGELEIN! FEGELEIN!! FEGELEIN!!! " --no-button "NEIN"  --yesno "Do you wanna perform some antics? " 10 60) then
+    antics=$(whiptail --title "Question 1.1" --radiolist \
+    "Which antics do you wanna perform? " 15 60 4 \
+    "channel id" "send message in any channel that you have access to" ON \
+    "join chatroom" "join any chatroom you want" OFF \
+    "troll" "custom copyrekt message" OFF 3>&1 1>&2 2>&3)
+    if [ $? != 0 ]; then
+        whiptail --title "Houston" --msgbox "Houston, we have an arsefockin' problem: WE NEED AN ANTIC" 10 60
+        exit
+    fi
+    if [ "$antics" = "channel id" ]
+    then
+        channelid=$(whiptail --title "Question 1.2" --inputbox "Input channel id, need to provide both chatroom id and channel id: " 10 60 3>&1 1>&2 2>&3)
+        if [ $? = 0 ]
+        then
+            parameters="$parameters --channel-id '$channelid'"
+        else
+            whiptail --title "Houston" --msgbox "Houston, we have an arsefockin' problem: WE NEED A CHANNEL ID" 10 60
+            exit
+        fi
+    fi
+    if [ "$antics" = "join chatroom" ]
+    then
+        chatroom=$(whiptail --title "Question 1.2" --inputbox "Input the last few letters of the invite link: " 10 60 3>&1 1>&2 2>&3)
+        if [ $? = 0 ]
+        then
+            parameters="$parameters --join-chatroom '$chatroom'"
+            echo "$parameters"
+            exit
+        else
+            whiptail --title "Houston" --msgbox "Houston, we have an arsefockin' problem: WE NEED AN INVITE LINK" 10 60
+            exit
+        fi
+    fi
+    if [ "$antics" = "troll" ]
+    then
+        copyrekt=$(whiptail --title "Question 1.2" --inputbox "Input copyrekt name: " 10 60 3>&1 1>&2 2>&3)
+        if [ $? = 0 ]
+        then
+            parameters="$parameters --troll '$copyrekt'"
+        else
+            whiptail --title "Houston" --msgbox "Houston, we have an arsefockin' problem: WE NEED AN COPYREKT NAME" 10 60
+            exit
+        fi
+    fi
+fi
+
 # special modes (message, upload)
-if (whiptail --title "Question 1" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna use some special modes? " 10 60) then
-    specialmode=$(whiptail --title "Question 1.1" --radiolist \
+if (whiptail --title "Question 2" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna use some special modes? " 10 60) then
+    specialmode=$(whiptail --title "Question 2.1" --radiolist \
     "Which special mode do you wanna use? " 15 60 4 \
     "message" "message mode" ON \
     "upload" "upload mode" OFF \
@@ -52,7 +103,7 @@ if (whiptail --title "Question 1" --yes-button "JAJAJAJAJA" --no-button "nein"  
     fi
     if [ "$specialmode" = "message" ]
     then
-        message=$(whiptail --title "Question 1.2" --inputbox "Input message: " 10 60 3>&1 1>&2 2>&3)
+        message=$(whiptail --title "Question 2.2" --inputbox "Input message: " 10 60 3>&1 1>&2 2>&3)
         if [ $? = 0 ]
         then
             parameters="$parameters -m '$message'"
@@ -63,7 +114,7 @@ if (whiptail --title "Question 1" --yes-button "JAJAJAJAJA" --no-button "nein"  
     fi
     if [ "$specialmode" = "upload" ]
     then
-        message=$(whiptail --title "Question 1.2" --inputbox "Input message: " 10 60 3>&1 1>&2 2>&3)
+        message=$(whiptail --title "Question 2.2" --inputbox "Input message: " 10 60 3>&1 1>&2 2>&3)
         if [ $? = 0 ]
         then
             parameters="$parameters -u '$message'"
@@ -71,7 +122,7 @@ if (whiptail --title "Question 1" --yes-button "JAJAJAJAJA" --no-button "nein"  
             whiptail --title "Houston" --msgbox "Houston, we have an arsefockin' problem: WE NEED A MESSAGE" 10 60
             exit
         fi
-        filename=$(whiptail --title "Question 1.3" --inputbox "Input file name: " 10 60 3>&1 1>&2 2>&3)
+        filename=$(whiptail --title "Question 2.3" --inputbox "Input file name: " 10 60 3>&1 1>&2 2>&3)
         if [ $? = 0 ]
         then
             parameters="$parameters '$filename'"
@@ -93,17 +144,34 @@ if (whiptail --title "Question 1" --yes-button "JAJAJAJAJA" --no-button "nein"  
     exit
 fi
 
-# download? 
-if (whiptail --title "Question 2" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna download and reupload other than just post links? " 10 60) then
-    downloadmode=1
-    parameters="$parameters -D"
-    if (whiptail --title "Question 2.1" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna keep your downloaded pics other than just delete them? " 10 60) then
-        parameters="$parameters --preserve-pics"
+# download and link only mode
+mode2=$(whiptail --title "Question 3" --radiolist \
+"Select alternative modes, cancel to select none: " 15 60 4 \
+"download" "download and reupload other than just post links" ON \
+"link only" "only export hentai pics links to file" OFF 3>&1 1>&2 2>&3)
+if [ $? = 0 ]; then
+    if [ "$mode2" = "download" ]
+    then
+        downloadmode=1
+        parameters="$parameters -D"
+        if (whiptail --title "Question 3.1" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna keep your downloaded pics other than just delete them? " 10 60) then
+            parameters="$parameters --preserve-pics"
+        fi
+    fi
+    if [ "$mode2" = "link only" ]
+    then
+        exportfilepath=$(whiptail --title "Question 3.1" --inputbox "You need to provide your exported hentai pics link file's location: " 10 60 3>&1 1>&2 2>&3)
+        if [ $? = 0 ]
+        then
+            parameters="$parameters -c '$configfile'"
+        else
+            whiptail --title "Houston" --msgbox "Houston, we have an arsefockin' problem: WE NEED A FILENAME" 10 60
+        fi
     fi
 fi
 
 # Site name
-site=$(whiptail --title "Question 3" --radiolist \
+site=$(whiptail --title "Question 4" --radiolist \
 "Select your desired hentai site: " 15 60 4 \
 "paheal" "rule34.paheal.net" ON \
 "gelbooru" "gelbooru.com" OFF \
@@ -122,8 +190,8 @@ else
 fi
 
 # Configuration file
-if (whiptail --title "Question 4" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna use your configuration file? " 10 60) then
-    configfile=$(whiptail --title "Question 4.1" --inputbox "You need to provide your configuration file's location: " 10 60 3>&1 1>&2 2>&3)
+if (whiptail --title "Question 5" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna use your configuration file? " 10 60) then
+    configfile=$(whiptail --title "Question 5.1" --inputbox "You need to provide your configuration file's location: " 10 60 3>&1 1>&2 2>&3)
     if [ $? = 0 ]
     then
         parameters="$parameters -c '$configfile'"
@@ -131,18 +199,18 @@ if (whiptail --title "Question 4" --yes-button "JAJAJAJAJA" --no-button "nein"  
 fi
 
 # silent option
-if (whiptail --title "Question 5" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna silent your arse? " 10 60) then
+if (whiptail --title "Question 6" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna silent your arse? " 10 60) then
     parameters="$parameters --silent"
 fi
 
 # new interval
-if (whiptail --title "Question 6" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna set new interval for each post? " 10 60) then
-    webhookinterval=$(whiptail --title "Question 6.1" --inputbox "(Optional) provide your webhook mode's new interval: " 10 60 3>&1 1>&2 2>&3)
+if (whiptail --title "Question 7" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna set new interval for each post? " 10 60) then
+    webhookinterval=$(whiptail --title "Question 7.1" --inputbox "(Optional) provide your webhook mode's new interval: " 10 60 3>&1 1>&2 2>&3)
     if [ $? = 0 ]
     then
         parameters="$parameters --webhookinterval $webhookinterval"
     fi
-    naturalinterval=$(whiptail --title "Question 6.2" --inputbox "(Optional) provide your natural mode's new interval: " 10 60 3>&1 1>&2 2>&3)
+    naturalinterval=$(whiptail --title "Question 7.2" --inputbox "(Optional) provide your natural mode's new interval: " 10 60 3>&1 1>&2 2>&3)
     if [ $? = 0 ]
     then
         parameters="$parameters --naturalinterval $naturalinterval"
@@ -157,7 +225,7 @@ then
         parameters="$parameters -D"
     fi
     # pixiv mode
-    pixivmode=$(whiptail --title "Question 7" --radiolist \
+    pixivmode=$(whiptail --title "Question 8" --radiolist \
     "Which pixiv mode are you gonna use? " 15 60 4 \
     "halfspeed mode" "(default)" ON \
     "fullscan mode" "gelbooru.com" OFF \
@@ -177,11 +245,11 @@ then
     fi
     
     # pixiv order
-    if (whiptail --title "Question 7.1" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna set your pixiv order? " 10 60) then
+    if (whiptail --title "Question 8.1" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna set your pixiv order? " 10 60) then
         if [ "$site" = "pixiv" ]
         then
-            if (whiptail --title "Question 7.11" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you have a pixiv premium account? " 10 60) then
-                pixivorder=$(whiptail --title "Question 7.2" --radiolist \
+            if (whiptail --title "Question 8.11" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you have a pixiv premium account? " 10 60) then
+                pixivorder=$(whiptail --title "Question 8.2" --radiolist \
                 "Which pixiv order are you gonna use? " 15 60 4 \
                 "date_d" "default, from latest to oldest" ON \
                 "date" "from oldest to latest" OFF \
@@ -195,7 +263,7 @@ then
                     exit
                 fi
             else
-                pixivorder=$(whiptail --title "Question 7.2" --radiolist \
+                pixivorder=$(whiptail --title "Question 8.2" --radiolist \
                 "Which pixiv order are you gonna use? " 15 60 4 \
                 "date_d" "default, from latest to oldest" ON \
                 "date" "from oldest to latest" OFF 3>&1 1>&2 2>&3)
@@ -209,7 +277,7 @@ then
         fi
         if [ "$site" = "pixiv_favourite" ]
         then
-            pixivorder=$(whiptail --title "Question 7.2" --radiolist \
+            pixivorder=$(whiptail --title "Question 8.2" --radiolist \
             "Which pixiv order are you gonna use? " 15 60 4 \
             "desc" "default, from latest added to favourite to oldest" ON \
             "asc" "from oldest added to favourite to latest" OFF \
@@ -225,13 +293,13 @@ then
     fi
     
     # pixiv progress control
-    if (whiptail --title "Question 7.3" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna set custom progress for pixiv dumpin'? " 10 60) then
-        startfrom=$(whiptail --title "Question 7.31" --inputbox "(Optional) provide which post you're gonna start from: " 10 60 3>&1 1>&2 2>&3)
+    if (whiptail --title "Question 8.3" --yes-button "JAJAJAJAJA" --no-button "nein"  --yesno "Do you wanna set custom progress for pixiv dumpin'? " 10 60) then
+        startfrom=$(whiptail --title "Question 8.31" --inputbox "(Optional) provide which post you're gonna start from: " 10 60 3>&1 1>&2 2>&3)
         if [ $? = 0 ]
         then
             parameters="$parameters --start-from $startfrom"
         fi
-        endwith=$(whiptail --title "Question 7.32" --inputbox "(Optional) provide which post you're gonna end with: " 10 60 3>&1 1>&2 2>&3)
+        endwith=$(whiptail --title "Question 8.32" --inputbox "(Optional) provide which post you're gonna end with: " 10 60 3>&1 1>&2 2>&3)
         if [ $? = 0 ]
         then
             parameters="$parameters --end-with $endwith"
