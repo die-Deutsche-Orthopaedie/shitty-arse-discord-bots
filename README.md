@@ -1,6 +1,18 @@
 # Shitty Arse Discord Bots
 Shitty Arse Discord Bots usin' bash, and yep, arsefockin' **B A S H**
 
+You'll need a computer / server / VPS / anythin' that can run **bash** to run this script, recommended services:
+
+> Free: 
+
+> * IMB Blurmix: https://console.bluemix.net/catalog/starters/php (it can run on 64 MB instance, that means you can run run four `futaba.sh` per account)
+
+> Paid: 
+
+> * Cloudcone: https://app.cloudcone.com/compute/283/create ($1.75/mo)
+
+> * Vultr: https://my.vultr.com/deploy/ ($5/mo, not worth it, unless you like tokyo's 30MB/s pixiv download speed, but no matter how fast you download pics on pixiv you're still ratelimited by discord, btw that shitty arse IPv6 only instance can't run `futaba.sh` since none of `*.discordapp.com`, `pixiv.net` or `i.pximg.net` has IPv6 address)
+
 Other bots will not be updated any fockin' way, all of them are in **futaba.sh**
 
 And one more thing, i've completed the **Holy Grail of Hentai**, **pixiv.net**, with arsefockin' **B A S H**! How the fock will i celebrate? 
