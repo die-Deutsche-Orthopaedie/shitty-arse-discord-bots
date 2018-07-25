@@ -103,6 +103,9 @@ function initmessage() {
         yandere)
             sitename="yande.re"
             ;;
+        shinobijp)
+            sitename="shinobi.jp"
+            ;;
         pixiv | pixiv_author | pixiv_favourite)
             sitename="pixiv.net"
             ;;
@@ -135,25 +138,28 @@ function initmessage() {
             ;;
         gelbooru)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;
+            ;;
         rule34xxx)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;
+            ;;
         yandere)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;
+            ;;
+        shinobijp)
+            message="FYI, the blogger's name is **$cutie**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            ;;
         pixiv)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;
+            ;;
         pixiv_author | pixiv_favourite)
             message="FYI, the author's id is **${cutie//&tag=/** and tag is **}**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;
+            ;;
         localmachine)
             message="FYI, the cutie's name is **$cutie_name**, and idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;
+            ;;
         localmachine_pixiv)
             message="FYI, the cutie's name is **$cutie_name**, but idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
-                ;;
+            ;;
         *)
             echo "fock it" >&2
             exit 6
@@ -435,7 +441,7 @@ function rule34xxx() {
 function yandere() {
     url="https://yande.re/post?tags=$cutie"
     totalfish=`curl "$url" | grep -Eo "[0-9]*</a> <a class=\"next_page" | grep -Eo "[0-9]*"`
-    if [ ! $finalfish ]
+    if [ ! $totalfish ]
     then
         totalfish=1
     fi
@@ -452,6 +458,34 @@ function yandere() {
         for hentailink in `curl "$url" | grep -Eo "a class=\"thumb\" href="\"/post/show/[0-9]*\" | grep -Eo "[0-9]*"` # find id's
         do
             hentai=`curl "https://yande.re/post/show/$hentailink" | grep "a class=\"highres-show\" href=\".*\">View" | sed 's/"/\n/g' | grep "http"`
+            processhentai
+        done
+    done
+
+    finalmessage
+}
+
+function shinobijp() {
+    url="http://$cutie.blog.shinobi.jp/Page/999999999999999999/"
+    totalfish=`curl "$url" | grep '<a href="/Page/[0-9]*/">前のページ</a>' | grep -Eo "[0-9]*"`
+    if [ ! $totalfish ]
+    then
+        totalfish=1
+    else
+        totalfish=`expr $totalfish + 1`
+    fi
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
+
+    initmessage
+
+    for fish in `seq 1 $totalfish`
+    do
+        url="http://$cutie.blog.shinobi.jp/Page/$fish/"
+        for hentai in `curl "$url" | sed 's/<br/\n/g' | grep "http://file.$cutie.blog.shinobi.jp/.*\" target=\"_blank\"" | sed 's/"/\n/g' | grep "http" | grep ".jp[e]*g"`
+        do
             processhentai
         done
     done
@@ -862,7 +896,7 @@ do
             echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
             echo
             echo "    Configurations: "
-            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, rule34xxx, yandere, pixiv, pixiv_author, pixiv_favourite"
+            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, rule34xxx, yandere, shinobijp, pixiv, pixiv_author, pixiv_favourite"
             echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
             echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
@@ -1264,6 +1298,9 @@ case "$site" in
         ;;
     yandere)
         yandere
+        ;;
+    shinobijp)
+        shinobijp
         ;;
     pixiv)
         if [ ! $downloadmode ]
