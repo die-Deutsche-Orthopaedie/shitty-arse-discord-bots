@@ -37,13 +37,15 @@ UPDATE: idk that sometimes resolvin' `i.pximg.net`, `www.pixiv.net`, `ptb.discor
 
 UPDATE: i finally fixed pixiv's bug on url, it seems that you'll have to at least replace space with `%20` before usin' union tags (like `AA AND BB`) on curl; and if you can't paste japanese characters into console or php shell, you can try to visit the original pixiv link in firefox, and copy the link to somewhere else, and get the entirely url-encoded tags, then you're good to go! 
 
-UPDATE: and one more thing, you can still use tagged search in pixiv_author and pixiv_favourite mode, but you'll need to add `&tag=<your tags>` after the author id， and you can use union tags as well
+UPDATE: and one more thing, you can still use tagged search in pixiv_author and pixiv_favourite mode, but you'll need to add `&tag=<your tags>` after the author id, and you can use union tags as well
 
 UPDATE: pls make sure your shitty arse pixiv parameter has a header called `Referer: `, otherwise you can't download any pixiv pic; if you get your curl command from a post visitin' from search results page (instead of just visit its link directly), it will usually have this header
 
 UPDATE: found a url decode function here: https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell, now you don't need to convert pixiv dumplog's filename back yourself if you used url encoded tags in pixiv dumpin'
 
 UPDATE: now with run time display and most importantly, progress control (pixiv only), you can set which pic to start and which pic to end, or both
+
+UPDATE: there would be new hentai in pixiv everyday, and due to discord's arsefockin' ratelimit you'll need days to process pixiv pics if you have 1000+ posts in your tag; so pls use `date` order to post oldest pics first so newly uploaded hentai will be properly processed; otherwise it might be missin' or make other posts missin'
 
 Usage: 
 
