@@ -47,6 +47,8 @@ UPDATE: now with run time display and most importantly, progress control (pixiv 
 
 UPDATE: there would be new hentai in pixiv everyday, and due to discord's arsefockin' ratelimit you'll need days to process pixiv pics if you have 1000+ posts in your tag; so pls use `date` order to post oldest pics first so newly uploaded hentai will be properly processed; otherwise it might be missin' or make other posts missin'
 
+UPDATE: added another site, but it just worths not mentionin'
+
 Usage: 
 
 `./futaba.sh [options] cutie cutie_name`
@@ -66,7 +68,7 @@ Options:
 > * * `-l or -L or --link-only <exportfilepath>`: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later
 >
 > * Configurations: 
-> * * `-s or -S or --site <sitename>`: input site name, currently supported: **paheal**, **gelbooru**, **rule34xxx**, **yandere**, **pixiv**, **pixiv_author**, **pixiv_favourite**
+> * * `-s or -S or --site <sitename>`: input site name, currently supported: **paheal**, **gelbooru**, **rule34xxx**, **yandere**, **shinobijp**, **pixiv**, **pixiv_author**, **pixiv_favourite**
 > * * * use **localmachine** to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case `$cutie` will be your filename
 > * * * and **localmachine_pixiv** to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case `$cutie` will be your filename
 > * * `-c or -C or --config-file <configfilepath>`: load a configuration file which contains **three** lines of **webhook url**, **account curl command** and **account curl command (used to upload)**; if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means
