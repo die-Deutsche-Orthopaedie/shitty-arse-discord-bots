@@ -268,6 +268,7 @@ function processhentai_pixiv() {
                 ext=".favourite"
                 ;;
         esac
+        ext3=`date +%y.%m.%d`
 
         for file in `ls | sed 's/ /|/g'`
         do
@@ -281,7 +282,7 @@ function processhentai_pixiv() {
                     makoto "$hentai" "$file"
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/`urldecode ${cutie//&tag=/.}`.pixivlog$ext$ext2.txt"
+            esac >> "$currentdir/`urldecode ${cutie//&tag=/.}`.pixivlog$ext$ext2.$ext3.txt"
         done
         if [ $preserve_pics ]
         then
@@ -375,7 +376,7 @@ function paheal() {
 
     for fish in `seq 1 $totalfish`
     do 
-        for hentai in `curl "$url/$fish" | sed 's/<br/\n/g' | grep "Image Only" | grep -Eo "http://.*>Image" | sed 's/">Image//g'`
+        for hentai in `curl "$url/$fish" | sed 's/<br/\n/g' | grep "Image Only" | grep -Eo "https://.*>Image" | sed 's/">Image//g'`
         do
             processhentai
         done
@@ -606,7 +607,13 @@ function pixiv() {
     then
         pixivorder="date_d" # default order: newest to oldest
     fi
-    url="https://www.pixiv.net/search.php?s_mode=s_tag&word=$cutie&order=$pixivorder&mode=r18" # it would be better if use japanese keyword ## some shitty arse hosts will not support you to input non-latin characters, you might need to have a way to deal with it like encodin' your url or just not use them to dump pixiv
+    if [ ! $fulltag ]
+    then
+        tag="s_tag"
+    else
+        tag="s_tag_full"
+    fi
+    url="https://www.pixiv.net/search.php?s_mode=$tag&word=$cutie&order=$pixivorder&mode=r18" # it would be better if use japanese keyword ## some shitty arse hosts will not support you to input non-latin characters, you might need to have a way to deal with it like encodin' your url or just not use them to dump pixiv
     finalfish=`eval "curl '$url' $shitty_arse_pixiv_parameter" | grep -Eo "og.*に関する作品は[0-9]*件" | grep -Eo "に関する作品は[0-9]*件" | grep -Eo "[0-9]*"`
 
     pixiv_det
@@ -747,7 +754,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -865,6 +872,10 @@ do
             end_with=$2
             shift 2
             ;;
+        --full-tag)
+            fulltag="JAJAJAJAJA"
+            shift
+            ;;
         --channel-id)
             channelid=$2
             shift 2
@@ -918,6 +929,7 @@ do
             echo "            and currently this thing will either kill the script or make it stop, just forget about it"
             echo "        --start-from <postnumber>: start from certain number of post, and skip all posts before it"
             echo "        --end-with <postnumber>: end with certain number of post, and skip all posts after it"
+            echo "        --full-tag: use \"s_tag_full\" instead of \"s_tag\""
             echo
             echo "    Antics: "
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
