@@ -106,6 +106,9 @@ function initmessage() {
         shinobijp)
             sitename="shinobi.jp"
             ;;
+        sankaku)
+            sitename="sankakucomplex.com"
+            ;;
         pixiv | pixiv_author | pixiv_favourite)
             sitename="pixiv.net"
             ;;
@@ -147,6 +150,9 @@ function initmessage() {
             ;;
         shinobijp)
             message="FYI, the blogger's name is **$cutie**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            ;;
+        sankaku)
+            message="FYI, the cutie's name is **$cutie_name**, idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
             ;;
         pixiv)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
@@ -193,7 +199,9 @@ function download() {
     fi
     cd temp
     rm *.* -f
-    wget "$hentai"
+    hentaifilename=${hentai##*/}
+    hentaifilename=${hentaifilename%\?*}
+    [ $aria2 ] && wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -O "$hentaifilename" || aria2c -R -s 128 -x 128 --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -o "$hentaifilename"
     for file in `ls | sed 's/ /|/g'`
     do
         file=`echo $file | sed 's/|/ /g'`
@@ -255,7 +263,8 @@ function processhentai_pixiv() {
         cd temp
         rm *.* -f
         # message_general "uploadin' $hentai"
-        eval "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'"
+        # eval "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'"
+        [ $aria2 ] && wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -O "$hentaifilename" || aria2c -R -s $aria2threads -x $aria2threads --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -o "$hentaifilename"
 
         case "$site" in
             pixiv)
@@ -494,6 +503,36 @@ function shinobijp() {
     finalmessage
 }
 
+function sankakucomplex() {
+    url="https://chan.sankakucomplex.com/post/index.content?tags=$cutie%20order:popular" 
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
+
+    initmessage
+    
+    num=1
+    while
+        nein=`curl "$url&page=$num" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" | sed 's/ /|/g'`
+        det=`echo $nein | grep -Eo "No\|matching\|posts"`
+        [ "$det" != "No|matching|posts" ]
+    do
+        for fish in `echo "$nein"`
+        do
+            link=`echo $fish | sed 's/|/ /g' | grep -Eo "post/show/[0-9]*"`
+            [ $link ] && for hentai in `curl "https://chan.sankakucomplex.com/$link" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" | grep "Original:" | sed 's/amp;//g' | sed 's/"/\n/g' | grep "//"`
+            do
+                hentai="https:$hentai"
+                processhentai
+            done
+        done
+        let num++
+    done
+    
+    finalmessage
+}
+
 function pixiv_hentai() {
     case "$site" in
         pixiv)
@@ -542,7 +581,6 @@ function pixiv_det() {
         cutie_name=`echo $cutie | sed 's/_/ /g'`
     fi
 }
-
 
 function pixiv_subprocess() {
     pixiv_hentai
@@ -754,7 +792,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,channel-id:,join-chatroom:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -822,6 +860,12 @@ do
         -d | -D | --download)
             downloadmode=1
             shift
+            ;;
+        --aria2)
+            aria2=1
+            aria2threads=$2
+            [ $aria2threads ] || aria2threads=16 # idk if it will be used
+            shift 2
             ;;
         --preserve-pics)
             preserve_pics=1
@@ -903,11 +947,12 @@ do
             echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
             echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
+            echo "            --aria2 <threads>: use aria2 instead of wget to download pics, if you need more than 16 threads you'll need a hacked aria2"
             echo "            --preserve-pics: move downloaded pics in pics folder other than removin' them"
             echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
             echo
             echo "    Configurations: "
-            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, rule34xxx, yandere, shinobijp, pixiv, pixiv_author, pixiv_favourite"
+            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, rule34xxx, yandere, shinobijp, sankaku, pixiv, pixiv_author, pixiv_favourite"
             echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
             echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
@@ -1313,6 +1358,9 @@ case "$site" in
         ;;
     shinobijp)
         shinobijp
+        ;;
+    sankaku)
+        sankakucomplex
         ;;
     pixiv)
         if [ ! $downloadmode ]
