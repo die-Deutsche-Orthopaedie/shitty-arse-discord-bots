@@ -124,7 +124,7 @@ function initmessage() {
     esac
     message="$sitename rule34 fully automatic masspostin' bot developed by **$author**"
     message_general "$message"
-    message="**Legal Disclaimer**: this bot's result is completely generated from the target site, so either the author or users of this bot has **ABSOLUTELY NO LIABILITY** for its behaviors, or **WOULD YOU JUST KINDLY GO DIDDLE YOURSELF YOU SOCIAL JUSTICE ARSEFOCKIN' WORRIORS**? <:funny_v1:449451139063218177>"
+    message="**Legal Disclaimer**: this bot's result is completely generated from the target site, so either the author or users of this bot has **ABSOLUTELY NO LIABILITY** for its behaviors, or **WOULD YOU JUST KINDLY GO DIDDLE YOURSELF YOU SOCIAL JUSTICE ARSEFOCKIN' WORRIORS**? $funnyemote"
     message_general "$message"
 
     case "$mode" in
@@ -137,34 +137,34 @@ function initmessage() {
     esac
     case "$site" in
         paheal)
-            message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         gelbooru)
-            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         rule34xxx)
-            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         yandere)
-            message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         shinobijp)
-            message="FYI, the blogger's name is **$cutie**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the blogger's name is **$cutie**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         sankaku)
-            message="FYI, the cutie's name is **$cutie_name**, idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, idk how many pics does this hentai have (and idc either$funnyemote), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         pixiv)
-            message="FYI, the cutie's name is **$cutie_name**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         pixiv_author | pixiv_favourite)
-            message="FYI, the author's id is **${cutie//&tag=/** and tag is **}**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the author's id is **${cutie//&tag=/** and tag is **}**, and this hentai has exactly **$finalfish** post(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         localmachine)
-            message="FYI, the cutie's name is **$cutie_name**, and idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, and idk how many pics does this hentai have (and idc either$funnyemote), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         localmachine_pixiv)
-            message="FYI, the cutie's name is **$cutie_name**, but idk how many pics does this hentai have (and idc either<:funny_v1:449451139063218177>), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai <:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+            message="FYI, the cutie's name is **$cutie_name**, but idk how many pics does this hentai have (and idc either$funnyemote), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         *)
             echo "fock it" >&2
@@ -180,7 +180,7 @@ function finalmessage() {
     finaltime=`date +%s%N`
     # usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
     usedtime=`awk -v x=$finaltime -v y=$starttime 'BEGIN{printf "%.3f",(x-y)/1000000000}'`
-    message="Thanks for usin' this shitty arse bot, this bot has finished dumpin' hentais in **$usedtime** second(s), see u next time<:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177><:funny_v1:449451139063218177>"
+    message="Thanks for usin' this shitty arse bot, this bot has finished dumpin' hentais in **$usedtime** second(s), see u next time$funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
     message_general "$message"
     exit
 }
@@ -264,8 +264,9 @@ function processhentai_pixiv() {
         rm *.* -f
         # message_general "uploadin' $hentai"
         # eval "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'"
+        hentaifilename=${hentai##*/}
+        hentaifilename=${hentaifilename%\?*}
         [ $aria2 ] && wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -O "$hentaifilename" || aria2c -R -s $aria2threads -x $aria2threads --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -o "$hentaifilename"
-
         case "$site" in
             pixiv)
                 ext=""
@@ -301,7 +302,81 @@ function processhentai_pixiv() {
         fi
         cd ..
     else
-        echo "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'" >> "$exportfilepath" # just an example, idk if it's useful any fockin' way
+        [ $aria2 ] && echo "wget --user-agent=\"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0\" --header=\"Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333\" \"$hentai\" -O \"$hentaifilename\"" >> "$exportfilepath" || echo "aria2c -R -s $aria2threads -x $aria2threads --header=\"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0\" --header=\"Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333\" \"$hentai\" -o \"$hentaifilename\"" >> "$exportfilepath" # just an example, idk if it's useful any fockin' way
+    fi
+}
+
+function processhentai_pixiv_ugoira() {
+    if [ ! $linkonlymode ]
+    then
+        mkdir temp
+        if [ $preserve_pics ]
+        then
+            mkdir pics
+        fi
+        cd temp
+        rm *.* -f
+        # message_general "uploadin' $hentai"
+        # eval "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'"
+        
+        f=`curl "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid" | sed 's/;/\n;/g' | grep ";pixiv.context.ugokuIllustData"`
+        lastframe=`echo $f | sed 's/,{/\n/g' | grep "}]}" | grep -Eo "[0-9]*.jpg" | grep -Eo "[0-9]*"`
+        imglink=`echo $f | sed 's/,/\n/g' | sed 's/\\\//g'  | grep "src" | sed  's/"/\n/g' | grep "https" | sed 's/img-zip-ugoira/img-original/g' | sed 's/_ugoira.*.zip/_ugoira/g'`
+        ext=${hentai##*.}
+        if [ $aria2 ]
+        then
+            for nein in `seq 0 $lastframe`
+            do
+                echo "$imglink$nein.$ext" >> neinfish.txt
+            done
+            aria2c -R -s $aria2threads -x $aria2threads -j $aria2threads --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" -i neinfish.txt
+            rm neinfish.txt
+        else
+            for nein in `seq 0 $lastframe`
+            do
+                echo -e "downloadin' \e[36m$imglink$nein$ext\e[0m"
+                wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$imglink$nein.$ext"
+            done
+        fi
+        
+        # ffmpeg -r 10 -i "$hentaiid""_ugoira%d.$ext" -vcodec libx264 -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" "$hentaiid.mp4"
+        ffmpeg -r 10 -i "$hentaiid""_ugoira%d.$ext" -vcodec libx264 -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" "$hentaiid.mp4" # for outdated media players
+        rm *."$ext" -f
+
+        case "$site" in
+            pixiv)
+                ext=""
+                ;;
+            pixiv_author)
+                ext=".author"
+                ;;
+            pixiv_favourite)
+                ext=".favourite"
+                ;;
+        esac
+        ext3=`date +%y.%m.%d`
+
+        for file in `ls | sed 's/ /|/g'`
+        do
+            file=`echo $file | sed 's/|/ /g'`
+            case "$mode" in
+                0)
+                    hifumi "" "$file"
+                    sleep "$webhookinterval"
+                    ;;
+                1)
+                    makoto "" "$file"
+                    sleep "$naturalinterval"
+                    ;;
+            esac >> "$currentdir/`urldecode ${cutie//&tag=/.}`.pixivlog$ext$ext2.$ext3.txt"
+        done
+        if [ $preserve_pics ]
+        then
+            mv *.* ../pics -f
+        else
+            rm *.* -f
+        fi
+        cd ..
     fi
 }
 
@@ -314,12 +389,10 @@ function localmachine() {
 
     if [ $pixivlogmode ]
     then
-        cat "$cutie" | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g' > /dev/shm
-        cutie="/dev/shm"
+        cutie=`cat "$cutie" | sed 's/,/\n/g' | grep -Eo '"url": "https://cdn.discordapp.com/.*"' | sed 's/"//g' | sed 's/url: //g'`
     fi
     
-    
-    for file in `cat "$cutie" | sed 's/ /|/g'`
+    for file in `echo "$cutie" | sed 's/ /|/g'`
     do
         hentai=`echo $file | sed 's/|/_/g'`
         if [ $downloadmode ]
@@ -589,12 +662,24 @@ function pixiv_subprocess() {
     if [ $hentaipages -eq 1 ]
     then # single-pic page cumfirmed
         hentai=`eval "curl 'https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid' $shitty_arse_pixiv_parameter" | sed 's/,/\n/g' | grep -Eo "original.*" | sed 's/\\\//g' | grep -Eo "https.*" | sed 's/"}//g'`
-        processhentai_pixiv # needs $hentai AND $hentaiid to work
+        if [ `echo $hentai | grep -c "ugoira"` -eq 1 ] && [ $ugoiramode ]
+        then
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+            processhentai_pixiv_ugoira # needs $hentai AND $hentaiid to work
+        else
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+        fi
     else # multi-pic page cumfirmed
         for bighentai in `eval "curl 'https://www.pixiv.net/member_illust.php?mode=manga&illust_id=$hentaiid' $shitty_arse_pixiv_parameter" | sed 's/\&amp;/\&/g' | sed 's/"/\n/g' | grep "page=[0-9]*"`
         do
             hentai=`eval "curl 'https://www.pixiv.net$bighentai' $shitty_arse_pixiv_parameter" | grep -Eo "img src.*\" " | sed 's/img src="//g' | sed 's/" //g'`
-            processhentai_pixiv
+            if [ `echo $hentai | grep -c "ugoira"` -eq 1 ] && [ $ugoiramode ]
+            then
+                processhentai_pixiv # needs $hentai AND $hentaiid to work
+                processhentai_pixiv_ugoira # needs $hentai AND $hentaiid to work
+            else
+                processhentai_pixiv # needs $hentai AND $hentaiid to work
+            fi
         done
     fi
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
@@ -607,7 +692,13 @@ function pixiv_half_subprocess() {
     if [ $hentaipages -eq 1 ]
     then # single-pic page cumfirmed
         hentai=`eval "curl 'https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid' $shitty_arse_pixiv_parameter" | sed 's/,/\n/g' | grep -Eo "original.*" | sed 's/\\\//g' | grep -Eo "https.*" | sed 's/"}//g'`
-        processhentai_pixiv # needs $hentai AND $hentaiid to work
+        if [ `echo $hentai | grep -c "ugoira"` -eq 1 ] && [ $ugoiramode ]
+        then
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+            processhentai_pixiv_ugoira # needs $hentai AND $hentaiid to work
+        else
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+        fi
     else # multi-pic page cumfirmed
         hentaitemp=`eval "curl 'https://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=$hentaiid&page=0' $shitty_arse_pixiv_parameter" | grep -Eo "img src.*\" " | sed 's/img src="//g' | sed 's/" //g'`
         extension=${hentaitemp##*.}
@@ -616,7 +707,13 @@ function pixiv_half_subprocess() {
         for fegelein in `seq 0 $hentaipages`
         do
             hentai="$hentaitemp$fegelein.$extension"
-            processhentai_pixiv
+            if [ `echo $hentai | grep -c "ugoira"` -eq 1 ] && [ $ugoiramode ]
+            then
+                processhentai_pixiv # needs $hentai AND $hentaiid to work
+                processhentai_pixiv_ugoira # needs $hentai AND $hentaiid to work
+            else
+                processhentai_pixiv # needs $hentai AND $hentaiid to work
+            fi
         done
     fi
     # message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
@@ -630,9 +727,21 @@ function pixiv_fast_subprocess() {
     for fegelein in `seq 0 $hentaipages`
     do
         hentai="$hentaitemp$fegelein.jpg"
-        processhentai_pixiv
+        if [ `echo $hentai | grep -c "ugoira"` -eq 1 ] && [ $ugoiramode ]
+        then
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+            processhentai_pixiv_ugoira # needs $hentai AND $hentaiid to work
+        else
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+        fi
         hentai="$hentaitemp$fegelein.png"
-        processhentai_pixiv
+        if [ `echo $hentai | grep -c "ugoira"` -eq 1 ] && [ $ugoiramode ]
+        then
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+            processhentai_pixiv_ugoira # needs $hentai AND $hentaiid to work
+        else
+            processhentai_pixiv # needs $hentai AND $hentaiid to work
+        fi
     done
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
 }
@@ -792,7 +901,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,channel-id:,join-chatroom:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -920,12 +1029,20 @@ do
             fulltag="JAJAJAJAJA"
             shift
             ;;
+        --ugoira-mode)
+            ugoiramode="JAJAJAJAJA"
+            shift
+            ;;
         --channel-id)
             channelid=$2
             shift 2
             ;;
         --join-chatroom)
             chatroom=$2
+            shift 2
+            ;;
+        --customfunny)
+            funnyemote=$2
             shift 2
             ;;
         -h | -H | --help)
@@ -975,11 +1092,13 @@ do
             echo "        --start-from <postnumber>: start from certain number of post, and skip all posts before it"
             echo "        --end-with <postnumber>: end with certain number of post, and skip all posts after it"
             echo "        --full-tag: use \"s_tag_full\" instead of \"s_tag\""
+            echo "        --ugoira-mode: process ugoira, download every last pic of them, and use ffmpeg to make them .mp4"
             echo
             echo "    Antics: "
             echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
             echo "            and i'm still not used to called discord chatroom \"server\", because what runs this script is the real server for me"
             echo "        --join-chatroom <chatroom-invite-link>: the ability to join chatroom via ARSEFOCKIN' B A S H, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGEL you only need \"FEGEL\""
+            echo "        --customfunny <funnyemote>: custom emote to express sarcasm"
             echo
             echo "    Help: "
             echo "        -h or -H or --help: this shit"
@@ -1034,7 +1153,6 @@ then
     webhook_url="$fast_webhook"
 fi
 
-
 if [ $channelid ] # it looks like shit but it works
 then
     echo $curl_command
@@ -1071,6 +1189,14 @@ if [ $englandmode ] # ENGLAND IS MY CITY
 then
     webhookinterval=`expr $webhookinterval - 1`
 fi
+
+if [ $ugoiramode ] && [ $linkonlymode ]
+then
+    echo "Houston, we have an arsefockin' problem: You can't process ugoira while usin' link only mode, at least for now" >&2
+    exit 9
+fi
+
+[ $funnyemote ] || funnyemote="<:funny_v1:449451139063218177>"
 
 if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
 then
