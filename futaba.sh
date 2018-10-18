@@ -201,7 +201,7 @@ function download() {
     rm *.* -f
     hentaifilename=${hentai##*/}
     hentaifilename=${hentaifilename%\?*}
-    [ $aria2 ] && wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -O "$hentaifilename" || aria2c -R -s 128 -x 128 --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -o "$hentaifilename"
+    [ $aria2 ] && aria2c -R -s 128 -x 128 --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -o "$hentaifilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -O "$hentaifilename"
     for file in `ls | sed 's/ /|/g'`
     do
         file=`echo $file | sed 's/|/ /g'`
@@ -266,7 +266,7 @@ function processhentai_pixiv() {
         # eval "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'"
         hentaifilename=${hentai##*/}
         hentaifilename=${hentaifilename%\?*}
-        [ $aria2 ] && wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -O "$hentaifilename" || aria2c -R -s $aria2threads -x $aria2threads --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -o "$hentaifilename"
+        [ $aria2 ] && aria2c -R -s $aria2threads -x $aria2threads --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -o "$hentaifilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -O "$hentaifilename"
         case "$site" in
             pixiv)
                 ext=""
