@@ -1,29 +1,35 @@
 #!/bin/bash
-# copyrekt die deutsche Orthopädiespezialist 2018
+# copyrekt die deutsche Orthopädiespezialist 201⑨
 # multi-site rule34 fully automatic masspostin' bot for discord
 # you can either use a webhook or your own account or alt account if you don't have permissions to create webhooks
 # here we fockin' go
 
 ######################################################################################################################################################################
-# need to be changed
+# default values, need to be changed
+
+# hentai update interval
 webhookinterval=3
 naturalinterval=2
-# hentai update interval
 
-shitty_arse_pixiv_parameter='-H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" -H "Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" --compressed -H "Referer: https://www.pixiv.net/search.php?s_mode=s_tag&order=popular_d&mode=r18&word="%"E4"%"BD"%"90"%"E5"%"80"%"89"%"E5"%"8F"%"8C"%"E8"%"91"%"89" -H "Cookie: first_visit_datetime_pc=2018-07-20+13"%"3A08"%"3A30; p_ab_id=7; p_ab_id_2=6; yuid=VISYRoA34; PHPSESSID=33032341_377c91c166788468902352ad9a12a03b; device_token=f34e4bd6d47058cfa80e682da07aac4d; c_type=24; a_type=0; b_type=1; module_orders_mypage="%"5B"%"7B"%"22name"%"22"%"3A"%"22sketch_live"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22tag_follow"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22recommended_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22showcase"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22everyone_new_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22following_new_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22mypixiv_new_illusts"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22fanbox"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22featured_tags"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22contests"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22user_events"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22sensei_courses"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22spotlight"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"2C"%"7B"%"22name"%"22"%"3A"%"22booth_follow_items"%"22"%"2C"%"22visible"%"22"%"3Atrue"%"7D"%"5D; is_sensei_service_user=1; login_ever=yes; user_language=zh; tag_view_ranking=0xsDLqCEW6~c66SdTL_2i~_hSAdpN9rx~l015P5ziIS~MM6RXH_rlN~HwnfumXz-3~eVxus64GZU~qWFESUmfEs~DADQycFGB0~lDlSeePO6w~Cac_6jhDcg~wKl4cqK7Gl~nJAGknuD4K~rR_Hcj7E5k~Ck8wmf-5yb~u8McsBs7WV~ZTBAtZUDtQ~xrGEf6ML2S~zvLaWh0_Dx~Ie2c51_4Sp~7ZLv-BOgKj~KN7uxuR89w~zZZn32I7eS; login_bc=1; privacy_policy_agreement=0" -H "DNT: 1" -H "Connection: keep-alive" -H "Upgrade-Insecure-Requests: 1" -H "Cache-Control: max-age=0"' # i'll let you use this temp account for a while
-# shitty_arse_pixiv_parameter='<get it yourself>'
+# shitty arse pixiv parameter, well, anythin' in pixiv curl other than `curl "<your pixiv page url>"`
+shitty_arse_pixiv_parameter='<get it yourself>'
 shitty_arse_pixiv_parameter=${shitty_arse_pixiv_parameter//--compressed /} # otherwise you cannot use it on wget
 
 webhook_url="<paste your webhook url here>"
 
 # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command and replace your message with a $1 and replace all '""' with '\"', then you're good to go! >
 # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
-curl_command='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}"'
+# curl_command='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: application/json" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXX$RANDOM$RANDOM$RANDOM\",\"tts\":false}"'
 
 # <login your discord account usin' firefox, use F12 to open developer mode, use "network" tab to monitor network activities, send a message in your desired channel, find the "messages" request and use "Copy" -> "Copy as cURL to get the cURL command, but this time you'll need to change the enitre --data into '-F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"', then you're good to go! >
 # it will look like the cURL command below, but pls do yourself a fockin' favor and change it to yours
-curl_command_upload='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: multipart/form-data; boundary=---------------------------XXXXXXXXXXXXXXXXX" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXXXXXXXXXXX\",\"tts\":false}" -F "filename=@$2"'
+# curl_command_upload='curl "https://discordapp.com/api/v6/channels/XXXXXXXXXXXXXXXXX/messages" -H "XXXXXXXXXXXXXXXXX" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/XXXXXXXXXXXXXXXXX" -H "Content-Type: multipart/form-data; boundary=---------------------------XXXXXXXXXXXXXXXXX" -H "Authorization: XXXXXXXXXXXXXXXXX" -H "X-Super-Properties: XXXXXXXXXXXXXXXXX" -H "Cookie:XXXXXXXXXXXXXXXXX" -H "DNT: X" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"XXXXXXXX$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@$2"'
 
+# now we have a better way to provide auth, just curl and copy anythin' after "Authorization: "
+auth_defaults=""
+channelid_defaults=""
+
+# contents below usually don't need to be changed
 ######################################################################################################################################################################
 
 ######################################################################################################################################################################
@@ -51,11 +57,21 @@ function hifumi() { # use webhooks to upload files [ with two parameters <messag
 }
 
 function futaba() { # use your own accounts [ with one parameter <message> ]
-    eval "$curl_command"
+    if [ "$auth" ]
+    then
+        curl "https://discordapp.com/api/v6/channels/$purechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$channelid" -H "Content-Type: application/json" -H "Authorization: $auth" -H "Cookie: __cfduid=d6fa896e3cb4d9ce5a05e36e3c845ada11531595067" -H "DNT: 1" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}";
+    else
+        eval "$curl_command"
+    fi
 }
 
 function makoto() { # use your own accounts to upload files [ with two parameters <message> <filepath> ]
-    eval "$curl_command_upload"
+    if [ "$auth" ]
+    then
+        curl "https://discordapp.com/api/v6/channels/$purechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$channelid" -H "Authorization: NDYyNTczNjY0NDIwODg4NTk3.Dhj1hA.as8aZRXu_3o0CG5M0OGEEmwS6Lw" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@$2"
+    else
+        eval "$curl_command_upload"
+    fi
 }
 
 ######################################################################################################################################################################
@@ -83,6 +99,19 @@ function message_general() { # [ with one parameter <message> ]
     fi
 }
 
+function england() { # [ with one parameter <message> ] # it looks like message_general(), but it's optimized for england is my city spam
+    case "$mode" in
+        0)
+            nanako "$1"
+            sleep "$webhookinterval"
+            ;;
+        1)
+            futaba "$1"
+            sleep "$naturalinterval"
+            ;;
+    esac
+}
+
 function initmessage() {
     if [ "$trollname" ]
     then
@@ -96,11 +125,17 @@ function initmessage() {
             ;;
         gelbooru)
             sitename="gelbooru.com"
+            ;;        
+        danbooru)
+            sitename="danbooru.donmai.us"
             ;;
         rule34xxx)
             sitename="rule34.xxx"
             ;;
         yandere)
+            sitename="yande.re"
+            ;;
+        yandere2)
             sitename="yande.re"
             ;;
         shinobijp)
@@ -142,10 +177,16 @@ function initmessage() {
         gelbooru)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
+        danbooru)
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
+            ;;
         rule34xxx)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has more than **$finalfish** pic(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         yandere)
+            message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
+            ;;
+        yandere2)
             message="FYI, the cutie's name is **$cutie_name**, and this hentai has **$totalfish** page(s), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
         shinobijp)
@@ -189,19 +230,22 @@ function finalmessage() {
 
 ######################################################################################################################################################################
 # site-related functions start here
+
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 function download() {
     mkdir temp
     if [ $preserve_pics ]
     then
-        mkdir pics
+        mkdir "`urldecode "$cutie"`.pics"
     fi
     cd temp
     rm *.* -f
     hentaifilename=${hentai##*/}
     hentaifilename=${hentaifilename%\?*}
-    [ $aria2 ] && aria2c -R -s 128 -x 128 --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -o "$hentaifilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -O "$hentaifilename"
+    [ $aria2 ] && aria2c -R -s 128 -x 128 -k 1M --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -o "$hentaifilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -O "$hentaifilename"
+    
+    ext3=`date +%y.%m.%d`
     for file in `ls | sed 's/ /|/g'`
     do
         file=`echo $file | sed 's/|/ /g'`
@@ -214,11 +258,11 @@ function download() {
                 makoto "" "$file"
                 sleep "$naturalinterval"
                 ;;
-        esac
+        esac >> "$currentdir/`urldecode "$cutie" | sed 's/ /./g' | sed 's/_/ /g'`.$site.log.$ext3.txt"
     done
     if [ $preserve_pics ]
     then
-        mv *.* ../pics -f
+        mv *.* "../`urldecode "$cutie"`.pics" -f 
     else
         rm *.* -f
     fi
@@ -258,7 +302,7 @@ function processhentai_pixiv() {
         mkdir temp
         if [ $preserve_pics ]
         then
-            mkdir pics
+            mkdir "`urldecode "$cutie"`.pics"
         fi
         cd temp
         rm *.* -f
@@ -292,11 +336,11 @@ function processhentai_pixiv() {
                     makoto "$hentai" "$file"
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/`urldecode ${cutie//&tag=/.}`.pixivlog$ext$ext2.$ext3.txt"
+            esac >> "$currentdir/`urldecode ${cutie//&tag=/.} | sed 's/ /./g' | sed 's/_/ /g'`.pixivlog$ext$ext2.$ext3.txt"
         done
         if [ $preserve_pics ]
         then
-            mv *.* ../pics -f
+            mv *.* "../`urldecode "$cutie"`.pics" -f 
         else
             rm *.* -f
         fi
@@ -312,7 +356,7 @@ function processhentai_pixiv_ugoira() {
         mkdir temp
         if [ $preserve_pics ]
         then
-            mkdir pics
+            mkdir "`urldecode "$cutie"`.pics"
         fi
         cd temp
         rm *.* -f
@@ -368,11 +412,11 @@ function processhentai_pixiv_ugoira() {
                     makoto "" "$file"
                     sleep "$naturalinterval"
                     ;;
-            esac >> "$currentdir/`urldecode ${cutie//&tag=/.}`.pixivlog$ext$ext2.$ext3.txt"
+            esac >> "$currentdir/`urldecode ${cutie//&tag=/.} | sed 's/ /./g' | sed 's/_/ /g'`.pixivlog$ext$ext2.$ext3.txt"
         done
         if [ $preserve_pics ]
         then
-            mv *.* ../pics -f
+            mv *.* "../`urldecode "$cutie"`.pics" -f 
         else
             rm *.* -f
         fi
@@ -443,6 +487,7 @@ function localmachine_pixiv() {
 
 function paheal() {
     url="https://rule34.paheal.net/post/list/$cutie/"
+    url=${url// /%20}
     totalfish=`curl "$url" | grep -Eo "Next.*Last" | grep -Eo "[0-9]*"`
     if [ ! $totalfish ]
     then
@@ -469,10 +514,11 @@ function paheal() {
 
 function gelbooru() {
     url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie"
+    url=${url// /%20}
     finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
     if [ ! $finalfish ]
     then
-        finalfish=20
+        finalfish=1
     fi
     if [ ! "$cutie_name" ]
     then
@@ -484,6 +530,7 @@ function gelbooru() {
     for fish in `seq 0 42 $finalfish`
     do
         url="https://gelbooru.com/index.php?page=post&s=list&tags=$cutie&pid=$fish"
+        url=${url// /%20}
         for hentailink in `curl "$url" | sed 's/>/\n/g' | grep -Eo "view&amp;id=[0-9]*" | grep -Eo "[0-9]*"` # find id's
         do
             hentai=`curl "https://gelbooru.com/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
@@ -494,8 +541,38 @@ function gelbooru() {
     finalmessage
 }
 
+function danbooru() {
+    url="https://danbooru.donmai.us/posts?&tags=$cutie"
+    url=${url// /%20}
+    finalfish=`curl "$url" | grep -Eo "[0-9]*</a></li><li class='arrow'" | grep -Eo "[0-9]*"`
+    if [ ! $finalfish ]
+    then
+        finalfish=1
+    fi
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
+
+    initmessage
+
+    for fish in `seq 1 $finalfish`
+    do
+        url="https://danbooru.donmai.us/posts?page=$fish&tags=$cutie"
+        url=${url// /%20}
+        for hentailink in `curl "$url" | grep -Eo "/posts/[0-9]+"` # find id's
+        do
+            hentai=`curl "https://danbooru.donmai.us$hentailink" | grep "Size:" | sed 's/"/\n/g' | grep "http"`
+            processhentai
+        done
+    done
+
+    finalmessage
+}
+
 function rule34xxx() {
     url="https://rule34.xxx/index.php?page=post&s=list&tags=$cutie"
+    url=${url// /%20}
     finalfish=`curl "$url" | grep -Eo "pid=[0-9]*\" alt=\"last page\"" | sed 's/pid=//g' | sed 's/" alt="last page"//g'`
     if [ ! $finalfish ]
     then
@@ -511,6 +588,7 @@ function rule34xxx() {
     for fish in `seq 0 42 $finalfish`
     do
         url="https://rule34.xxx/index.php?page=post&s=list&tags=$cutie&pid=$fish"
+        url=${url// /%20}
         for hentailink in `curl "$url" | sed 's/>/\n/g' |  grep -Eo "view&amp;id=[0-9]*" | grep -Eo "[0-9]*"` # find id's
         do
             hentai=`curl "https://rule34.xxx/index.php?page=post&s=view&id=$hentailink" | sed 's/\/li/\n/g' | grep -Eo "<li><a href=\".*\" style=\"font-weight: bold;\">Original image" | sed 's/"/\n/g' | grep "http"`
@@ -523,6 +601,7 @@ function rule34xxx() {
 
 function yandere() {
     url="https://yande.re/post?tags=$cutie"
+    url=${url// /%20}
     totalfish=`curl "$url" | grep -Eo "[0-9]*</a> <a class=\"next_page" | grep -Eo "[0-9]*"`
     if [ ! $totalfish ]
     then
@@ -538,6 +617,7 @@ function yandere() {
     for fish in `seq 1 $totalfish`
     do
         url="https://yande.re/post?page=$fish&tags=$cutie"
+        url=${url// /%20}
         for hentailink in `curl "$url" | grep -Eo "a class=\"thumb\" href="\"/post/show/[0-9]*\" | grep -Eo "[0-9]*"` # find id's
         do
             hentai=`curl "https://yande.re/post/show/$hentailink" | grep "a class=\"highres-show\" href=\".*\">View" | sed 's/"/\n/g' | grep "http"`
@@ -548,8 +628,38 @@ function yandere() {
     finalmessage
 }
 
+function yandere2() {
+    url="https://yande.re/post?tags=$cutie"
+    url=${url// /%20}
+    totalfish=`curl "$url" | grep -Eo "[0-9]*</a> <a class=\"next_page" | grep -Eo "[0-9]*"`
+    if [ ! $totalfish ]
+    then
+        totalfish=1
+    fi
+    if [ ! "$cutie_name" ]
+    then
+        cutie_name=`echo $cutie | sed 's/_/ /g'`
+    fi
+
+    initmessage
+
+    for fish in `seq 1 $totalfish`
+    do
+        url="https://yande.re/post?page=$fish&tags=$cutie"
+        url=${url// /%20}
+        for hentailink in `curl "$url" | grep -Eo "a class=\"thumb\" href="\"/post/show/[0-9]*\" | grep -Eo "[0-9]*"` # find id's
+        do
+            hentai=`curl "https://yande.re/post/show/$hentailink" | grep "Download PNG" | sed 's/"/\n/g' | grep "http"`
+            processhentai
+        done
+    done
+
+    finalmessage
+}
+
 function shinobijp() {
     url="http://$cutie.blog.shinobi.jp/Page/999999999999999999/"
+    url=${url// /%20}
     totalfish=`curl "$url" | grep '<a href="/Page/[0-9]*/">前のページ</a>' | grep -Eo "[0-9]*"`
     if [ ! $totalfish ]
     then
@@ -567,6 +677,7 @@ function shinobijp() {
     for fish in `seq 1 $totalfish`
     do
         url="http://$cutie.blog.shinobi.jp/Page/$fish/"
+        url=${url// /%20}
         for hentai in `curl "$url" | sed 's/<br/\n/g' | grep "http://file.$cutie.blog.shinobi.jp/.*\" target=\"_blank\"" | sed 's/"/\n/g' | grep "http" | grep ".jp[e]*g"`
         do
             processhentai
@@ -576,8 +687,9 @@ function shinobijp() {
     finalmessage
 }
 
-function sankakucomplex() {
-    url="https://chan.sankakucomplex.com/post/index.content?tags=$cutie%20order:popular" 
+function sankakucomplex() { # defunct, would update later
+    url="https://chan.sankakucomplex.com/post/index.content?tags=$cutie%20order:popular"
+    url=${url// /%20}
     if [ ! "$cutie_name" ]
     then
         cutie_name=`echo $cutie | sed 's/_/ /g'`
@@ -587,14 +699,14 @@ function sankakucomplex() {
     
     num=1
     while
-        nein=`curl "$url&page=$num" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" | sed 's/ /|/g'`
+        nein=`curl "$url&page=$num" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" -H "Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" --compressed -H "Referer: $url&page=$num&commit=Search" -H "DNT: 1" -H "Connection: keep-alive" -H "Cookie: _pk_id.2.42fa=572917ae58b0d777.1539068321.14.1545558908.1545558908.; _pk_ref.2.42fa="%"22"%"5B"%"5C"%"22"%"5C"%"22"%"2C"%"20"%"5C"%"22"%"5C"%"22"%"2C"%"201545558908"%"2C"%"20"%"5C"%"22https"%"3A"%"2F"%"2Fiqdb.org"%"2F"%"5C"%"22"%"5D"%"22; auto_page=1; locale=en" -H "Upgrade-Insecure-Requests: 1" -H "Cache-Control: max-age=0" | sed 's/ /|/g'`
         det=`echo $nein | grep -Eo "No\|matching\|posts"`
         [ "$det" != "No|matching|posts" ]
     do
         for fish in `echo "$nein"`
         do
             link=`echo $fish | sed 's/|/ /g' | grep -Eo "post/show/[0-9]*"`
-            [ $link ] && for hentai in `curl "https://chan.sankakucomplex.com/$link" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" | grep "Original:" | sed 's/amp;//g' | sed 's/"/\n/g' | grep "//"`
+            [ $link ] && for hentai in `curl "https://chan.sankakucomplex.com/$link" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" -H "Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" --compressed -H "Referer: $url&page=$num" -H "DNT: 1" -H "Connection: keep-alive" -H "Cookie: _pk_id.2.42fa=572917ae58b0d777.1539068321.14.1545558908.1545558908.; _pk_ref.2.42fa="%"22"%"5B"%"5C"%"22"%"5C"%"22"%"2C"%"20"%"5C"%"22"%"5C"%"22"%"2C"%"201545558908"%"2C"%"20"%"5C"%"22https"%"3A"%"2F"%"2Fiqdb.org"%"2F"%"5C"%"22"%"5D"%"22; auto_page=1; locale=en" -H "Upgrade-Insecure-Requests: 1" -H "Cache-Control: max-age=0" | grep "Original:" | sed 's/amp;//g' | sed 's/"/\n/g' | grep "//"`
             do
                 hentai="https:$hentai"
                 processhentai
@@ -745,8 +857,6 @@ function pixiv_fast_subprocess() {
     done
     message_general "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=$hentaiid done processin'"
 }
-
-# https://www.pixiv.net/search.php?word=%E5%87%A6%E5%A5%B3%E5%96%AA%E5%A4%B1%20OR%20%E7%A0%B4%E7%93%9C&order=date_d&mode=r18&p=2
 
 function pixiv() {
     cutie=${cutie// /%20}
@@ -901,7 +1011,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,auth:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -957,7 +1067,7 @@ do
             echo "$filepath, $message"
             shift 2
             ;;
-        -c | -C | --config-file)
+        -c | --config-file)
             configmode=1
             configfilepath=$2
             shift 2
@@ -1033,7 +1143,7 @@ do
             ugoiramode="JAJAJAJAJA"
             shift
             ;;
-        --channel-id)
+        -C | --channel-id)
             channelid=$2
             shift 2
             ;;
@@ -1043,6 +1153,10 @@ do
             ;;
         --customfunny)
             funnyemote=$2
+            shift 2
+            ;;
+        --auth)
+            auth=$2
             shift 2
             ;;
         -h | -H | --help)
@@ -1069,11 +1183,12 @@ do
             echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
             echo
             echo "    Configurations: "
-            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, rule34xxx, yandere, shinobijp, sankaku, pixiv, pixiv_author, pixiv_favourite"
+            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, danbooru, rule34xxx, yandere, yandere2, shinobijp, sankaku, pixiv, pixiv_author, pixiv_favourite"
             echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
-            echo "        -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
+            echo "        -c or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
             echo "            --fast-webhook <webhook-link>: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode"
+            echo "        --auth <auth>: use auth string instead of config file, basically you can't use them both"
             echo "        --troll <trollname>: replace die deutsche Orthopädiespezialist in the copyrekt message to something else"
             echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
@@ -1095,7 +1210,7 @@ do
             echo "        --ugoira-mode: process ugoira, download every last pic of them, and use ffmpeg to make them .mp4"
             echo
             echo "    Antics: "
-            echo "        --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
+            echo "        -C or --channel-id <chatroom-id/channel-id>: the ability to send message in any channel that you have access to (only with natural mode), need to provide both chatroom id and channel id"
             echo "            and i'm still not used to called discord chatroom \"server\", because what runs this script is the real server for me"
             echo "        --join-chatroom <chatroom-invite-link>: the ability to join chatroom via ARSEFOCKIN' B A S H, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGEL you only need \"FEGEL\""
             echo "        --customfunny <funnyemote>: custom emote to express sarcasm"
@@ -1141,6 +1256,12 @@ then
     exit 3
 fi
 
+if [ $configmode ] && [ "$auth" ]
+then
+    echo "Houston, we have an arsefockin' problem: You can't use config file and auth both" >&2
+    exit 10
+fi
+
 if [ $configmode ]
 then
     webhook_url=`sed -n 1p "$configfilepath"`
@@ -1153,16 +1274,49 @@ then
     webhook_url="$fast_webhook"
 fi
 
+if [ ! "$curl_command" ] # curl command unset, force auth mode usin' $auth_defaults
+then
+    echo -e "\033[31m\$curl_command not detected, force auth mode\033[0m"
+    auth="$auth_defaults"
+    if [ $channelid ]
+    then
+        purechannelid=`echo "$channelid" | cut -d/ -f2`
+    else
+        channelid="$channelid_defaults"
+        purechannelid=`echo "$channelid" | cut -d/ -f2`
+    fi
+else
+    if [ $channelid ] # it looks like shit but it works
+    then
+        # echo $curl_command
+        # echo
+        curl_command=${curl_command//`echo $curl_command | grep -Eo "channels/[0-9]*/messages"`/channels/`echo $channelid | cut -f2 -d/`/messages}
+        curl_command=${curl_command//`echo $curl_command | grep -Eo "channels/[0-9]*/[0-9]*\""`/channels/$channelid\"}
+        curl_command_upload=${curl_command_upload//`echo $curl_command_upload | grep -Eo "channels/[0-9]*/messages"`/channels/`echo $channelid | cut -f2 -d/`/messages}
+        curl_command_upload=${curl_command_upload//`echo $curl_command_upload | grep -Eo "channels/[0-9]*/[0-9]*\""`/channels/$channelid\"}
+        purechannelid=`echo "$channelid" | cut -d/ -f2`
+        # echo $curl_command
+        # echo
+    else
+        channelid="$channelid_defaults"
+        purechannelid=`echo "$channelid" | cut -d/ -f2`
+    fi
+fi
+
 if [ $channelid ] # it looks like shit but it works
 then
-    echo $curl_command
-    echo
+    # echo $curl_command
+    # echo
     curl_command=${curl_command//`echo $curl_command | grep -Eo "channels/[0-9]*/messages"`/channels/`echo $channelid | cut -f2 -d/`/messages}
     curl_command=${curl_command//`echo $curl_command | grep -Eo "channels/[0-9]*/[0-9]*\""`/channels/$channelid\"}
     curl_command_upload=${curl_command_upload//`echo $curl_command_upload | grep -Eo "channels/[0-9]*/messages"`/channels/`echo $channelid | cut -f2 -d/`/messages}
     curl_command_upload=${curl_command_upload//`echo $curl_command_upload | grep -Eo "channels/[0-9]*/[0-9]*\""`/channels/$channelid\"}
-    echo $curl_command
-    echo
+    purechannelid=`echo "$channelid" | cut -d/ -f2`
+    # echo $curl_command
+    # echo
+else
+    channelid="$channelid_defaults"
+    purechannelid="$purechannelid_defaults"
 fi
 
 if [ $chatroom ]
@@ -1196,7 +1350,7 @@ then
     exit 9
 fi
 
-[ $funnyemote ] || funnyemote="<:funny_v1:449451139063218177>"
+[ $funnyemote ] || funnyemote="<:funny_v2:530321446338035742>"
 
 if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
 then
@@ -1206,19 +1360,6 @@ then
         exit 4
     fi
 else
-    function england() { # [ with one parameter <message> ] # it looks like message_general(), but it's optimized for england is my city spam
-        case "$mode" in
-            0)
-                nanako "$1"
-                sleep "$webhookinterval"
-                ;;
-            1)
-                futaba "$1"
-                sleep "$naturalinterval"
-                ;;
-        esac
-    }
-
     if [ $pingasmode ]
     then
         england "https://www.youtube.com/watch?v=9_mgU0VbqBw"
@@ -1476,11 +1617,17 @@ case "$site" in
     gelbooru)
         gelbooru
         ;;
+    danbooru)
+        danbooru
+        ;;
     rule34xxx)
         rule34xxx
         ;;
     yandere)
         yandere
+        ;;
+    yandere2)
+        yandere2
         ;;
     shinobijp)
         shinobijp
