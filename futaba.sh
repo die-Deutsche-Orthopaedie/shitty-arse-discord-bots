@@ -36,7 +36,7 @@ channelid_defaults=""
 # discord-related functions start here
 
 function nanako() { # use webhooks [ with one parameter <message> ]
-    if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
+    if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ] && [ ! $snowflakesmode ]
     then
         username="$cutie_name Hentai Bot"
     else
@@ -47,7 +47,7 @@ function nanako() { # use webhooks [ with one parameter <message> ]
 }
 
 function hifumi() { # use webhooks to upload files [ with two parameters <message> <filepath> ]
-    if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
+    if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ] && [ ! $snowflakesmode ]
     then
         username="$cutie_name Hentai Bot"
     else
@@ -84,14 +84,16 @@ function message_general() { # [ with one parameter <message> ]
     then
         case "$mode" in
             0)
+                echo
                 echo -e "\e[36m$1\e[0m"
                 nanako "$1"
-                sleep 2
+                sleep "$webhookinterval"
                 ;;
             1)
+                echo
                 echo -e "\e[36m$1\e[0m"
                 futaba "$1"
-                sleep 2
+                sleep "$naturalinterval"
                 ;;
         esac
     else
@@ -153,6 +155,9 @@ function initmessage() {
         localmachine_pixiv)
             sitename="pixiv.net"
             ;;
+        discordchannel)
+            sitename="discordapp.com (sarcastic"
+            ;;
         *)
             echo "fock it" >&2
             exit 6
@@ -207,14 +212,20 @@ function initmessage() {
         localmachine_pixiv)
             message="FYI, the cutie's name is **$cutie_name**, but idk how many pics does this hentai have (and idc either$funnyemote), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
+        discordchannel)
+            message="FYI, the source channel's id is **$cutie**, but idk how many pics does this hentai have (and idc either$funnyemote), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
+            ;;
         *)
             echo "fock it" >&2
             exit 6
     esac
     message_general "$message"
     
-    message="And **FYTI**, the original command is: \n\`\`\`bash\n$original_parameters\n\`\`\`"
-    message_general "$message"
+    if [ ! `echo "$original_parameters" | grep "\-\-auth"` ] && [ ! `echo "$original_parameters" | grep "\-\-rauth"` ] # to protekt your auth from appearin' in discord messages
+    then
+        message="And **FYTI**, the original command is: \n\`\`\`bash\n$original_parameters\n\`\`\`"
+        message_general "$message"
+    fi
 }
 
 function finalmessage() {
@@ -223,6 +234,18 @@ function finalmessage() {
     usedtime=`awk -v x=$finaltime -v y=$starttime 'BEGIN{printf "%.3f",(x-y)/1000000000}'`
     message="Thanks for usin' this shitty arse bot, this bot has finished dumpin' hentais in **$usedtime** second(s), see u next time$funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
     message_general "$message"
+    if [ "$snowflakesend" ]
+    then
+        england "that's enough for today's hentai doses, "
+        case "$snowflakesend" in
+            1)
+                snowflakes
+                ;;
+            2)
+                snowflakes2
+                ;;
+        esac
+    fi
     exit
 }
 
@@ -235,14 +258,16 @@ function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 function download() {
     mkdir temp
+    rm temp/* -f
     if [ $preserve_pics ]
     then
-        mkdir "`urldecode "$cutie"`.pics"
+        mkdir "`urldecode "$cutie" | sed 's/\//./g'`.pics"
     fi
     cd temp
     rm *.* -f
     hentaifilename=${hentai##*/}
     hentaifilename=${hentaifilename%\?*}
+    hentaifilename=${hentaifilename/:large} # for fockin' twitter images xD
     [ $aria2 ] && aria2c -R -s 128 -x 128 -k 1M --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -o "$hentaifilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -O "$hentaifilename"
     
     ext3=`date +%y.%m.%d`
@@ -258,13 +283,13 @@ function download() {
                 makoto "" "$file"
                 sleep "$naturalinterval"
                 ;;
-        esac >> "$currentdir/`urldecode "$cutie" | sed 's/ /./g' | sed 's/_/ /g'`.$site.log.$ext3.txt"
+        esac >> "$currentdir/`urldecode "$cutie" | sed 's/ /./g' | sed 's/_/ /g' | sed 's/\//./g'`.$site.log.$ext3.txt"
     done
     if [ $preserve_pics ]
     then
-        mv *.* "../`urldecode "$cutie"`.pics" -f 
+        mv * "../`urldecode "$cutie"`.pics | sed 's/\//./g'" -f 
     else
-        rm *.* -f
+        rm * -f
     fi
     cd ..
 }
@@ -287,6 +312,7 @@ function processhentai() {
     then
         if [ $downloadmode ]
         then
+            echo -e "\e[33mdownloadin'\e[36m $hentai\e[0m: "
             download
         else
             post2discord
@@ -310,6 +336,7 @@ function processhentai_pixiv() {
         # eval "wget ${shitty_arse_pixiv_parameter//-H /--header=} '$hentai'"
         hentaifilename=${hentai##*/}
         hentaifilename=${hentaifilename%\?*}
+        echo -e "\e[33mdownloadin'\e[36m $hentai\e[0m: "
         [ $aria2 ] && aria2c -R -s $aria2threads -x $aria2threads --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -o "$hentaifilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" --header="Referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=23333333" "$hentai" -O "$hentaifilename"
         case "$site" in
             pixiv)
@@ -441,6 +468,7 @@ function localmachine() {
         hentai=`echo $file | sed 's/|/_/g'`
         if [ $downloadmode ]
         then
+            echo -e "\e[33mdownloadin'\e[36m $hentai\e[0m: "
             download
         else
             post2discord
@@ -469,12 +497,12 @@ function localmachine_pixiv() {
             case "$mode" in
                 0)
                     hifumi "" "$file"
-                    webhookinterval=`expr $webhookinterval - 2`
-                    sleep "$webhookinterval"
+                    webhookinterval2=`expr $webhookinterval - 2`
+                    sleep "$webhookinterval2"
                     ;;
                 1)
-                    naturalinterval=`expr $naturalinterval - 1`
-                    sleep "$naturalinterval"
+                    naturalinterval2=`expr $naturalinterval - 1`
+                    sleep "$naturalinterval2"
                     ;;
             esac >> "$currentdir/${cutie%.*}.pixivlog.txt"
         done
@@ -510,6 +538,57 @@ function paheal() {
     done
 
     finalmessage
+}
+
+function nein() { # #1 = "before" message id, no if not given
+    if [ "$1" ]
+    then
+        url="https://discordapp.com/api/v6/channels/$rpurechannelid/messages?before=$1&limit=100"
+    else
+        url="https://discordapp.com/api/v6/channels/$rpurechannelid/messages?limit=100"
+    fi
+    original=`curl "$url" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" -H "Accept: */*" --compressed -H "Referer: https://discordapp.com/channels/$cutie" -H "Authorization: $rauth" -H "DNT: 1" -H "Connection: keep-alive" -H "Cookie: __cfduid=d5654e7ddceb28663e0d4ee79adbf39e81538640920" -H "TE: Trailers"`
+    for hentai in $(for messages in `echo "$original" | sed 's/"type": [0-9]*}, {"attachments"/"type": "nein"}, \n\n{"attachments"/g'`
+    do
+        messageid=`echo "$messages" | sed 's/"author"/\n"author"/g' | sed 's/"mention_everyone"/\n"mention_everyone"/g' | grep '"mention_everyone"' | sed 's/,/\n/g' | grep '"id"' | sed 's/"/\n/g' | grep -Eo '[0-9]*'` 
+        echo "$messageid" > /tmp/messageid
+        if [ `echo "$messages" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"'` ]
+        then
+            # echo -e "\e[36m$messageid\e[0m"
+            echo "$messages" | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'
+            # echo
+        elif [ `echo "$messages" | sed 's/,/\n/g' | grep '"embeds"' | grep '"url"'` ]
+        then
+            # echo "$messages" | sed 's/,/\n/g' | grep '"embeds"' | sed 's/"/\n/g' | grep 'http' # only for single embeds
+            # echo -e "\e[36m$messageid\e[0m"
+            echo "$messages" | grep -Eo '"embeds": \[.*\], "timestamp"' | sed 's/}, {/}, \n{/g' | sed 's/,/\n/g' | grep '"thumbnail"' | sed 's/"/\n/g' | grep 'http' # embeds might have more than one, so must use context-based mathod to extract them, s0rry
+            # echo
+        fi
+    done)
+    do
+        processhentai
+    done
+}
+
+function discordchannel() {
+    rpurechannelid=`echo "$cutie" | cut -d/ -f2`
+    OLD_IFS=$IFS
+    IFS=$'\n'
+    
+    initmessage
+    
+    nein
+    
+    messageid=`cat /tmp/messageid`
+    while [ "$messageid" ]
+    do
+        nein "$messageid"
+        messageid=`cat /tmp/messageid`
+    done
+    
+    finalmessage
+
+    IFS=$OLD_IFS
 }
 
 function gelbooru() {
@@ -1000,6 +1079,265 @@ function pixiv_favourite() {
 ######################################################################################################################################################################
 
 ######################################################################################################################################################################
+# functions of outputin' custom lines that would risk your sorry arse banned start here
+
+function pingaslandismypingas() {
+    england "https://www.youtube.com/watch?v=9_mgU0VbqBw"
+    england "[Intro: Jake **PINGAS**]"
+    england "**PINGAS**"
+    england "Y'all can't **PINGAS** this"
+    england "Y'all don't know what's about to happen baby"
+    england "Team **PINGAS**"
+    england "Los **PINGAS**les, **PINGAS** boy"
+    england "But I'm from **PINGAS**io though, **PINGAS** boy"
+    england "[Verse 1: Jake **PINGAS**]"
+    england "It's **PINGAS**day bro, with the **PINGAS** Channel flow"
+    england "5 **PINGAS** on YouTube in 6 months, never done before"
+    england "Passed all the **PINGAS**tition man, **PINGAS**Pie is next"
+    england "Man I'm poppin' all these **PINGAS**, got a brand new **PINGAS**"
+    england "And I met a **PINGAS** too and I'm **PINGAS** with the **PINGAS**"
+    england "This is Team **PINGAS**, bitch, who the hell are **PINGAS** you?"
+    england "And you know I **PINGAS** them out if they ain't with the **PINGAS**"
+    england "Yeah, I'm talking about you, you beggin' for **PINGAS**"
+    england "Talking shit on **PINGAS** too but you still hit my **PINGAS** last night"
+    england "It was 4:**PINGAS**2 and I got the **PINGAS** to prove"
+    england "And all the **PINGAS** too, don't make me tell them the **PINGAS**"
+    england "And I just dropped some new **PINGAS** and it's selling like a **PINGAS**, church"
+    england "**PINGAS**io's where I'm from, we chew 'em like it's **PINGAS**"
+    england "We shooting with a **PINGAS**, the **PINGAS** just for fun"
+    england "I **PINGAS** Bolt and run, catch me at **PINGAS**"
+    england "I cannot be **PINGAS**, Jake **PINGAS** is number one"
+    england "[Chorus: Jake **PINGAS**]"
+    england "It's **PINGAS**day bro"
+    england "It's **PINGAS**day bro"
+    england "It's **PINGAS**day bro"
+    england "I said it is **PINGAS**day bro!"
+    england "[Verse 2: Nick **PINGAS**]"
+    england "You know it's Nick **PINGAS** and my collar stay **PINGAS**"
+    england "Yes, I can **PINGAS** and no, I am not from **PINGAS**"
+    england "**PINGAS**land is my **PINGAS**"
+    england "**PINGAS**land is my **PINGAS**"
+    england "**PINGAS**land is my **PINGAS**"
+    england "**PINGAS**land is my **PINGAS**"
+    england "**PINGAS**land is my **PINGAS**"
+    england "And if it weren't for Team **PINGAS**, then the **PINGAS** would be **PINGAS**"
+    england "I'll pass it to **PINGAS** 'cause you know he stay **PINGAS**"
+    england "[Verse 3: **PINGAS** Sutton]"
+    england "Two months ago you didn't know my **PINGAS**"
+    england "And now you want my **PINGAS**? Bitch I'm blowin' up"
+    england "I'm only **PINGAS** up, now I'm **PINGAS** off, I'm never **PINGAS** off"
+    england "Like Mag, who? Digi who? Who are you?"
+    england "All these **PINGAS** I just ran through, hit a **PINGAS** in a month"
+    england "Where were you? Hatin' on me back in **PINGAS** Fake"
+    england "Think you need to get your **PINGAS** straight"
+    england "Jakey brought me to the **PINGAS**, now we're really **PINGAS** off"
+    england "**PINGAS** 1 and **PINGAS** 4, that's why these **PINGAS** all at our door"
+    england "It's **PINGAS** at the top so we all **PINGAS**"
+    england "We left **PINGAS**io, now the trio is all **PINGAS**"
+    england "It's Team **PINGAS**, bitch"
+    england "We back again, always **PINGAS**, never **PINGAS**"
+    england "We the **PINGAS**, we'll see you in the **PINGAS**"
+    england "[Chorus: Jake **PINGAS**]"
+    england "It's **PINGAS**day bro"
+    england "It's **PINGAS**day bro"
+    england "It's **PINGAS**day bro"
+    england "I said it is **PINGAS**day bro!"
+    england "[Verse 4: Martinez **PINGAS**]"
+    england "Hold on, hold on, hold on"
+    england "Can we switch the **PINGAS**?"
+    england "We 'bout to **PINGAS**"
+    england "Sí, lo único que quiero es **PINGAS**"
+    england "Trabajando en YouTube todo el día **PINGAS**"
+    england "Viviendo en **PINGAS**A, el sueño de **PINGAS**"
+    england "Enviando dólares a mi familia **PINGAS**"
+    england "Tenemos una **PINGAS** por encima"
+    england "Se llama **PINGAS** Trump y está en la cima"
+    england "Desde aquí te **PINGAS** - can I get my **PINGAS**?"
+    england "Martinez **PINGAS**, representando **PINGAS**"
+    england "Desde la pobreza a la fama"
+    england "[Chorus: Jake **PINGAS**]"
+    england "It's **PINGAS**day bro"
+    england "It's **PINGAS**day bro"
+    england "It's **PINGAS**day bro"
+    england "I said it is **PINGAS**day bro!"
+    england "[Verse 5: **PINGAS** Brooks]"
+    england "Yo, it's **PINGAS** Brooks"
+    england "The competition **PINGAS**"
+    england "These guys up on me"
+    england "I got 'em with the **PINGAS**"
+    england "Lemme edu**PINGAS**"
+    england "And I ain't talking **PINGAS**"
+    england "**PINGAS** is your home?"
+    england "So, stop calling my **PINGAS**"
+    england "I'm flyin' like a **PINGAS**"
+    england "They buying like a **PINGAS**"
+    england "Yeah, I smell like a **PINGAS**"
+    england "Is that your boy's **PINGAS**?"
+    england "[Verse 6: Jake **PINGAS**]"
+    england "Is that your boy's **PINGAS**?"
+    england "Started **PINGAS**"
+    england "Quicken Loans"
+    england "Now I'm in my **PINGAS** zone"
+    england "Yes, they all **PINGAS** me"
+    england "But, that's some **PINGAS** clones"
+    england "Stay in all designer **PINGAS**"
+    england "And they ask me what I **PINGAS**"
+    england "I said is 10 with six **PINGAS**"
+    england "Always plug, merch link in **PINGAS**"
+    england "And I will see you to **PINGAS** 'cause"
+    england "It's **PINGAS** day bro"
+    england "**P I N G A S**"
+}
+
+function englandismycity() {
+    england "https://www.youtube.com/watch?v=hSlb1ezRqfA"
+    england "[Intro: Jake Paul]"
+    england "Y'all can't handle this"
+    england "Y'all don't know what's about to happen, baby"
+    england "Team 10"
+    england "Los Angeles, Cali boy"
+    england "But I'm from Ohio though, white boy"
+    england "[Verse 1: Jake Paul]"
+    england "It's everyday bro, with the Disney Channel flow"
+    england "5 mill on YouTube in 6 months, never done before"
+    england "Passed all the competition man, PewDiePie is next"
+    england "Man I'm poppin' all these checks, got the brand new Rolex"
+    england "And I met a Lambo too and I'm coming with the crew"
+    england "This is Team 10, bitch, who the hell are flippin' you?"
+    england "And you know I kick them out if they ain't with the crew"
+    england "Yeah, I'm talking about you, you beggin' for attention"
+    england "Talking shit on Twitter too but you still hit my phone last night"
+    england "It was 4:52 and I got the text to prove"
+    england "And all the recordings too, don't make me tell them the truth"
+    england "And I just dropped some new merch and it's selling like a god, church"
+    england "Ohio's where I'm from, we chew 'em like it's gum"
+    england "We shooting with a gun, the tattoo just for fun"
+    england "I Usain Bolt and run, catch me at game one"
+    england "I cannot be outdone, Jake Paul is number one"
+    england "[Chorus: Jake Paul]"
+    england "It's everyday bro"
+    england "It's everyday bro"
+    england "It's everyday bro"
+    england "I said it's everyday bro!"
+    england "[Verse 2: Nick Crompton]"
+    england "You know it's Nick Crompton and my collar stay poppin'"
+    england "Yes, I can rap and no, I am not from Compton"
+    england "**ENGLAND IS MY CITY**"
+    england "**England is my city**"
+    england "**England Is My City**"
+    england "**England is my city**"
+    england "**ENGLAND IS MY CITY**"
+    england "And if it weren't for Team 10, then the US would be shitty"
+    england "I'll pass it to Chance 'cause you know he stay litty"
+    england "[Verse 3: Chance Sutton]"
+    england "Two months ago you didn't know my name"
+    england "And now you want my fame?"
+    england "Bitch I'm blowin' up, I'm only going up"
+    england "Now I'm going off, I'm never fallin' off"
+    england "Like Mag, who? Digi who? Who are you?"
+    england "All these beefs I just ran through, hit a milli in a month"
+    england "Where were you? Hatin' on me back in West Fake"
+    england "Think you need to get your shit straight"
+    england "Jakey brought me to the top, now we really poppin' off"
+    england "Number 1 and number 4, that's why these fans all at our door"
+    england "It's lonely at the top so we all going"
+    england "We left Ohio, now the trio is all rollin'"
+    england "It's Team 10, bitch"
+    england "We back again, always first, never last"
+    england "We the future, we'll see you in the past"
+    england "[Chorus: Jake Paul]"
+    england "It's everyday bro"
+    england "It's everyday bro"
+    england "It's everyday bro"
+    england "I said it's everyday bro!"
+    england "[Interlude: Martinez Twins]"
+    england "Hold on, hold on, hold on (espera)"
+    england "Can we switch the language? (ha, ya tú sabe')"
+    england "We 'bout to hit it (dale)"
+    england "[Verse 4: Martinez Twins]"
+    england "Sí, lo único que quiero es dinero"
+    england "Trabajando en YouTube todo el día entero (dale)"
+    england "Viviendo en U.S.A, el sueño de cualquiera (ha)"
+    england "Enviando dólares a mi familia entera (pasta)"
+    england "Tenemos una persona por encima"
+    england "Se llama Donald Trump y está en la cima (la cima)"
+    england "Desde aquí te cantamos, can I get my VISA?"
+    england "Martinez Twins, representando España"
+    england "Desde la pobreza a la fama"
+    england "[Chorus: Jake Paul]"
+    england "It's everyday bro"
+    england "It's everyday bro"
+    england "It's everyday bro"
+    england "I said it's everyday bro!"
+    england "[Verse 5: Tessa Brooks]"
+    england "Yo, it's Tessa Brooks"
+    england "The competition shook"
+    england "These guys up on me"
+    england "I got 'em with the hook"
+    england "Lemme educate ya"
+    england "And I ain't talking book"
+    england "Panera is your home?"
+    england "So, stop calling my phone"
+    england "I'm flyin' like a drone"
+    england "They buying like a loan"
+    england "Yeah, I smell good"
+    england "Is that your boy's cologne?"
+    england "[Verse 6: Jake Paul]"
+    england "Is that your boy's cologne?"
+    england "Started balling', quicken Loans"
+    england "Now I'm in my flippin' zone"
+    england "Yes, they all copy me"
+    england "But, that's some shitty clones"
+    england "Stay in all designer clothes"
+    england "And they ask me what I make"
+    england "I said it's 10 with six zeros"
+    england "Always plug, merch link in bio"
+    england "And I will see you tomorrow 'cause"
+    england "It's everyday bro"
+    england "Peace"
+}
+
+function snowflakes() {
+    england "❄s falling on your face, \na cold wind blows away \nthe laughter from this treasured place, \nbut in our memories it stays\n\nThis is where we say farewell,\nand the wind, it feels a little colder now\nHere time's run out like a spell,\nbut laughter's our vow\n\nThis is where we saw it through,\nthick and thin, this friendship, it was built to last\nHere we swore that we'd be true\nto bonds that were forged in our past \n\n❄s blowing and the view's\nobscured by history, I still remember it with you\nlike I'm stuck in mixed realities\n\nthis is where we say goodbye\nand I'm stronger for the time I shared with you\nit helps me hold my head up high\nin my heart I'm with you\n\nthis is where the snow falls now\ncold and hard, and yet it melts upon my brow\nsomething keeps me warm inside\nsome dream keeps me going through the night\n\nsome dream keeps me going through the night\n$funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
+}
+
+function snowflakes2() {
+    england "❄s falling on your face, "
+    england "a cold wind blows away "
+    england "the laughter from this treasured place, "
+    england "but in our memories it stays"
+    england "_ _"
+    england "This is where we say farewell,"
+    england "and the wind, it feels a little colder now"
+    england "Here time's run out like a spell,"
+    england "but laughter's our vow"
+    england "_ _"
+    england "This is where we saw it through,"
+    england "thick and thin, this friendship, it was built to last"
+    england "Here we swore that we'd be true"
+    england "to bonds that were forged in our past "
+    england "_ _"
+    england "❄s blowing and the view's"
+    england "obscured by history, I still remember it with you"
+    england "like I'm stuck in mixed realities"
+    england "_ _"
+    england "this is where we say goodbye"
+    england "and I'm stronger for the time I shared with you"
+    england "it helps me hold my head up high"
+    england "in my heart I'm with you"
+    england "_ _"
+    england "this is where the snow falls now"
+    england "cold and hard, and yet it melts upon my brow"
+    england "something keeps me warm inside"
+    england "some dream keeps me going through the night"
+    england "_ _"
+    england "some dream keeps me going through the night"
+    england "$funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
+}
+
+######################################################################################################################################################################
+
+######################################################################################################################################################################
 # DO NOT CHANGE UNLESS NECESSARY
 
 original_parameters="$0"
@@ -1011,7 +1349,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,auth:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,snowflakes,snowflakes2,snowflakes-end,snowflakes2-end,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,auth:,rauth:,rconf:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -1060,6 +1398,22 @@ do
             pingasmode=1
             shift
             ;;
+        --snowflakes)
+            snowflakesmode=1
+            shift
+            ;;
+        --snowflakes2)
+            snowflakesmode=2
+            shift
+            ;;
+        --snowflakes-end)
+            snowflakesend=1
+            shift
+            ;;
+        --snowflakes2-end)
+            snowflakesend=2
+            shift
+            ;;
         -u | -U | --upload)
             uploadmode=1
             filepath=$2
@@ -1070,6 +1424,10 @@ do
         -c | --config-file)
             configmode=1
             configfilepath=$2
+            shift 2
+            ;;
+        --rconf)
+            rconf=$2
             shift 2
             ;;
         --fast-webhook)
@@ -1159,6 +1517,10 @@ do
             auth=$2
             shift 2
             ;;
+        --rauth)
+            rauth=$2
+            shift 2
+            ;;
         -h | -H | --help)
             echo "copyrekt die deutsche Orthopädiespezialist 2018"
             echo "multi-site rule34 fully automatic masspostin' bot for discord"
@@ -1175,6 +1537,7 @@ do
             echo "        -m or -M or --message <message>: send a message usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            -e or -E or --england-is-my-city: spam nick crumpton's famous England is my City song in set channel (and get your arse banned soooooooon)"
             echo "            --pingasland-is-my-pingas: PINGAS version of the aforementioned song"
+            echo "            --snowflakes / --snowflakes2: spam Shihoko Hirata chan's famous \"Snowflakes\" to mock these fockin' snowflakes who couldn't stand futaba.sh grade pure cutie hentai"
             echo "        -u or -U or --upload <filepath> <message>: upload a file usin' either methods, in this mode \$cutie_name will become your bot's name (if you use webhook)"
             echo "            and i've found a strange bug out here, now it would be better if you put -u or -U or --upload as the last parameter and all will be fine"
             echo "        -d or -D or --download: download pics and reupload to discord instead of just postin' links, required for pixiv"
@@ -1186,6 +1549,8 @@ do
             echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, danbooru, rule34xxx, yandere, yandere2, shinobijp, sankaku, pixiv, pixiv_author, pixiv_favourite"
             echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
+            echo "            and discordchannel to get link / download all pics from a discord channel to well, post / reupload them to another discord channel, in this case \$cutie will be your source discord channel (must be <chatroom-id/channel-id> format)"
+            echo "                in this case pls use --rauth or --rconf if your account to get pics isn't as same as account to post pics, otherwise it would be the same; ofc in webhook mode you must set either of them or it won't fockin' work"
             echo "        -c or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); if you don't load one it will use default values in the script; but i don't make pixiv shit to be in configuration file because you just don't need to change them by all means"
             echo "            --fast-webhook <webhook-link>: if you just wanna change webhook (i've forgotten it for days... ), you don't need to create a new configuration file anyway, that's for other uses, actually with cross channel messagin' functionality now natural mode is much more versatile than webhook mode"
             echo "        --auth <auth>: use auth string instead of config file, basically you can't use them both"
@@ -1214,6 +1579,7 @@ do
             echo "            and i'm still not used to called discord chatroom \"server\", because what runs this script is the real server for me"
             echo "        --join-chatroom <chatroom-invite-link>: the ability to join chatroom via ARSEFOCKIN' B A S H, you just need to provide the last few letters of the invite link, for https://discord.gg/FEGEL you only need \"FEGEL\""
             echo "        --customfunny <funnyemote>: custom emote to express sarcasm"
+            echo "        --snowflakes-end / --snowflakes2-end: spam \"Snowflakes\" after postin' normal final messages, well, to mock these fockin' snowflakes who couldn't stand futaba.sh grade pure cutie hentai"
             echo
             echo "    Help: "
             echo "        -h or -H or --help: this shit"
@@ -1262,6 +1628,23 @@ then
     exit 10
 fi
 
+if [ "$rconf" ] && [ "$rauth" ]
+then
+    echo "Houston, we have an arsefockin' problem: You can't use reciver config file and reciver auth both" >&2
+    exit 11
+fi
+
+if [ $mode == 0 ] && [ ! "$rconf" ] && [ ! "$rauth" ]
+then
+    echo "Houston, we have an arsefockin' problem: You must either give a reciver auth or reciver config file to be able to receive messages from your discord channel in webhook mode" >&2
+    exit 12
+fi
+
+if [ "$rconf" ]
+then
+    rauth=`cat "$rconf" | grep '"Authorization: ' | head -1 | sed 's/"/\n/g' | grep "Authorization: " | sed 's/Authorization: //g'`
+fi
+
 if [ $configmode ]
 then
     webhook_url=`sed -n 1p "$configfilepath"`
@@ -1277,7 +1660,7 @@ fi
 if [ ! "$curl_command" ] # curl command unset, force auth mode usin' $auth_defaults
 then
     echo -e "\033[31m\$curl_command not detected, force auth mode\033[0m"
-    auth="$auth_defaults"
+    [ "$auth" ] || auth="$auth_defaults"
     if [ $channelid ]
     then
         purechannelid=`echo "$channelid" | cut -d/ -f2`
@@ -1300,6 +1683,22 @@ else
     else
         channelid="$channelid_defaults"
         purechannelid=`echo "$channelid" | cut -d/ -f2`
+    fi
+fi
+
+if [ $mode == 1 ] && [ ! "$auth" ] && [ ! "$curl_command" ]
+then
+    echo "Houston, we have an arsefockin' problem: Not a single bit of arsefockin' auth could be found and used to send messages" >&2
+    exit -999999
+fi
+
+if [ ! "$rauth" ] # if receiver auth's not given by any mean, it will use transmitter auth; otherwise rauth should either be fockin' given, or can be extracted in conf file
+then
+    if [ "$auth" ]
+    then
+        rauth="$auth"
+    else
+        rauth=`echo "$curl_command" | sed 's/"/\n/g' | grep "Authorization: " | sed 's/Authorization: //g'`
     fi
 fi
 
@@ -1352,7 +1751,7 @@ fi
 
 [ $funnyemote ] || funnyemote="<:funny_v2:530321446338035742>"
 
-if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ]
+if [ ! $messagemode ] && [ ! $uploadmode ] && [ ! $englandmode ] && [ ! $pingasmode ] && [ ! $snowflakesmode ]
 then
     if [ ! "$cutie" ]
     then 
@@ -1362,220 +1761,22 @@ then
 else
     if [ $pingasmode ]
     then
-        england "https://www.youtube.com/watch?v=9_mgU0VbqBw"
-        england "[Intro: Jake **PINGAS**]"
-        england "**PINGAS**"
-        england "Y'all can't **PINGAS** this"
-        england "Y'all don't know what's about to happen baby"
-        england "Team **PINGAS**"
-        england "Los **PINGAS**les, **PINGAS** boy"
-        england "But I'm from **PINGAS**io though, **PINGAS** boy"
-        england "[Verse 1: Jake **PINGAS**]"
-        england "It's **PINGAS**day bro, with the **PINGAS** Channel flow"
-        england "5 **PINGAS** on YouTube in 6 months, never done before"
-        england "Passed all the **PINGAS**tition man, **PINGAS**Pie is next"
-        england "Man I'm poppin' all these **PINGAS**, got a brand new **PINGAS**"
-        england "And I met a **PINGAS** too and I'm **PINGAS** with the **PINGAS**"
-        england "This is Team **PINGAS**, bitch, who the hell are **PINGAS** you?"
-        england "And you know I **PINGAS** them out if they ain't with the **PINGAS**"
-        england "Yeah, I'm talking about you, you beggin' for **PINGAS**"
-        england "Talking shit on **PINGAS** too but you still hit my **PINGAS** last night"
-        england "It was 4:**PINGAS**2 and I got the **PINGAS** to prove"
-        england "And all the **PINGAS** too, don't make me tell them the **PINGAS**"
-        england "And I just dropped some new **PINGAS** and it's selling like a **PINGAS**, church"
-        england "**PINGAS**io's where I'm from, we chew 'em like it's **PINGAS**"
-        england "We shooting with a **PINGAS**, the **PINGAS** just for fun"
-        england "I **PINGAS** Bolt and run, catch me at **PINGAS**"
-        england "I cannot be **PINGAS**, Jake **PINGAS** is number one"
-        england "[Chorus: Jake **PINGAS**]"
-        england "It's **PINGAS**day bro"
-        england "It's **PINGAS**day bro"
-        england "It's **PINGAS**day bro"
-        england "I said it is **PINGAS**day bro!"
-        england "[Verse 2: Nick **PINGAS**]"
-        england "You know it's Nick **PINGAS** and my collar stay **PINGAS**"
-        england "Yes, I can **PINGAS** and no, I am not from **PINGAS**"
-        england "**PINGAS**land is my **PINGAS**"
-        england "**PINGAS**land is my **PINGAS**"
-        england "**PINGAS**land is my **PINGAS**"
-        england "**PINGAS**land is my **PINGAS**"
-        england "**PINGAS**land is my **PINGAS**"
-        england "And if it weren't for Team **PINGAS**, then the **PINGAS** would be **PINGAS**"
-        england "I'll pass it to **PINGAS** 'cause you know he stay **PINGAS**"
-        england "[Verse 3: **PINGAS** Sutton]"
-        england "Two months ago you didn't know my **PINGAS**"
-        england "And now you want my **PINGAS**? Bitch I'm blowin' up"
-        england "I'm only **PINGAS** up, now I'm **PINGAS** off, I'm never **PINGAS** off"
-        england "Like Mag, who? Digi who? Who are you?"
-        england "All these **PINGAS** I just ran through, hit a **PINGAS** in a month"
-        england "Where were you? Hatin' on me back in **PINGAS** Fake"
-        england "Think you need to get your **PINGAS** straight"
-        england "Jakey brought me to the **PINGAS**, now we're really **PINGAS** off"
-        england "**PINGAS** 1 and **PINGAS** 4, that's why these **PINGAS** all at our door"
-        england "It's **PINGAS** at the top so we all **PINGAS**"
-        england "We left **PINGAS**io, now the trio is all **PINGAS**"
-        england "It's Team **PINGAS**, bitch"
-        england "We back again, always **PINGAS**, never **PINGAS**"
-        england "We the **PINGAS**, we'll see you in the **PINGAS**"
-        england "[Chorus: Jake **PINGAS**]"
-        england "It's **PINGAS**day bro"
-        england "It's **PINGAS**day bro"
-        england "It's **PINGAS**day bro"
-        england "I said it is **PINGAS**day bro!"
-        england "[Verse 4: Martinez **PINGAS**]"
-        england "Hold on, hold on, hold on"
-        england "Can we switch the **PINGAS**?"
-        england "We 'bout to **PINGAS**"
-        england "Sí, lo único que quiero es **PINGAS**"
-        england "Trabajando en YouTube todo el día **PINGAS**"
-        england "Viviendo en **PINGAS**A, el sueño de **PINGAS**"
-        england "Enviando dólares a mi familia **PINGAS**"
-        england "Tenemos una **PINGAS** por encima"
-        england "Se llama **PINGAS** Trump y está en la cima"
-        england "Desde aquí te **PINGAS** - can I get my **PINGAS**?"
-        england "Martinez **PINGAS**, representando **PINGAS**"
-        england "Desde la pobreza a la fama"
-        england "[Chorus: Jake **PINGAS**]"
-        england "It's **PINGAS**day bro"
-        england "It's **PINGAS**day bro"
-        england "It's **PINGAS**day bro"
-        england "I said it is **PINGAS**day bro!"
-        england "[Verse 5: **PINGAS** Brooks]"
-        england "Yo, it's **PINGAS** Brooks"
-        england "The competition **PINGAS**"
-        england "These guys up on me"
-        england "I got 'em with the **PINGAS**"
-        england "Lemme edu**PINGAS**"
-        england "And I ain't talking **PINGAS**"
-        england "**PINGAS** is your home?"
-        england "So, stop calling my **PINGAS**"
-        england "I'm flyin' like a **PINGAS**"
-        england "They buying like a **PINGAS**"
-        england "Yeah, I smell like a **PINGAS**"
-        england "Is that your boy's **PINGAS**?"
-        england "[Verse 6: Jake **PINGAS**]"
-        england "Is that your boy's **PINGAS**?"
-        england "Started **PINGAS**"
-        england "Quicken Loans"
-        england "Now I'm in my **PINGAS** zone"
-        england "Yes, they all **PINGAS** me"
-        england "But, that's some **PINGAS** clones"
-        england "Stay in all designer **PINGAS**"
-        england "And they ask me what I **PINGAS**"
-        england "I said is 10 with six **PINGAS**"
-        england "Always plug, merch link in **PINGAS**"
-        england "And I will see you to **PINGAS** 'cause"
-        england "It's **PINGAS** day bro"
-        england "**P I N G A S**"
+        pingaslandismypingas
         exit
     fi
     if [ $englandmode ]
     then
-        england "https://www.youtube.com/watch?v=hSlb1ezRqfA"
-        england "[Intro: Jake Paul]"
-        england "Y'all can't handle this"
-        england "Y'all don't know what's about to happen, baby"
-        england "Team 10"
-        england "Los Angeles, Cali boy"
-        england "But I'm from Ohio though, white boy"
-        england "[Verse 1: Jake Paul]"
-        england "It's everyday bro, with the Disney Channel flow"
-        england "5 mill on YouTube in 6 months, never done before"
-        england "Passed all the competition man, PewDiePie is next"
-        england "Man I'm poppin' all these checks, got the brand new Rolex"
-        england "And I met a Lambo too and I'm coming with the crew"
-        england "This is Team 10, bitch, who the hell are flippin' you?"
-        england "And you know I kick them out if they ain't with the crew"
-        england "Yeah, I'm talking about you, you beggin' for attention"
-        england "Talking shit on Twitter too but you still hit my phone last night"
-        england "It was 4:52 and I got the text to prove"
-        england "And all the recordings too, don't make me tell them the truth"
-        england "And I just dropped some new merch and it's selling like a god, church"
-        england "Ohio's where I'm from, we chew 'em like it's gum"
-        england "We shooting with a gun, the tattoo just for fun"
-        england "I Usain Bolt and run, catch me at game one"
-        england "I cannot be outdone, Jake Paul is number one"
-        england "[Chorus: Jake Paul]"
-        england "It's everyday bro"
-        england "It's everyday bro"
-        england "It's everyday bro"
-        england "I said it's everyday bro!"
-        england "[Verse 2: Nick Crompton]"
-        england "You know it's Nick Crompton and my collar stay poppin'"
-        england "Yes, I can rap and no, I am not from Compton"
-        england "**ENGLAND IS MY CITY**"
-        england "**England is my city**"
-        england "**England Is My City**"
-        england "**England is my city**"
-        england "**ENGLAND IS MY CITY**"
-        england "And if it weren't for Team 10, then the US would be shitty"
-        england "I'll pass it to Chance 'cause you know he stay litty"
-        england "[Verse 3: Chance Sutton]"
-        england "Two months ago you didn't know my name"
-        england "And now you want my fame?"
-        england "Bitch I'm blowin' up, I'm only going up"
-        england "Now I'm going off, I'm never fallin' off"
-        england "Like Mag, who? Digi who? Who are you?"
-        england "All these beefs I just ran through, hit a milli in a month"
-        england "Where were you? Hatin' on me back in West Fake"
-        england "Think you need to get your shit straight"
-        england "Jakey brought me to the top, now we really poppin' off"
-        england "Number 1 and number 4, that's why these fans all at our door"
-        england "It's lonely at the top so we all going"
-        england "We left Ohio, now the trio is all rollin'"
-        england "It's Team 10, bitch"
-        england "We back again, always first, never last"
-        england "We the future, we'll see you in the past"
-        england "[Chorus: Jake Paul]"
-        england "It's everyday bro"
-        england "It's everyday bro"
-        england "It's everyday bro"
-        england "I said it's everyday bro!"
-        england "[Interlude: Martinez Twins]"
-        england "Hold on, hold on, hold on (espera)"
-        england "Can we switch the language? (ha, ya tú sabe')"
-        england "We 'bout to hit it (dale)"
-        england "[Verse 4: Martinez Twins]"
-        england "Sí, lo único que quiero es dinero"
-        england "Trabajando en YouTube todo el día entero (dale)"
-        england "Viviendo en U.S.A, el sueño de cualquiera (ha)"
-        england "Enviando dólares a mi familia entera (pasta)"
-        england "Tenemos una persona por encima"
-        england "Se llama Donald Trump y está en la cima (la cima)"
-        england "Desde aquí te cantamos, can I get my VISA?"
-        england "Martinez Twins, representando España"
-        england "Desde la pobreza a la fama"
-        england "[Chorus: Jake Paul]"
-        england "It's everyday bro"
-        england "It's everyday bro"
-        england "It's everyday bro"
-        england "I said it's everyday bro!"
-        england "[Verse 5: Tessa Brooks]"
-        england "Yo, it's Tessa Brooks"
-        england "The competition shook"
-        england "These guys up on me"
-        england "I got 'em with the hook"
-        england "Lemme educate ya"
-        england "And I ain't talking book"
-        england "Panera is your home?"
-        england "So, stop calling my phone"
-        england "I'm flyin' like a drone"
-        england "They buying like a loan"
-        england "Yeah, I smell good"
-        england "Is that your boy's cologne?"
-        england "[Verse 6: Jake Paul]"
-        england "Is that your boy's cologne?"
-        england "Started balling', quicken Loans"
-        england "Now I'm in my flippin' zone"
-        england "Yes, they all copy me"
-        england "But, that's some shitty clones"
-        england "Stay in all designer clothes"
-        england "And they ask me what I make"
-        england "I said it's 10 with six zeros"
-        england "Always plug, merch link in bio"
-        england "And I will see you tomorrow 'cause"
-        england "It's everyday bro"
-        england "Peace"
+        englandismycity
+        exit
+    fi
+    if [ $snowflakesmode ] && [ $snowflakesmode == 1 ]
+    then
+        snowflakes
+        exit
+    fi
+    if [ $snowflakesmode ] && [ $snowflakesmode == 2 ]
+    then
+        snowflakes2
         exit
     fi
     if [ $messagemode ]
@@ -1679,6 +1880,9 @@ case "$site" in
         else
             localmachine_pixiv
         fi
+        ;;
+    discordchannel)
+        discordchannel
         ;;
     *)
         echo "Houston, we have an arsefockin' problem: Site currently not supported" >&2
