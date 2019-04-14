@@ -229,6 +229,7 @@ function initmessage() {
 }
 
 function finalmessage() {
+    [ $(($hcount%$multiplepics)) -eq 0 ] || england "$combined"
     finaltime=`date +%s%N`
     # usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
     usedtime=`awk -v x=$finaltime -v y=$starttime 'BEGIN{printf "%.3f",(x-y)/1000000000}'`
@@ -307,6 +308,28 @@ function post2discord() {
     esac
 }
 
+function post2discord_v2() {
+    let hcount++
+    case $(($hcount%$multiplepics)) in
+        0)
+            combined=${combined}${hentai}
+            case "$mode" in
+                0)
+                    nanako "$combined"
+                    sleep "$webhookinterval"
+                    ;;
+                1)
+                    futaba "$combined"
+                    sleep "$naturalinterval"
+                    ;;
+            esac
+            combined=`echo ""`
+            ;;
+        *)
+            combined=${combined}${hentai}"$delimiter"
+    esac
+}
+
 function processhentai() {
     if [ ! $linkonlymode ]
     then
@@ -315,7 +338,7 @@ function processhentai() {
             echo -e "\e[33mdownloadin'\e[36m $hentai\e[0m: "
             download
         else
-            post2discord
+            [ $multiplepics ] && post2discord_v2 || post2discord
         fi
     else
         echo "$hentai" >> "$exportfilepath"
@@ -471,7 +494,7 @@ function localmachine() {
             echo -e "\e[33mdownloadin'\e[36m $hentai\e[0m: "
             download
         else
-            post2discord
+            [ $multiplepics ] && post2discord_v2 || post2discord
         fi
     done
     
@@ -1349,7 +1372,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,england-is-my-city,pingasland-is-my-pingas,snowflakes,snowflakes2,snowflakes-end,snowflakes2-end,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,auth:,rauth:,rconf:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,multiple-pics:,delimiter:,england-is-my-city,pingasland-is-my-pingas,snowflakes,snowflakes2,snowflakes-end,snowflakes2-end,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,auth:,rauth:,rconf:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -1388,6 +1411,14 @@ do
         -m | -M | --message)
             messagemode=1
             message=$2
+            shift 2
+            ;;
+        --multiple-pics)
+            multiplepics=$2
+            shift 2
+            ;;
+        --delimiter)
+            delimiter=$2
             shift 2
             ;;
         -e | -E | --england-is-my-city)
@@ -1558,6 +1589,8 @@ do
             echo "        --silent: omit all of messages except pics (they'll be outputted in console anyway), may be useful in some cases"
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
             echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
+            echo "        --multiple-pics <multiplepics>: send more than one pic in a message, the maximum pics you can send at once is 5, more pics would not be in embeds"
+            echo "                --delimiter <delimiter>: set the delimiter between pics in a message, defaultly it would a new line (\\n), but you can use space as well"
             echo
             echo "    pixiv.net Related Configurations: "
             echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
@@ -1810,6 +1843,10 @@ then
     echo "Houston, we have an arsefockin' problem: You need to input a hentai site" >&2
     exit 5
 fi
+
+hcount=0
+combined=`echo ""`
+[ "$delimiter" ] || delimiter="\n"
 
 case "$site" in
     paheal)
