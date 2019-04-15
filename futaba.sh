@@ -158,6 +158,9 @@ function initmessage() {
         discordchannel)
             sitename="discordapp.com (sarcastic"
             ;;
+        apkpure)
+            sitename="apkpure.com"
+            ;;
         *)
             echo "fock it" >&2
             exit 6
@@ -215,6 +218,9 @@ function initmessage() {
         discordchannel)
             message="FYI, the source channel's id is **$cutie**, but idk how many pics does this hentai have (and idc either$funnyemote), and the hentai update interval is set to **$nein** second(s), so enjoy your fockin' hentai $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
             ;;
+        apkpure)
+            message="FYI, the search term is **$cutie**, and it has **$finalfish** search result(s), and the apk update interval is set to **$nein** second(s), so enjoy your fockin' apk $funnyemote$funnyemote$funnyemote$funnyemote$funnyemote"
+            ;;
         *)
             echo "fock it" >&2
             exit 6
@@ -265,13 +271,26 @@ function download() {
         mkdir "`urldecode "$cutie" | sed 's/\//./g'`.pics"
     fi
     cd temp
-    rm *.* -f
-    hentaifilename=${hentai##*/}
-    hentaifilename=${hentaifilename%\?*}
-    hentaifilename=${hentaifilename/:large} # for fockin' twitter images xD
+    if [ ! "$hentaifilename" ]
+    then
+        hentaifilename=${hentai##*/}
+        hentaifilename=${hentaifilename%\?*}
+        hentaifilename=${hentaifilename/:large} # for fockin' twitter images xD
+    fi
     [ $aria2 ] && aria2c -R -s 128 -x 128 -k 1M --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -o "$hentaifilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$hentai" -O "$hentaifilename"
     
     ext3=`date +%y.%m.%d`
+    
+    for file in `ls | sed 's/ /|/g'`
+    do
+        file=`echo $file | sed 's/|/ /g'`
+        filesize=`ls -l "$file" | awk '{ print $5 }'`
+        if [ $filesize -gt $((1048576*$maxfilesize)) ]
+        then
+            rar a -df -v${maxfilesize}M -ep1 -htb -m0 -ma5 -rr5 -ts -ol "${file%.*}.rar" "$file"
+        fi
+    done
+    
     for file in `ls | sed 's/ /|/g'`
     do
         file=`echo $file | sed 's/|/ /g'`
@@ -293,6 +312,7 @@ function download() {
         rm * -f
     fi
     cd ..
+    unset hentaifilename
 }
 
 function post2discord() {
@@ -1099,6 +1119,29 @@ function pixiv_favourite() {
     finalmessage
 }
 
+function apkpure() { # $1 = apkpure search term, $2 = discord auth, $3 = channelid, $4 = max file size in MB, exceeded ones would be compressed via rar
+    OLD_IFS=$IFS
+    IFS=$'\n'
+    finalfish=`curl "https://apkpure.com/search?q=$cutie" | grep "<span>[0-9]*</span> search results found" | grep -Eo "[0-9]*"`
+    
+    initmessage
+
+    for jajaja in `seq 0 15 $finalfish`
+    do 
+        for link in `curl "https://apkpure.com/search-page?q=$cutie&t=app&begin=$jajaja" | grep ' <p class="search-title">' | grep -Eo 'href=.*">' | sed 's/href="//g' | sed 's/">//g' `
+        do
+            damn=`curl "https://apkpure.com$link/download?from=details"`
+            hentaifilename=`echo "$damn" | grep -Eo 'span class="file".*<span class="fsize"' | sed 's/span class="file">//g' | sed 's/ <span class="fsize"//g'`
+            hentai=`echo "$damn" | grep 'iframe id="iframe_download"' | sed 's/"/\n/g' | grep "http"`
+            processhentai
+        done
+    done
+    
+    finalmessage
+
+    IFS=$OLD_IFS
+}
+
 ######################################################################################################################################################################
 
 ######################################################################################################################################################################
@@ -1372,7 +1415,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,multiple-pics:,delimiter:,england-is-my-city,pingasland-is-my-pingas,snowflakes,snowflakes2,snowflakes-end,snowflakes2-end,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,auth:,rauth:,rconf:,help -- "$@"`
+parameters=`getopt -o S:s:WwA:a:NnM:m:EeU:u:C:c:DdL:l:hH -a -l site:,webhook,avatar-url:,natural-mode,message:,multiple-pics:,delimiter:,max-filesize:,england-is-my-city,pingasland-is-my-pingas,snowflakes,snowflakes2,snowflakes-end,snowflakes2-end,upload:,config-file:,fast-webhook:,download,aria2:,preserve-pics,link-only:,troll:,silent,webhookinterval:,naturalinterval:,pixiv-fast-mode,pixiv-fullscan-mode,pixiv-order:,pixiv-log,start-from:,end-with:,full-tag,ugoira-mode,channel-id:,join-chatroom:,customfunny:,auth:,rauth:,rconf:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -1419,6 +1462,10 @@ do
             ;;
         --delimiter)
             delimiter=$2
+            shift 2
+            ;;
+        --max-filesize)
+            maxfilesize=$2
             shift 2
             ;;
         -e | -E | --england-is-my-city)
@@ -1553,7 +1600,7 @@ do
             shift 2
             ;;
         -h | -H | --help)
-            echo "copyrekt die deutsche Orthopädiespezialist 2018"
+            echo "copyrekt die deutsche Orthopädiespezialist 201⑨"
             echo "multi-site rule34 fully automatic masspostin' bot for discord"
             echo "you can either use a webhook or your own account or alt account if you don't have permissions to create webhooks"
             echo
@@ -1577,7 +1624,7 @@ do
             echo "        -l or -L or --link-only <exportfilepath>: only export hentai pics links to file; for pixiv, it's the entire wget command, you can use bash or localmachine_pixiv to run them later"
             echo
             echo "    Configurations: "
-            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, danbooru, rule34xxx, yandere, yandere2, shinobijp, sankaku, pixiv, pixiv_author, pixiv_favourite"
+            echo "        -s or -S or --site <sitename>: input site name, currently supported: paheal, gelbooru, danbooru, rule34xxx, yandere, yandere2, shinobijp, sankaku, pixiv, pixiv_author, pixiv_favourite, apkpure"
             echo "            use localmachine to post or upload pics in local file (like bein' generated in link-only mode) to discord, in this case \$cutie will be your filename"
             echo "            and localmachine_pixiv to download and reupload pics in local pixiv file generated in link-only mode to discord, in this case \$cutie will be your filename"
             echo "            and discordchannel to get link / download all pics from a discord channel to well, post / reupload them to another discord channel, in this case \$cutie will be your source discord channel (must be <chatroom-id/channel-id> format)"
@@ -1590,7 +1637,8 @@ do
             echo "        --webhookinterval <newinterval>: override webhook mode hentei interval in the script"
             echo "        --naturalinterval <newinterval>: override natural mode hentei interval in the script"
             echo "        --multiple-pics <multiplepics>: send more than one pic in a message, the maximum pics you can send at once is 5, more pics would not be in embeds"
-            echo "                --delimiter <delimiter>: set the delimiter between pics in a message, defaultly it would a new line (\\n), but you can use space as well"
+            echo "            --delimiter <delimiter>: set the delimiter between pics in a message, defaultly it would a new line (\\n), but you can use space as well"
+            echo "        --max-filesize <maxfilesize>: max file size in MB when uploadin' to discord, default value is 8MB, exceeded ones would be compressed via rar"
             echo
             echo "    pixiv.net Related Configurations: "
             echo "        --pixiv-fast-mode: only use the list page info to dump pixiv pics, but will generate too much 404"
@@ -1847,6 +1895,7 @@ fi
 hcount=0
 combined=`echo ""`
 [ "$delimiter" ] || delimiter="\n"
+[ "$maxfilesize" ] || maxfilesize=8
 
 case "$site" in
     paheal)
@@ -1920,6 +1969,15 @@ case "$site" in
         ;;
     discordchannel)
         discordchannel
+        ;;
+    apkpure)
+        if [ ! $downloadmode ]
+        then
+            echo "Houston, we have an arsefockin' problem: apkpure.com MUST use download mode to process, because apk links of it cannot be processed by discord" >&2
+            exit 7
+        else
+            apkpure
+        fi
         ;;
     *)
         echo "Houston, we have an arsefockin' problem: Site currently not supported" >&2
