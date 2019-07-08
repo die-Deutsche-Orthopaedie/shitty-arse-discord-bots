@@ -3,7 +3,7 @@
 # discord "file hostin'" bot (sarcastic
 # upload all files of a folder to discord
 # auto compress files into 8MB or 50MB volumes if file size excceeded
-# auto generate discord links file so you can aria2c its sorry arse afterwards, so that you actually don't need to be limited to bullshit 8MB or 50MB file size limit
+# auto generate discord link file so you can aria2c its sorry arse afterwards, so that you actually don't need to be limited to bullshit 8MB or 50MB file size limit
 
 maxfilesize=8 # in MB and not in MiB bruh
 aria2location="/lea/is/worst/girl/aria2c.exe"
@@ -32,6 +32,8 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
             recursiveUploadv3 "$base/$file" "$2" "$superbase"
             sleep 1
         else
+            relativepath="${base#$superbase}"
+            relativepath="${relativepath#/}"
             if [[ "$file" == *,* ]]
             then
                 file2=`echo "$file" | sed 's/,/_/g'`
@@ -47,6 +49,8 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
                         discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"' | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'`
                         echo -e "\e[36m$discordlink\e[0m"
                         echo "$discordlink" >> "$exportfilename"
+                        echo " dir=downloaded/$relativepath" >> "$exportfilename"
+                        echo " out=$files" >> "$exportfilename"
                         sleep 1
                     done
                     rm /tmp/bruh -rf
@@ -56,6 +60,8 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
                     discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"' | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'`
                     echo -e "\e[36m$discordlink\e[0m"
                     echo "$discordlink" >> "$exportfilename"
+                    echo " dir=downloaded/$relativepath" >> "$exportfilename"
+                    echo " out=$file" >> "$exportfilename"
                     sleep 1
                     mv "$base/$file2" "$base/$file"
                 fi
@@ -73,6 +79,8 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
                         discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"' | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'`
                         echo -e "\e[36m$discordlink\e[0m"
                         echo "$discordlink" >> "$exportfilename"
+                        echo " dir=downloaded/$relativepath" >> "$exportfilename"
+                        echo " out=$files" >> "$exportfilename"
                         sleep 1
                     done
                     rm /tmp/bruh -rf
@@ -81,6 +89,8 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
                     discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"' | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'`
                     echo -e "\e[36m$discordlink\e[0m"
                     echo "$discordlink" >> "$exportfilename"
+                    echo " dir=downloaded/$relativepath" >> "$exportfilename"
+                    echo " out=$file" >> "$exportfilename"
                     sleep 1
                 fi
             fi
@@ -154,8 +164,8 @@ do
             echo "  -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); well it's for backward compatibility of futaba.sh bruh"
             echo "  --max-filesize <maxfilesize>: max file size in MB when uploadin' to discord, default value is 8MB, exceeded ones would be compressed via rar"
             echo "  -n or -N or --nitro: equals to --max-filesize 50"
-            echo "  -e or -E or --export-filename <filename>: customize filename of discord links file"
-            echo "  -u or -U or --uber-pack <filename>: pack generated discord links file, an aria2c.exe and a batch file into an .rar (well, you don't need to type .rar again bruh) so windows users would be happy to use, and most importantly it would be uploaded to discord and have a link aswell, you can instantly copy this link elsewhere as if it's the key to million of files:funny_v2:"
+            echo "  -e or -E or --export-filename <filename>: customize filename of discord link file"
+            echo "  -u or -U or --uber-pack <filename>: pack generated discord link file, an aria2c.exe and a batch file into an .rar (well, you don't need to type .rar again bruh) so windows users would be happy to use, and most importantly it would be uploaded to discord and have a link aswell, you can instantly copy this link elsewhere as if it's the key to million of files:funny_v2:"
             echo
             echo "and btw folder path must be fockin' absolute path"
             exit
@@ -210,12 +220,15 @@ recursiveUploadv3 "$basedir" "$channelid"
 
 if [ "$uber" ]
 then
+    response=`curl "https://discordapp.com/api/v6/channels/$purechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$channelid" -H "Authorization: $auth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"link file $exportfilename ready to fire<:funny_v2:530321446338035742><:funny_v2_right:530321527908859907>\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@$exportfilename"`
+    discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"' | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'`
+    echo -e "your link file's link: \e[36m$discordlink\e[0m"
     echo "aria2c -x 128 -s 128 -j 128 -k 1M -R -i $exportfilename" > direct.download.bat
     echo "aria2c -x 128 -s 128 -j 128 -k 1M -R -i %1" > drag.list.file.and.download.bat
     rar a -ep1 -htb -m5 -ma5 -rr5 -ts -ol "/tmp/$uber.rar" "$exportfilename" "$aria2location" "direct.download.bat" "drag.list.file.and.download.bat"
     rm "direct.download.bat" "drag.list.file.and.download.bat" -f
     response=`curl "https://discordapp.com/api/v6/channels/$purechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$channelid" -H "Authorization: $auth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"über pack $uber.rar ready to fire<:funny_v2:530321446338035742><:funny_v2_right:530321527908859907>\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@/tmp/$uber.rar"`
     discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"' | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'`
-    echo -e "your über pack link: \e[36m$discordlink\e[0m"
+    echo -e "your über pack's link: \e[36m$discordlink\e[0m"
     rm "/tmp/$uber.rar" -f
 fi
