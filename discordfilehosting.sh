@@ -38,20 +38,23 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
             then
                 file2=`echo "$file" | sed 's/,/_/g'`
                 filesize=`ls -l "$base/$file" | awk '{ print $5 }'`
-                if [ $filesize -gt $((1000000*$maxfilesize)) ]
+                if [ "$forcepack" ] || [ $filesize -gt $((1000000*$maxfilesize)) ]
                 then
                     rm /tmp/bruh -rf
                     mkdir /tmp/bruh
                     rar a -v${maxfilesize}M -ep1 -htb -m0 -ma5 -rr5 -ts -ol "/tmp/bruh/${file2%.*}.rar" "$base/$file"
+                    file="${file%.*}"
+                    file2="${file2%.*}"
                     for files in `ls /tmp/bruh | sed 's/ /|/g'`
                     do
                         files=`echo "$files" | sed 's/|/ /g'`
-                        response=`curl "https://discordapp.com/api/v6/channels/$purechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$channelid" -H "Authorization: $auth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"<:funny_v2_right:530321527908859907>$files<:funny_v2:530321446338035742>\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@/tmp/bruh/$files"`
+                        newfiles="${files/$file2/$file}"
+                        response=`curl "https://discordapp.com/api/v6/channels/$purechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$channelid" -H "Authorization: $auth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"<:funny_v2_right:530321527908859907>$newfiles<:funny_v2:530321446338035742>\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@/tmp/bruh/$files"`
                         discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"attachments"' | grep '"url"' | sed 's/,/\n/g' | grep '"attachments"' | sed 's/"/\n/g' | grep 'http'`
                         echo -e "\e[36m$discordlink\e[0m"
                         echo "$discordlink" >> "$exportfilename"
                         echo " dir=downloaded/$relativepath" >> "$exportfilename"
-                        echo " out=$files" >> "$exportfilename"
+                        echo " out=$newfiles" >> "$exportfilename"
                         sleep 1
                     done
                     rm /tmp/bruh -rf
@@ -68,7 +71,7 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
                 fi
             else
                 filesize=`ls -l "$base/$file" | awk '{ print $5 }'`
-                if [ $filesize -gt $((1048576*$maxfilesize)) ]
+                if [ "$forcepack" ] || [ $filesize -gt $((1048576*$maxfilesize)) ]
                 then
                     rm /tmp/bruh -rf
                     mkdir /tmp/bruh
@@ -113,7 +116,7 @@ done
 
 starttime=`date +%s%N`
 currentdir=`pwd`
-parameters=`getopt -o c:C:e:E:u:U:hHnN -a -l config-file:,max-filesize:,export-filename:,uber-pack:,help,nitro -- "$@"`
+parameters=`getopt -o c:C:e:E:u:U:hHfFnN -a -l config-file:,max-filesize:,export-filename:,uber-pack:,help,force-pack,nitro -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -141,6 +144,10 @@ do
             maxfilesize="$2"
             shift 2
             ;;
+        -f | -F | --force-pack)
+            forcepack="JAJAJAJAJA"
+            shift
+            ;;
         -n | -N | --nitro)
             maxfilesize=48
             shift
@@ -164,6 +171,7 @@ do
             echo "Options: "
             echo "  -c or -C or --config-file <configfilepath>: load a configuration file which contains three lines of webhook url, account curl command and account curl command (used to upload); well it's for backward compatibility of futaba.sh bruh"
             echo "  --max-filesize <maxfilesize>: max file size in MB when uploadin' to discord, default value is 8MB, exceeded ones would be compressed via rar"
+            echo "  -f or -F or --force-pack: pack all files with rar even if they're smaller than max file size"
             echo "  -n or -N or --nitro: equals to --max-filesize 50"
             echo "  -e or -E or --export-filename <filename>: customize filename of discord link file"
             echo "  -u or -U or --uber-pack <filename>: pack generated discord link file, an aria2c.exe and a batch file into an .rar (well, you don't need to type .rar again bruh) so windows users would be happy to use, and most importantly it would be uploaded to discord and have a link aswell, you can instantly copy this link elsewhere as if it's the key to million of files:funny_v2:"
