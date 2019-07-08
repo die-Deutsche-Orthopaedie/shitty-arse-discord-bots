@@ -37,6 +37,7 @@ function recursiveUploadv3 { # $1 = absolute path, $2 = channel id, $3 = superba
             if [[ "$file" == *,* ]]
             then
                 file2=`echo "$file" | sed 's/,/_/g'`
+                filesize=`ls -l "$base/$file" | awk '{ print $5 }'`
                 if [ $filesize -gt $((1000000*$maxfilesize)) ]
                 then
                     rm /tmp/bruh -rf
