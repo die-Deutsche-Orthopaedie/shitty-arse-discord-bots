@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>discord image hostin' (sarcastic</title>
+    <link rel="shortcut icon" type="image/png" href="https://cdn.discordapp.com/attachments/598119350850945055/598133773275627530/funny_v2.png"/>
+    <script type="text/javascript">
+        var xhr;
+        function UploadFile() {
+            var fileObj = document.getElementById("file").files[0];
+            
+            var url = document.getElementById("webhookurl").value;
+
+            var form = new FormData();
+            form.append("file", fileObj);
+            form.append("payload_json", "{\"content\":\"" + document.getElementById("message").value + "\",\"username\":\"" + document.getElementById("username").value + "\",\"avatar_url\":\"" + document.getElementById("avatarurl").value + "\"}"); // discord parameters
+ 
+            xhr = new XMLHttpRequest();
+            xhr.open("post", url, true);
+            xhr.onload = uploadComplete;
+            xhr.onerror =  uploadFailed;
+ 
+            xhr.upload.onprogress = progressFunction;
+            xhr.upload.onloadstart = function(){
+                ot = new Date().getTime();
+                oloaded = 0;
+            };
+ 
+            xhr.send(form);
+        }
+ 
+        function uploadComplete(evt) {
+            alert("finally finished b r u h");
+            var data = JSON.parse(evt.target.responseText);
+            var file_url = data.attachments[0].url;
+            var filename = file_url.substr(file_url.lastIndexOf("/") + 1);
+            var PINGAS = document.getElementById("PINGAS");
+            PINGAS.innerHTML = "";
+            var bruh0 = document.createElement("div");
+            bruh0.innerHTML = "<p>OMG she's soooooooo c u t e~</p>";
+            PINGAS.appendChild(bruh0);
+            var bruh = document.createElement("div");
+            bruh.innerHTML = "<p>" + evt.target.responseText + "</p>";
+            PINGAS.appendChild(bruh);
+            var bruh2 = document.createElement("div");
+            bruh2.innerHTML ="<p><a href=" + file_url + ">" + filename + "</a></p>";
+            PINGAS.appendChild(bruh2);
+            var bruh3 = document.createElement("div");
+            bruh3.innerHTML ="<p><img src=" + file_url + "></img></p>";
+            PINGAS.appendChild(bruh3);
+        }
+        
+        function uploadFailed(evt) {
+            alert("b r u h");
+        }
+        
+        function cancleUploadFile(){
+            xhr.abort();
+        }
+ 
+         function progressFunction(evt) {
+            var progressBar = document.getElementById("progressBar");
+            var percentageDiv = document.getElementById("percentage");
+            if (evt.lengthComputable) {//
+                progressBar.max = evt.total;
+                progressBar.value = evt.loaded;
+                percentageDiv.innerHTML = Math.round(evt.loaded / evt.total * 100) + "%";
+            }
+            var time = document.getElementById("time");
+            var nt = new Date().getTime();
+            var pertime = (nt-ot)/1000;
+            ot = new Date().getTime();
+            var perload = evt.loaded - oloaded;
+            oloaded = evt.loaded;
+            var speed = perload/pertime;
+            var bspeed = speed;
+            var units = 'B/s';
+            if(speed/1024>1){
+                speed = speed/1024;
+                units = 'KB/s';
+            }
+            if(speed/1024>1){
+                speed = speed/1024;
+                units = 'MB/s';
+            }
+            speed = speed.toFixed(1);
+            var resttime = ((evt.total-evt.loaded)/bspeed).toFixed(1);
+            time.innerHTML = ', speed: '+speed+units+', remainin\' time: '+resttime+'s';
+            if(bspeed==0) time.innerHTML = 'b r u h';
+        }
+    </script>
+</head>
+<body>
+<h1>discord image hostin' (sarcastic</h1>
+<img src="https://i.redd.it/vwhm2lx3uci21.png"></img>
+<h3>"k-kawaii yukari chan is my waifu!! " :funny_v2:</h3>
+webhook url: 
+<input type="text" id="webhookurl" name="webhookurl" style="width: 1024px;"/>
+<br />
+username: 
+<input type="text" id="username" name="username" value="Hermann FEGELEIN" style="width: 1024px;"/>
+<br />
+avatar url:
+<input type="text" id="avatarurl" name="avatarurl" value="https://cdn.discordapp.com/attachments/598119350850945055/598119762832130088/FegeleinHeadOrthodox.png" value="" style="width: 1024px;"/>
+<br />
+message:
+<input type="text" id="message" name="message" value="b r u h" style="width: 1200px;"/>
+<br />
+<progress id="progressBar" value="0" max="100" style="width: 300px;"></progress>
+<span id="percentage"></span><span id="time"></span>
+<br /><br />
+<input type="file" id="file" name="myfile" />
+<input type="button" onclick="UploadFile()" value="u p l o a d" />
+<input type="button" onclick="cancleUploadFile()" value="cancel" />
+<div id="PINGAS"></div>
+</body>
+</html>
