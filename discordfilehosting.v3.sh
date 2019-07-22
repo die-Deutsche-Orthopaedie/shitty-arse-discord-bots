@@ -17,6 +17,10 @@ function ubertantics { # $1 = auth, $2 = guild name, $3 = channel name, $4 = web
     response=`curl "https://discordapp.com/api/v6/guilds" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Origin: https://discordapp.com" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/@me" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data "{\"name\":\"$2\",\"region\":\"us-west\",\"icon\":null}"`
     guildid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | head -1 | grep -Eo "[0-9]*"`
     syschannelid=`echo "$response" | sed 's/,/\n/g' | grep '"system_channel_id"' | grep -Eo "[0-9]*"`
+    if [ ! -f "funnyfaces.txt" ]
+    then
+        wget "https://cdn.discordapp.com/attachments/598119350850945055/602983449871253505/funnyfaces.txt" -O "funnyfaces.txt"
+    fi
     leftfunny=`sed -n "1p" funnyfaces.txt`
     rightfunny=`sed -n "2p" funnyfaces.txt`
     # upload funny emojis :funny_v2:
@@ -26,7 +30,7 @@ CURL_DATA`
     leftfunnyid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | grep -Eo "[0-9]*"`
     # upload another funny emojis :funny_v2_right:
     response=`curl "https://discordapp.com/api/v6/guilds/$guildid/emojis" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/channels/602959306437951528/602959307985780749" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data @- <<CURL_DATA
-        {"image":"$leftfunny","name":"funny_v2_right"}
+        {"image":"$rightfunny","name":"funny_v2_right"}
 CURL_DATA`
     rightfunnyid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | grep -Eo "[0-9]*"`
     echo "-F|<:funny_v2:$leftfunnyid>|<:funny_v2_right:$rightfunnyid>" >> "$5"
