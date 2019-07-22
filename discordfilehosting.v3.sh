@@ -8,13 +8,43 @@
 maxfilesize=8 # in MB and not in MiB bruh
 aria2location="/lea/is/worst/girl/aria2c.exe"
 
-rightfunny=""
-leftfunny=""
-welcomemessage="discord file hostin' bot will be runnin' in here soon, pls consider mutin' this place for a minute$leftfunny$rightfunny"
-finishmessage="done$leftfunny$rightfunny"
-
 username_defaults="Hermann FEGELEIN! FEGELEIN!! FEGELEIN!!! "
 avatarurl_defaults="https://cdn.discordapp.com/attachments/467378952739094539/597940396907036674/FegeleinHeadOrthodox.png"
+
+function ubertantics { # $1 = auth, $2 = guild name, $3 = channel name, $4 = webhook name, $5 = output config file path, $6 = number of channels
+    rm "$5" -f
+    # create a guild
+    response=`curl "https://discordapp.com/api/v6/guilds" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Origin: https://discordapp.com" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/@me" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data "{\"name\":\"$2\",\"region\":\"us-west\",\"icon\":null}"`
+    guildid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | head -1 | grep -Eo "[0-9]*"`
+    syschannelid=`echo "$response" | sed 's/,/\n/g' | grep '"system_channel_id"' | grep -Eo "[0-9]*"`
+    leftfunny=`sed -n "1p" funnyfaces.txt`
+    rightfunny=`sed -n "2p" funnyfaces.txt`
+    # upload funny emojis :funny_v2:
+    response=`curl "https://discordapp.com/api/v6/guilds/$guildid/emojis" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/channels/602959306437951528/602959307985780749" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data @- <<CURL_DATA
+        {"image":"$leftfunny","name":"funny_v2"}
+CURL_DATA`
+    leftfunnyid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | grep -Eo "[0-9]*"`
+    # upload another funny emojis :funny_v2_right:
+    response=`curl "https://discordapp.com/api/v6/guilds/$guildid/emojis" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/channels/602959306437951528/602959307985780749" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data @- <<CURL_DATA
+        {"image":"$leftfunny","name":"funny_v2_right"}
+CURL_DATA`
+    rightfunnyid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | grep -Eo "[0-9]*"`
+    echo "-F|<:funny_v2:$leftfunnyid>|<:funny_v2_right:$rightfunnyid>" >> "$5"
+    
+    [ "$6" ] && channels="$6" || channels=16
+    for channel in `seq 1 $channels`
+    do
+        # create a channel
+        response=`curl "https://discordapp.com/api/v6/guilds/$guildid/channels" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Origin: https://discordapp.com" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/channels/$guildid" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data "{\"type\":0,\"name\":\"$3$channel\",\"permission_overwrites\":[]}"`
+        channelid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | grep -Eo "[0-9]*"`
+        # create a webhook
+        response=`curl "https://discordapp.com/api/v6/channels/$channelid/webhooks" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Origin: https://discordapp.com" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/channels/$guildid/$channelid" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data "{\"name\":\"$4 $channel\"}"`
+        token=`echo "$response" | sed 's/,/\n/g' | grep "token" | sed 's/ "token": "//g' | sed 's/"//g'`
+        webhookid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | head -1 | grep -Eo "[0-9]*"`
+        curl -F "payload_json={\"content\":\"<:funny_v2:$leftfunnyid><:funny_v2_right:$rightfunnyid>\",\"username\":\"FEGELEIN $channel\",\"avatar_url\":\"https://cdn.discordapp.com/attachments/467378952739094539/597940396907036674/FegeleinHeadOrthodox.png\"}" "https://discordapp.com/api/webhooks/$webhookid/$token"
+        echo "-W|https://discordapp.com/api/webhooks/$webhookid/$token" >> "$5"
+    done
+}
 
 function message { # $1 = message
     [ "${webhookurl[0]}" ] && curl -F "payload_json={\"content\":\"$1\",\"username\":\"${username[0]}\",\"avatar_url\":\"${avatarurl[0]}\"}" "${webhookurl[0]}" || curl "https://discordapp.com/api/v6/channels/${purechannelid[0]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid[0]}" -H "Content-Type: application/json" -H "Authorization: ${auth[0]}" -H "Cookie: __cfduid=d6fa896e3cb4d9ce5a05e36e3c845ada11531595067" -H "DNT: 1" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}"; 
@@ -35,30 +65,36 @@ function praseconf {
     for templine in `cat "$configfilepath"`
     do
         temp=`echo $templine | cut -f1 -d\|`
-        if [ "$temp" = "-W" ]
+        if [ "$temp" = "-F" ]
         then
-            webhookurl[$processes]=`echo $templine | cut -f2 -d\|`
-            username[$processes]=`echo $templine | cut -f3 -d\|`
-            avatarurl[$processes]=`echo $templine | cut -f4 -d\|`
-            if [ ! "${username["$processes"]}" ]
-            then
-                username[$processes]="$username_defaults $processes"
-            fi
-            if [ ! "${avatarurl["$processes"]}" ]
-            then
-                avatarurl[$processes]="$avatarurl_defaults"
-            fi
+            leftfunny=`echo $templine | cut -f2 -d\|`
+            rightfunny=`echo $templine | cut -f3 -d\|`
         else
-            auth[$processes]=`echo $templine | cut -f1 -d\|`
-            channelid[$processes]=`echo $templine | cut -f2 -d\|`
-            if ! [ "${channelid["$processes"]}" != "${auth["$processes"]}" ]
+            if [ "$temp" = "-W" ]
             then
-                channelid[$processes]="$channelid_defeults"
+                webhookurl[$processes]=`echo $templine | cut -f2 -d\|`
+                username[$processes]=`echo $templine | cut -f3 -d\|`
+                avatarurl[$processes]=`echo $templine | cut -f4 -d\|`
+                if [ ! "${username["$processes"]}" ]
+                then
+                    username[$processes]="$username_defaults $processes"
+                fi
+                if [ ! "${avatarurl["$processes"]}" ]
+                then
+                    avatarurl[$processes]="$avatarurl_defaults"
+                fi
+            else
+                auth[$processes]=`echo $templine | cut -f1 -d\|`
+                channelid[$processes]=`echo $templine | cut -f2 -d\|`
+                if ! [ "${channelid["$processes"]}" != "${auth["$processes"]}" ]
+                then
+                    channelid[$processes]="$channelid_defeults"
+                fi
+                purechannelid[$processes]=`echo "${channelid["$processes"]}" | cut -d/ -f2`
+                echo "bruh ${auth["$processes"]} ${purechannelid["$processes"]}"
             fi
-            purechannelid[$processes]=`echo "${channelid["$processes"]}" | cut -d/ -f2`
-            echo "bruh ${auth["$processes"]} ${purechannelid["$processes"]}"
+            let processes+=1
         fi
-        let processes+=1
     done
     echo -e "found \e[36m$processes\e[0m process(es)"
     # for processid in `seq 0 $processes`
@@ -80,7 +116,6 @@ function upload_subprocess {  # upload a single file into discord, where $1 = ab
         if [ "$dir" = "$file" ]
         then
             dir=""
-            focced="JAJAJAJAJA"
         fi
         if [[ "$file" == *,* ]]
         then
@@ -223,7 +258,7 @@ do
 done
 
 currentdir=`pwd`
-parameters=`getopt -o c:C:e:E:u:U:hHfFnN -a -l config-file:,max-filesize:,export-filename:,uber-pack:,uber-standalone:,help,force-pack,nitro -- "$@"`
+parameters=`getopt -o aAe:E:u:U:hHfFnN -a -l antics,max-filesize:,export-filename:,uber-pack:,uber-standalone:,help,force-pack,nitro -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -243,9 +278,9 @@ while true
 do
     # echo $@
     case "$1" in
-        -c | -C | --config-file)
-            configfilepath="$2"
-            shift 2
+        -a | -A | --antics)
+            antics="JAJAJAJAJA"
+            shift
             ;;
         --max-filesize)
             maxfilesize="$2"
@@ -256,7 +291,7 @@ do
             shift
             ;;
         -n | -N | --nitro)
-            maxfilesize=48
+            maxfilesize=50
             shift
             ;;
         -e | -E | --export-filename)
@@ -277,7 +312,7 @@ do
             echo "upload all files of a folder to discord, but this time with multiple accounts and multi-threads support"
             echo
             echo "Usage: "
-            echo "./futaba.sh [options] path channelid configfilepath"
+            echo "./discordfilehosting.v3.sh [options] path channelid configfilepath"
             echo
             echo "Options: "
             echo "  --max-filesize <maxfilesize>: max file size in MB when uploadin' to discord, default value is 8MB, exceeded ones would be compressed via rar"
@@ -286,19 +321,34 @@ do
             echo "  -e or -E or --export-filename <filename>: customize filename of discord link file"
             echo "  -u or -U or --uber-pack <filename>: pack generated discord link file, an aria2c.exe and a batch file into an .rar (well, you don't need to type .rar again bruh) so windows users would be happy to use, and most importantly it would be uploaded to discord and have a link aswell, you can instantly copy this link elsewhere as if it's the key to million of files:funny_v2:"
             echo "      --uber-standalone <filename>: pack and upload only, in case this shitty script has an unexpected error at this paticular moment"
+            echo "  -a or -A or --antics: THE ULTIMATE ANTICS, once this option is used, this script can use the auth provided to create a guild (or discord \"server\" as you call it), then create 16 or whatever number you like channels and create one webhook per channel, then export webhook urls into a config file so you can use it to upload files afterwards"
+            echo "    in this case the parameters should be like: ./discordfilehosting.v3.sh --antics auth guild_name channel_name webhook_name output_config_file_path [number_of_channels]"
             echo
             echo "put auths of accounts and webhook urls into config files, one auth/webhook url per line"
             echo "webhooks must begin with a -W and then seperate webhook url, username (optional) and avatar url (also optional) with a |"
             echo "now normal accounts can post files into another channel other than default channel, just put channel id after a |"
+            echo "if you wanna use custom funny emote, you need to add a line with \"-F|[left_funny]|[right_funny]\""
             echo "and btw folder path must be fockin' absolute path"
             exit
             shift
             ;;
         --)
-            basedir="$2"
-            channelid_defeults="$3"
-            shift 2
-            break
+            if [ "$antics" ]
+            then
+                anticsauth="$2"
+                anticsguildname="$3"
+                anticschannelname="$4"
+                anticswebhookname="$5"
+                outputconfigfilepath="$6"
+                channels="$7"
+                ubertantics "$anticsauth" "$anticsguildname" "$anticschannelname" "$anticswebhookname" "$outputconfigfilepath" "$channels"
+                exit
+            else
+                basedir="$2"
+                channelid_defeults="$3"
+                shift 2
+                break
+            fi
             ;;
         *)
             echo "Internal error!"
@@ -314,6 +364,8 @@ then
 else
     configfilepath="$2"
     praseconf
+    welcomemessage="discord file hostin' bot will be runnin' in here soon, pls consider mutin' this place for a minute$leftfunny$rightfunny"
+    finishmessage="done$leftfunny$rightfunny"
 fi
 
 if [ ! "$exportfilename" ]
