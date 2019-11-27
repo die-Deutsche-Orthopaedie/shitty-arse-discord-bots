@@ -51,7 +51,7 @@ CURL_DATA`
 }
 
 function message { # $1 = message
-    [ "${webhookurl[0]}" ] && curl -F "payload_json={\"content\":\"$1\",\"username\":\"${username[0]}\",\"avatar_url\":\"${avatarurl[0]}\"}" "${webhookurl[0]}" || curl "https://discordapp.com/api/v6/channels/${purechannelid[0]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid[0]}" -H "Content-Type: application/json" -H "Authorization: ${auth[0]}" -H "Cookie: __cfduid=d6fa896e3cb4d9ce5a05e36e3c845ada11531595067" -H "DNT: 1" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}"; 
+    [ "${webhookurl[0]}" ] && curl --retry 9 --retry-delay 1 -F "payload_json={\"content\":\"$1\",\"username\":\"${username[0]}\",\"avatar_url\":\"${avatarurl[0]}\"}" "${webhookurl[0]}" || curl --retry 9 --retry-delay 1 "https://discordapp.com/api/v6/channels/${purechannelid[0]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid[0]}" -H "Content-Type: application/json" -H "Authorization: ${auth[0]}" -H "Cookie: __cfduid=d6fa896e3cb4d9ce5a05e36e3c845ada11531595067" -H "DNT: 1" -H "Connection: keep-alive" --data "{\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}"; 
 }
 
 function uploadfile { # $1 = message, #2 = filepath
@@ -61,14 +61,14 @@ function uploadfile { # $1 = message, #2 = filepath
 function upload_via_url { # $1 = message, #2 = url, #3 = start locaion, #4 = end location, #5 = extra parameters (if any)
     if [ ! "$5" ]
     then
-        [ "${webhookurl["$processid"]}" ] && curl --range "$3-$4" "$2" | curl -# -F "payload_json={\"content\":\"$1\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "file=@-" "${webhookurl["$processid"]}" || curl --range "$3"-"$4" "$2" | curl -# "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@-"
+        [ "${webhookurl["$processid"]}" ] && curl --retry 9 --retry-delay 1 --range "$3-$4" "$2" | curl -# -F "payload_json={\"content\":\"$1\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "file=@-" "${webhookurl["$processid"]}" || curl --retry 9 --retry-delay 1 --range "$3"-"$4" "$2" | curl -# "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@-"
     else
-        [ "${webhookurl["$processid"]}" ] && eval "curl --range '$3-$4' '$2' $5" | curl -# -F "payload_json={\"content\":\"$1\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "file=@-" "${webhookurl["$processid"]}" || eval "curl --range $3-$4 '$2' $5" | curl -# "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@-"
+        [ "${webhookurl["$processid"]}" ] && eval "curl --retry 9 --retry-delay 1 --range '$3-$4' '$2' $5" | curl -# -F "payload_json={\"content\":\"$1\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "file=@-" "${webhookurl["$processid"]}" || eval "curl --retry 9 --retry-delay 1 --range $3-$4 '$2' $5" | curl -# "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@-"
     fi
 }
 
 function upload_via_rclone { # $1 = message, #2 = basedir, #3 = filename, #4 = start location, #5 = counts
-    [ "${webhookurl["$processid"]}" ] && rclone cat --offset "$4" --count "$5" "$2/$3" | curl -# -F "payload_json={\"content\":\"$1\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "file=@-" "${webhookurl["$processid"]}" || rclone cat "$2/$3" | curl -# "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@-"
+    [ "${webhookurl["$processid"]}" ] && rclone --low-level-retries 9 cat --offset "$4" --count "$5" "$2/$3" | curl -# -F "payload_json={\"content\":\"$1\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "file=@-" "${webhookurl["$processid"]}" || rclone --low-level-retries 9 cat "$2/$3" | curl -# "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$1\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@-"
 }
 
 function praseconf {
@@ -114,6 +114,12 @@ function praseconf {
         fi
     done
     echo -e "found \e[36m$processes\e[0m process(es)"
+    if [ "$threadlimit" ]
+    then
+        echo -e "but you set a thread limit of \e[36m$threadlimit\e[0m"
+        [ "$processes" -gt "$threadlimit" ] && processes="$threadlimit"
+        echo -e "so... the actual thread limit was set to \e[36m$processes\e[0m"
+    fi
     # for processid in `seq 0 $processes`
     # do
         # [ "${webhookurl["$processid"]}" ] && echo "${webhookurl["$processid"]} ${username["$processid"]} ${avatarurl["$processid"]} " || echo "${auth["$processid"]}"
@@ -224,8 +230,9 @@ function upload_subprocess3 { # for rclone
     local counts="$((end - start + 1))"
     local partnum="$4"
     local filename="$5"
-    local response=`upload_via_rclone "$rightfunny**part $partnum** of rclone location $filename$leftfunny" "$basedir" "$filename" "$start" "$counts"`
-    # echo "upload_via_rclone \"$rightfunny**part $partnum** of rclone location $filename$leftfunny\" \"$basedir\" \"$filename\" \"$start\" \"$counts\""
+    [ "oneindexurl" ] && local fileurl="$6"
+    [ "oneindexurl" ] && local response=`upload_via_url "$rightfunny**part $partnum** of rclone location $filename$leftfunny" "$fileurl" "$start" "$end"` || local response=`upload_via_rclone "$rightfunny**part $partnum** of rclone location $filename$leftfunny" "$basedir" "$filename" "$start" "$counts"`
+    # [ "oneindexurl" ] && echo "upload_via_url \"$rightfunny**part $partnum** of rclone location $filename$leftfunny\" \"$fileurl\" \"$start\" \"$end\"" || echo "upload_via_rclone \"$rightfunny**part $partnum** of rclone location $filename$leftfunny\" \"$basedir\" \"$filename\" \"$start\" \"$counts\""
     local discordlink=`echo "$response" | sed 's/,/\n/g' | grep '"url"' | sed 's/"/\n/g' | grep 'http'`
     echo -e "\e[36m$discordlink\e[0m uploaded by process \e[36m$processid\e[0m"
     echo "$discordlink" >> "/tmp/damned/$exportfilename.part$processid"
@@ -352,9 +359,9 @@ function scheduler3 { # muptiple threads for remote files
         let totalfiles++
         processid=$[totalfiles%processes]
         end=$((init+maxfilesizeinbytes-1))
-        [ $end -gt $filesize ] && end=$filesize
+        [ $end -gt $((filesize-1)) ] && end=$((filesize-1))
         echo "$init|$end|$totalfiles" >> "/tmp/damned/list$processid"
-        echo "$init|$end|$totalfiles -> $processid"
+        # echo "$init|$end|$totalfiles -> $processid"
     done
     
     for processid in `seq 0 $[processes-1]`
@@ -397,6 +404,7 @@ function scheduler4 { # muptiple threads for rclone files
     do
         filesize=`echo $fileinfo | grep -Eo "^ *[0-9]* " | grep -Eo "[0-9]*"`
         filename=${fileinfo//`echo $fileinfo | grep -Eo "^ *[0-9]* "`/}
+        [ "oneindexurl" ] && fileurl=`curl -sI "$oneindexurl/$filename" | grep "Location: " | sed 's/Location: //g' | sed 's/\r//g' | sed 's/\n//g' | sed 's/\t//g'`
         fileparts=0
         for init in `seq 0 $maxfilesizeinbytes $filesize`
         do
@@ -404,9 +412,9 @@ function scheduler4 { # muptiple threads for rclone files
             let fileparts++
             processid=$[totalfiles%processes]
             end=$((init+maxfilesizeinbytes-1))
-            [ $end -gt $filesize ] && end=$filesize
-            echo "$init|$end|$fileparts|$filename" >> "/tmp/damned/list$processid"
-            echo "$init|$end|$fileparts|$filename -> $processid"
+            [ $end -gt $((filesize-1)) ] && end=$((filesize-1))
+            [ "oneindexurl" ] && echo "$init|$end|$fileparts|$filename|$fileurl" >> "/tmp/damned/list$processid" || echo "$init|$end|$fileparts|$filename" >> "/tmp/damned/list$processid"
+            # echo "$init|$end|$fileparts|$filename -> $processid"
         done
         dosfilename=${filename//\//\\}
         combine="type"
@@ -426,8 +434,9 @@ function scheduler4 { # muptiple threads for rclone files
             start=`echo $rangeinfo | cut -f1 -d\|`
             end=`echo $rangeinfo | cut -f2 -d\|`
             partnum=`echo $rangeinfo | cut -f3 -d\|`
-            filename=`echo $rangeinfo | cut -f4- -d\|`
-            upload_subprocess3 "$processid" "$start" "$end" "$partnum" "$filename"
+            filename=`echo $rangeinfo | cut -f4 -d\|`
+            [ "oneindexurl" ] && fileurl=`echo $rangeinfo | cut -f5- -d\|`
+            [ "oneindexurl" ] && upload_subprocess3 "$processid" "$start" "$end" "$partnum" "$filename" "$fileurl" || upload_subprocess3 "$processid" "$start" "$end" "$partnum" "$filename"
         done
     } &
     done
@@ -455,7 +464,7 @@ do
 done
 
 currentdir=`pwd`
-parameters=`getopt -o aAe:E:u:U:r:R:hHfFnN -a -l antics,max-filesize:,export-filename:,uber-pack:,uber-standalone:,remote:,rclone,help,force-pack,nitro -- "$@"`
+parameters=`getopt -o aAe:E:u:U:r:R:hHfFnN -a -l antics,max-filesize:,threadlimit:,export-filename:,uber-pack:,uber-standalone:,remote:,rclone,help,force-pack,nitro,oneindex-optimization: -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -481,6 +490,10 @@ do
             ;;
         --max-filesize)
             maxfilesize="$2"
+            shift 2
+            ;;
+        --threadlimit)
+            threadlimit="$2"
             shift 2
             ;;
         -f | -F | --force-pack)
@@ -512,6 +525,10 @@ do
             rclone="JAJAJAJAJA"
             shift
             ;;
+        --oneindex-optimization)
+            oneindexurl="$2"
+            shift 2
+            ;;
         -h | -H | --help)
             echo "copyrekt die deutsche Orthopädiespezialist 201⑨"
             echo "discord \"file hostin'\" bot (sarcastic"
@@ -522,12 +539,14 @@ do
             echo
             echo "Options: "
             echo "  --max-filesize <maxfilesize>: max file size in MB when uploadin' to discord, default value is 8MB, exceeded ones would be compressed via rar"
+            echo "  --threadlimit <threads>: you can appoint thread limits in some cases, like your shitty arse vps is too shitty to handle too many threads that config file gives"
             echo "  -f or -F or --force-pack: pack all files with rar even if they're smaller than max file size"
             echo "  -n or -N or --nitro: equals to --max-filesize 50"
             echo "  -e or -E or --export-filename <filename>: customize filename of discord link file"
             echo "  -r or -R or --remote <filename>: download files on remote server and reupoload them into discord, only file spilt will work, and if you have no alt filename just add a \" \" to replace them"
             echo "      in this case [path] shall be remote url you can add curl parameters after [configfilepath], or not"
             echo "      --rclone: process rclone's remotes usin' rclone cat, pls make the path of remote in [path]"
+            echo "          --oneindex-optimization <oneindex url>: use oneindex to parse rclone's onedrive links, so you don't actually need to start 24 rclones:wiebitte:"
             echo "  -u or -U or --uber-pack <filename>: pack generated discord link file, an aria2c.exe and a batch file into an .rar (well, you don't need to type .rar again bruh) so windows users would be happy to use, and most importantly it would be uploaded to discord and have a link aswell, you can instantly copy this link elsewhere as if it's the key to million of files:funny_v2:"
             echo "      --uber-standalone <filename>: pack and upload only, in case this shitty script has an unexpected error at this paticular moment"
             echo "  -a or -A or --antics: THE ULTIMATE ANTICS, once this option is used, this script can use the auth provided to create a guild (or discord \"server\" as you call it), then create 16 or whatever number you like channels and create one webhook per channel, then export webhook urls into a config file so you can use it to upload files afterwards"
