@@ -45,7 +45,7 @@ CURL_DATA`
         response=`curl "https://discordapp.com/api/v6/channels/$channelid/webhooks" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0" -H "Accept: */*" -H "Accept-Language: zh-CN" --compressed -H "Content-Type: application/json" -H "Authorization: $1" -H "Origin: https://discordapp.com" -H "Connection: keep-alive" -H "Referer: https://discordapp.com/channels/$guildid/$channelid" -H "Cookie: __cfduid=d18e61b3a58d5bf3884bee6af6f80557c1542341827" -H "TE: Trailers" --data "{\"name\":\"$4 $channel\"}"`
         token=`echo "$response" | sed 's/,/\n/g' | grep "token" | sed 's/ "token": "//g' | sed 's/"//g'`
         webhookid=`echo "$response" | sed 's/,/\n/g' | grep '"id"' | head -1 | grep -Eo "[0-9]*"`
-        curl -F "payload_json={\"content\":\"<:funny_v2:$leftfunnyid><:funny_v2_right:$rightfunnyid>\",\"username\":\"FEGELEIN $channel\",\"avatar_url\":\"https://cdn.discordapp.com/attachments/467378952739094539/597940396907036674/FegeleinHeadOrthodox.png\"}" "https://discordapp.com/api/webhooks/$webhookid/$token"
+        curl -F "payload_json={\"content\":\"<:funny_v2:$leftfunnyid><:funny_v2_right:$rightfunnyid>\",\"username\":\"FEGELEIN $channel\",\"avatar_url\":\"https://cdn.discordapp.com/emojis/680083496789606422.png\"}" "https://discordapp.com/api/webhooks/$webhookid/$token"
         echo "-W|https://discordapp.com/api/webhooks/$webhookid/$token" >> "$5"
     done
 }
