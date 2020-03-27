@@ -5,7 +5,7 @@
 # only auth would be accepted, and added attachment re-upload feature to re-upload attachments and perhaps replace attachment links in original dumped messages into our repuloaded attachments
 # and perhaps upload via nitro account instead of webhooks or normal accounts if attachments exceeded a certain size:futabruh:
 # and now continue and incremental modes are also made and it just futabruhin' works
-# i even added a futabruhin' greta joke:howdareyou::gertabitte:
+# i even added a futabruhin' greta joke:howdareyou::gretabitte:
 
 tmpdir="/tmp/wiebitte"
 currentdir=`pwd`
