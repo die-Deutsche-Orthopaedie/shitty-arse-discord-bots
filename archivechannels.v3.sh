@@ -19,19 +19,28 @@ function nein { # #1 = "before" message id, no if not given
     fi
     original=`curl "$url" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" -H "Accept: */*" --compressed -H "Referer: https://discordapp.com/channels/$rchannel" -H "Authorization: $rauth" -H "DNT: 1" -H "Connection: keep-alive" -H "Cookie: __cfduid=d5654e7ddceb28663e0d4ee79adbf39e81538640920" -H "TE: Trailers"`
     
+    local bruh2=0
     while [ "$original" != "[]" ]
     do
         local bruh=0
         for singlemessage in `echo $original | sed 's/^\[//g' | sed 's/\]$//g' | sed 's/}, {"id":/}\n{"id":/g'`
         do
             let bruh++
+            let bruh2++
             messageid=`echo $singlemessage | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
             if [ "$messageid" -eq "$lastmessageid" ] 
             then
                 IFS=$OLD_IFS
                 exit
             fi
-            echo -e "processin' messages $bruh/50, message id: \e[36m$messageid\e[0m"
+            
+            if [ "$estimation" ]
+            then
+                echo -e "processin' messages \e[36m$bruh\e[0m/50, outta total progress of \e[36m$bruh2\e[32m/$totalresults\e[0m, message id: \e[36m$messageid\e[0m"
+            else
+                echo -e "processin' messages \e[36m$bruh\e[0m/50, message id: \e[36m$messageid\e[0m"
+            fi
+            
             if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ] && [ "$reupload" ]
             then
                 attachmenturl=`echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
@@ -87,7 +96,7 @@ do
 done
 
 currentdir=`pwd`
-parameters=`getopt -o c:C:i:I:a:A:uUs:S:hH -a -l continue:,incremental:,antics:,reupload,store:help -- "$@"`
+parameters=`getopt -o c:C:i:I:a:A:eEuUs:S:hH -a -l continue:,incremental:,antics:,estimation,reupload,store:help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -120,6 +129,10 @@ do
             rarfilename="$2"
             shift 2
             ;;
+        -e | -E | --estimation)
+            estimation="JAJAJAJAJA"
+            shift
+            ;;
         -u | -U | --reupload)
             reupload="JAJAJAJAJA"
             shift
@@ -142,6 +155,7 @@ do
             echo "  -i or -I or --incremental <filename>: read message id from the first line of an existing archive file, and dump from the latest message to there"
             echo "    in both cases newer dumps would be stored in a new file, you can use any file merge commands to merge them"
             echo "  -a or -A or --antics <rarfilename>: compress and upload dumped message file right into source channel to furtherly humiliate its arsehole mod of its failure against fegelein's antics:wiebitte:"
+            echo "  -e or -E or --estimation: use discord search feature to estimate how many posts source channel have"
             echo "  -u or -U or --reupload: reupload attachments in source channel into another channel given"
             echo "    -s or -S or --store <location>: downloaded attachments would be renamed and stored into local folder instead of bein' deleted"
             echo
@@ -198,6 +212,11 @@ do
                         filename="$temp.$time.json"
                     fi
                     break
+                fi
+                if [ "$estimation" ]
+                then
+                    rguildid=`echo "$rchannel" | cut -d/ -f1`
+                    totalresults=`curl "https://discordapp.com/api/v6/guilds/$rguildid/messages/search?channel_id=$rpurechannelid" -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0' -H 'Accept: */*' -H 'Accept-Language: en-US' --compressed -H "Authorization: $rauth" -H 'Connection: keep-alive' -H "Referer: https://discordapp.com/channels/$rchannel" -H 'Cookie: __cfduid=d440293169c3730ee2beff170518c1cb31565407611; locale=en-US; __cfruid=cd69440a7f7f42175065bc6d8aaeaf9e61ec8171-1585334844' -H 'TE: Trailers' | grep -Eo '"total_results": [0-9]*,' | grep -Eo "[0-9]*"`
                 fi
             fi
             ;;
