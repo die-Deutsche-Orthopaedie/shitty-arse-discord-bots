@@ -2,9 +2,10 @@
 # copyrekt die deutsche Orthopädiespezialist 2020
 # channel archive bot for discord, but fegelly improved
 # archive a discord channel before it's deleted by its arsehole mods
-# only auth are accepted, and add image re-upload feature to re-upload pics and perhaps replace pics links in original dumped messages into our repuloaded pics
-# and perhaps upload via nitro account instead of webhooks or normal accounts if pics exceeded a certain size:futabruh:
+# only auth would be accepted, and added attachment re-upload feature to re-upload attachments and perhaps replace attachment links in original dumped messages into our repuloaded attachments
+# and perhaps upload via nitro account instead of webhooks or normal accounts if attachments exceeded a certain size:futabruh:
 # and now continue and incremental modes are also made and it just futabruhin' works
+# i even added a futabruhin' greta joke:howdareyou::gertabitte:
 
 tmpdir="/tmp/wiebitte"
 currentdir=`pwd`
@@ -176,7 +177,7 @@ do
                 rar a -v8M -htb -m5 -ma5 -rr5 -ol -ts "$tmpdir/$rarfilename.rar" "$filename"
                 for file in `ls $tmpdir`
                 do
-                    curl "https://discordapp.com/api/v6/channels/$rpurechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$rchannel" -H "Authorization: $rauth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"<:funny_v2_right:530321527908859907><:funny_v2_right:530321527908859907><:funny_v2_right:530321527908859907><:funny_v2_right:530321527908859907><:funny_v2_right:530321527908859907><:thonkaho_v2:575910346590781441>**a r c h i v e d**<:thonkaho_v2:575910346590781441><:funny_v2:530321446338035742><:funny_v2:530321446338035742><:funny_v2:530321446338035742><:funny_v2:530321446338035742><:funny_v2:530321446338035742>\",\"nonce\":\"46776845$RANDOM$RANDOM$RANDOM\",\"tts\":false}" -F "filename=@$tmpdir/$file"
+                    curl "https://discordapp.com/api/v6/channels/$rpurechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$rchannel" -H "Authorization: $rauth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"​​Riley chan, Cosette chan, and Greta Thunberg were all lost in the desert. They found a lamp and rubbed it. A genie popped out and granted them each one wish. Riley chan wished to be back home. Poof! She was back home. Cosette chan wished to be at home with her family. Poof! She was back home with her family. Greta Thunberg said, \\\"How dare you fucking call me Greta Chan! \\\"\",\"tts\":false}" -F "filename=@$tmpdir/$file"
                 done
                 rm "$tmpdir"/* -f
                 exit
