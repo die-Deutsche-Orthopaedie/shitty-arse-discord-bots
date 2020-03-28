@@ -60,6 +60,9 @@ function nein { # #1 = "before" message id, no if not given
                 attachmenturl=`echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
                 attachmentproxyurl=`echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
                 echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
+                echo "$attachmenturl" >> "$currentdir/${filename%.*}.aria2.original"
+                echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
+                echo " out=$messageid.${attachmenturl##*/}" >> "$currentdir/${filename%.*}.aria2.original"
                 cd "$tmpdir"
                 wget "$attachmenturl"
                 for file in `ls "$tmpdir"`
@@ -79,13 +82,12 @@ function nein { # #1 = "before" message id, no if not given
                     newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
                     singlemessage=${singlemessage/$attachmenturl/$newattachmenturl}
                     singlemessage=${singlemessage/$attachmentproxyurl/$newattachmentproxyurl}
+                    echo "$newattachmenturl" >> "$currentdir/${filename%.*}.aria2"
+                    echo " dir=${filename%.*}.attachments" >> "$currentdir/${filename%.*}.aria2"
+                    echo " out=$messageid.$file" >> "$currentdir/${filename%.*}.aria2"
                     if [ "$store" ]
                     then
                         mv "$file" "$storelocaion/$messageid.$file"
-                    else
-                        echo "$newattachmenturl" >> "$currentdir/${filename%.*}.aria2"
-                        echo " dir=${filename%.*}.attachments" >> "$currentdir/${filename%.*}.aria2"
-                        echo " out=$messageid.$file" >> "$currentdir/${filename%.*}.aria2"
                     fi
                 done
                 rm "$tmpdir"/* -f
@@ -94,6 +96,14 @@ function nein { # #1 = "before" message id, no if not given
                 echo
             else
                 echo "$singlemessage" >> "$filename"
+                if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
+                then
+                    attachmenturl=`echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                    echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
+                    echo "$attachmenturl" >> "$currentdir/${filename%.*}.aria2.original"
+                    echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
+                    echo " out=$messageid.${attachmenturl##*/}" >> "$currentdir/${filename%.*}.aria2.original"
+                fi
                 echo
             fi
         done
