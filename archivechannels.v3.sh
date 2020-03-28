@@ -36,7 +36,7 @@ function nein { # #1 = "before" message id, no if not given
     while [ "$original" != "[]" ]
     do
         local bruh=0
-        for singlemessage in `echo $original | sed 's/^\[//g' | sed 's/\]$//g' | sed 's/}, {"id":/}\n{"id":/g'`
+        for singlemessage in `echo $original | sed 's/^\[//g' | sed 's/\]$//g' | sed 's/}, {"id": "\([0-9]*\)", "type"/}\n{"id": "\1", "type":/g'`
         do
             let bruh++
             let bruh2++
@@ -57,40 +57,43 @@ function nein { # #1 = "before" message id, no if not given
             
             if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ] && [ "$reupload" ]
             then
-                attachmenturl=`echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
-                attachmentproxyurl=`echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
-                echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
-                echo "$attachmenturl" >> "$currentdir/${filename%.*}.aria2.original"
-                echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
-                echo " out=$messageid.${attachmenturl##*/}" >> "$currentdir/${filename%.*}.aria2.original"
-                cd "$tmpdir"
-                wget "$attachmenturl"
-                for file in `ls "$tmpdir"`
+                for singleattachment in `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
                 do
-                    filesize=`ls -l "$tmpdir/$file" | awk '{print $5}'`
-                    if [ "$filesize" -lt "$maxfilesize" ]
-                    then
-                        response=`curl -F "payload_json={\"content\":\"attachment for message id $messageid\",\"username\":\"kawaii yukari chan\",\"avatar_url\":\"https://cdn.discordapp.com/attachments/524633631012945922/693099262237736960/yukari_v3.png\"}" -F "filename=@$file" "$swebhookurl"`
-                        sleep 2
-                    else
-                        echo -e "\e[33mattachment file size exceeded evil discord webhook filesize limit, would upload via nitro account\e[0m"
-                        response=`curl "https://discordapp.com/api/v6/channels/$spurechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$schannel" -H "Authorization: $sauth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$singlemessage\",\"tts\":false}" -F "filename=@$file"`
-                        sleep 2
-                    fi
-                    newattachmenturl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
-                    echo -e "\e[36mreuploaded, new url: \e[32m$newattachmenturl\e[0m"
-                    newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
-                    singlemessage=${singlemessage/$attachmenturl/$newattachmenturl}
-                    singlemessage=${singlemessage/$attachmentproxyurl/$newattachmentproxyurl}
-                    echo "$newattachmenturl" >> "$currentdir/${filename%.*}.aria2"
-                    echo " dir=${filename%.*}.attachments" >> "$currentdir/${filename%.*}.aria2"
-                    echo " out=$messageid.$file" >> "$currentdir/${filename%.*}.aria2"
-                    if [ "$store" ]
-                    then
-                        mv "$file" "$storelocaion/$messageid.$file"
-                    fi
+                    attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                    attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                    echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
+                    echo "$attachmenturl" >> "$currentdir/${filename%.*}.aria2.original"
+                    echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
+                    echo " out=$messageid.${attachmenturl##*/}" >> "$currentdir/${filename%.*}.aria2.original"
+                    cd "$tmpdir"
+                    wget "$attachmenturl"
+                    for file in `ls "$tmpdir"`
+                    do
+                        filesize=`ls -l "$tmpdir/$file" | awk '{print $5}'`
+                        if [ "$filesize" -lt "$maxfilesize" ]
+                        then
+                            response=`curl -F "payload_json={\"content\":\"attachment for message id $messageid\",\"username\":\"kawaii yukari chan\",\"avatar_url\":\"https://cdn.discordapp.com/attachments/524633631012945922/693099262237736960/yukari_v3.png\"}" -F "filename=@$file" "$swebhookurl"`
+                            sleep 2
+                        else
+                            echo -e "\e[33mattachment file size exceeded evil discord webhook filesize limit, would upload via nitro account\e[0m"
+                            response=`curl "https://discordapp.com/api/v6/channels/$spurechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$schannel" -H "Authorization: $sauth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"$singlemessage\",\"tts\":false}" -F "filename=@$file"`
+                            sleep 2
+                        fi
+                        newattachmenturl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                        echo -e "\e[36mreuploaded, new url: \e[32m$newattachmenturl\e[0m"
+                        newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                        singlemessage=${singlemessage/$attachmenturl/$newattachmenturl}
+                        singlemessage=${singlemessage/$attachmentproxyurl/$newattachmentproxyurl}
+                        echo "$newattachmenturl" >> "$currentdir/${filename%.*}.aria2"
+                        echo " dir=${filename%.*}.attachments" >> "$currentdir/${filename%.*}.aria2"
+                        echo " out=$messageid.$file" >> "$currentdir/${filename%.*}.aria2"
+                        if [ "$store" ]
+                        then
+                            mv "$file" "$storelocaion/$messageid.$file"
+                        fi
+                    done
+                    rm "$tmpdir"/* -f
                 done
-                rm "$tmpdir"/* -f
                 cd "$currentdir"
                 echo "$singlemessage" >> "$filename"
                 echo
@@ -98,16 +101,20 @@ function nein { # #1 = "before" message id, no if not given
                 echo "$singlemessage" >> "$filename"
                 if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
                 then
-                    attachmenturl=`echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
-                    echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
-                    echo "$attachmenturl" >> "$currentdir/${filename%.*}.aria2.original"
-                    echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
-                    echo " out=$messageid.${attachmenturl##*/}" >> "$currentdir/${filename%.*}.aria2.original"
+                    for singleattachment in `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
+                    do
+                        attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                        attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                        echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
+                        echo "$attachmenturl" >> "$currentdir/${filename%.*}.aria2.original"
+                        echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
+                        echo " out=$messageid.${attachmenturl##*/}" >> "$currentdir/${filename%.*}.aria2.original"
+                    done
                 fi
                 echo
             fi
         done
-        sleep 5    
+        sleep 2
         
         original=`curl "https://discordapp.com/api/v6/channels/$rpurechannelid/messages?before=$messageid&limit=50" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" -H "Accept: */*" --compressed -H "Referer: https://discordapp.com/channels/$rchannel" -H "Authorization: $rauth" -H "DNT: 1" -H "Connection: keep-alive" -H "Cookie: __cfduid=d5654e7ddceb28663e0d4ee79adbf39e81538640920" -H "TE: Trailers"`
     done
