@@ -81,7 +81,7 @@ function nein { # #1 = "before" message id, no if not given
                         fi
                         newattachmenturl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
                         echo -e "\e[36mreuploaded, new url: \e[32m$newattachmenturl\e[0m"
-                        newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                        newattachmentproxyurl=`echo $response | grep -Eo '"proxy_url": ".{1,}"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
                         singlemessage=${singlemessage/$attachmenturl/$newattachmenturl}
                         singlemessage=${singlemessage/$attachmentproxyurl/$newattachmentproxyurl}
                         echo "$newattachmenturl" >> "$currentdir/${filename%.*}.aria2"
