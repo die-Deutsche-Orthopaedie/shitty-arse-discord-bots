@@ -43,6 +43,7 @@ function nein { # #1 = "before" message id, no if not given
             messageid=`echo $singlemessage | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
             if [ "$messageid" -eq "$lastmessageid" ] 
             then
+                echo -e "\e[33mcurrent message id \e[36m$messageid\e[33m equals the latest message id of base dumps, stoppin'\e[0m"
                 IFS=$OLD_IFS
                 exit
             fi
@@ -81,6 +82,10 @@ function nein { # #1 = "before" message id, no if not given
                     if [ "$store" ]
                     then
                         mv "$file" "$storelocaion/$messageid.$file"
+                    else
+                        echo "$newattachmenturl" >> "$currentdir/${filename%.*}.aria2"
+                        echo " dir=${filename%.*}.attachments" >> "$currentdir/${filename%.*}.aria2"
+                        echo " out=$messageid.$file" >> "$currentdir/${filename%.*}.aria2"
                     fi
                 done
                 rm "$tmpdir"/* -f
