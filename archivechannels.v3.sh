@@ -37,8 +37,7 @@ function nein { # #1 = "before" message id, no if not given
         sleep 1
     done
     
-    
-    local bruh2=0
+    [ "$finished" ] && bruh2="$finished" || bruh2=0
     while [ "$original" != "[]" ]
     do
         local bruh=0
@@ -164,6 +163,7 @@ do
     case "$1" in
         -c | -C | --continue)
             messageid=`cat $2 | tail -1 | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
+            finished=`cat $2 | wc -l`
             shift 2
             ;;
         -i | -I | --incremental)
