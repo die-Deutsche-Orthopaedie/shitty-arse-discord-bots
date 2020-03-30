@@ -6,7 +6,9 @@
 # and perhaps upload via nitro account instead of webhooks or normal accounts if attachments exceeded a certain size:futabruh:
 # and now continue and incremental modes are also made and it just futabruhin' works
 # i even added a futabruhin' greta joke:howdareyou::gertabitte:
-# (v4) now experimental multithreading attachment reuploadin' feature is under development
+# (v4) now it supports multithreading attachment reuploadin' feature 
+# (v4) and even optimized for large message dumps (> 10000 messages)
+# now if your arsehole mod threatens to delete a channel in an hour, you know what the futabruh you would do, bc it would indeed finish dumpin' a 60000 message channel within an hour:wiebitte:
 
 tmpdir="/tmp/wiebitte"
 currentdir=`pwd`
@@ -80,11 +82,14 @@ function praseconf {
     # done
 }
 
-function upload_subprocess { # $1 = process id
+function reupload_subprocess { # $1 = process id
     local processid="$1"
     local line
+    local totalbruh=`cat "$tmpdir/metadata$processid" | wc -l`
+    local bruh=0
     for line in `cat "$tmpdir/metadata$processid"`
     do
+        let bruh++
         local messageid=`echo $line | cut -f1 -d\|`
         local attachmenturl=`echo $line | cut -f3 -d\|`
         local attachmentproxyurl=`echo $line | cut -f4 -d\|`
@@ -115,9 +120,55 @@ function upload_subprocess { # $1 = process id
             echo -e "\e[36m$attachmenturl\e[0m from message id \e[36m$messageid\e[0m by process \e[32m$processid\e[0m done processin', new, url: \e[36m$newattachmenturl\e[0m"
         done
         rm "$tmpdir.$processid"/* -f
+        echo -e "\e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m files(s) in process \e[32m$processid\e[0m has been reuploaded"
     done
 }
 
+function analysis_subprcess { # $1 = process id
+    local processid="$1"
+    local singlemessage
+    local totalbruh=`cat "$tmpdir/$filename.part$processid" | wc -l`
+    local bruh=0
+    for singlemessage in `cat "$tmpdir/$filename.part$processid"`
+    do
+        let bruh++
+        local messageid=`echo $singlemessage | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
+        if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
+        then
+            local singleattachment
+            for singleattachment in `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
+            do
+                local attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                local attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                local filesize=`echo $singleattachment | grep -Eo '"size": [0-9]*,' | grep -Eo "[0-9]*"`
+                
+                if [ "$filesize" -gt "$maxfilesize" ]
+                then
+                    echo "$messageid|$filesize|$attachmenturl|$attachmentproxyurl" >> "$tmpdir/metadata0"
+                    echo -e "detected attachment (again? ) and distributed to \e[36nitro process\e[0, url: \e[32m$attachmenturl\e[0m"
+                else
+                    echo "$messageid|$filesize|$attachmenturl|$attachmentproxyurl" >> "$tmpdir/metadata$processid"
+                    echo -e "detected attachment (again? ) and distributed to \e[36process $processid\e[0, url: \e[32m$attachmenturl\e[0m"
+                fi
+            done
+        fi
+        echo -e "\e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m messages(s) in process \e[32m$processid\e[0m has been processed"
+    done
+}
+
+function replace_subprocess {
+    local processid="$1"
+    local totalbruh=`cat "$tmpdir/results$processid" | wc -l`
+    local bruh=0
+    for line in `cat "$tmpdir/results$processid"`
+    do
+        let bruh++
+        local before=`echo $line | cut -f1 -d\|`
+        local after=`echo $line | cut -f2 -d\|`
+        sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$tmpdir/$filename.part$processid"
+        echo -e "replaced \e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m line(s) in original dumps for process \e[32m$processid\e[0m"
+    done
+}
 
 function scheduler {
     for bruh in `seq 0 $processes`
@@ -145,7 +196,7 @@ function scheduler {
     for processid in `seq 0 $processes`
     do
     {
-        upload_subprocess "$processid"
+        reupload_subprocess "$processid"
     } &
     done
     wait
@@ -169,9 +220,84 @@ function scheduler {
     done
 }
 
+function scheduler2 {
+    for bruh in `seq 0 $processes`
+    do
+        mkdir "$tmpdir.$bruh"
+        rm "$tmpdir.$bruh"/* -f
+    done
+    
+    # spilt message dumps into $processes files, assumin' they're in $tmpdir/$filename.part$processid, where process 0 does not do that
+    totalbitte=`cat "$currentdir/$filename" | wc -l`
+    wiebitte=0
+    for line in `seq 0 $((totalbitte/processes)) $totalbitte`
+    do
+        let wiebitte++
+        if [ "$wiebitte" -eq "$processes" ]         
+        then 
+            sed -n "$((line+1)),$totalbitte""p" "$currentdir/$filename" > "$tmpdir/$filename.part$wiebitte" 
+            break
+        else
+            sed -n "$((line+1)),$((line+totalbitte/processes))p" "$currentdir/$filename" > "$tmpdir/$filename.part$wiebitte"
+        fi
+    done
+    
+    for processid in `seq 1 $processes`
+    do
+    {
+        analysis_subprcess "$processid"
+    } &
+    done
+    wait
+    
+    for processid in `seq 0 $processes`
+    do
+    {
+        reupload_subprocess "$processid"
+    } &
+    done
+    wait
+    
+    for processid in `seq 0 $processes`
+    do
+        cat "$tmpdir/results$processid" >> "$currentdir/${filename%.*}.sedresults"
+        # cat "$tmpdir/aria2$processid" >> "$currentdir/${filename%.*}.aria2"
+    done
+    
+    for processid in `seq 1 $processes`
+    do
+    {
+        replace_subprocess "$processid"
+    } &
+    done
+    wait
+    
+    for processid in `seq 1 $processes`
+    do
+        cat "$tmpdir/$filename.part$processid" >> "$currentdir/${filename%.*}.replaced.${filename##*.}"
+    done
+    
+    totalbruh=`cat "$tmpdir/results0" | wc -l`
+    bruh=0
+    for line in `cat "$tmpdir/results0"`
+    do
+        let bruh++
+        before=`echo $line | cut -f1 -d\|`
+        after=`echo $line | cut -f2 -d\|`
+        sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$currentdir/${filename%.*}.replaced.${filename##*.}"
+        echo -e "replaced \e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m line(s) in original dumps for \e[32mnitro process\e[0m"
+    done
+}
+
 function stage2 {
     praseconf
-    scheduler
+
+    if [ "$optimized" ] 
+    then
+        scheduler2 
+    else
+        scheduler
+    fi
 }
 
 function stage1 {
@@ -266,7 +392,7 @@ function stage1 {
                     do
                         attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
                         attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
-                        if [ "$multithreading" ]
+                        if [ "$multithreading" ] && [ ! "$optimized" ]
                         then
                             filesize=`echo $singleattachment | grep -Eo '"size": [0-9]*,' | grep -Eo "[0-9]*"`
                             echo "$messageid|$filesize|$attachmenturl|$attachmentproxyurl" >> "$currentdir/${filename%.*}.metadata"
@@ -302,7 +428,7 @@ done
 
 currentdir=`pwd`
 rm "$tmpdir"/* -f
-parameters=`getopt -o c:C:i:I:a:A:eEuUs:S:hHmM -a -l continue:,incremental:,antics:,estimation,reupload,store:help,multithreading -- "$@"`
+parameters=`getopt -o c:C:i:I:a:A:eEuUs:S:hHmMoO -a -l continue:,incremental:,antics:,estimation,reupload,store:help,multithreading,optimized -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -353,6 +479,10 @@ do
             multithreading="JAJAJAJAJA"
             shift
             ;;
+        -o | -O | --optimized)
+            optimized="JAJAJAJAJA"
+            shift
+            ;;
         -h | -H | --help)
             echo "copyrekt die deutsche Orthopädiespezialist 2020"
             echo "channel archive bot for discord, but improved"
@@ -372,6 +502,7 @@ do
             echo "    config file format: "
             echo "      -W|webhook url|username|avatarurl (latter two are optional)"
             echo "      -N|nitro account auth|<chatroom id/channel id>"
+            echo "    -o or -O or --optimized: another way of multithreading scheduler, to make sure sed replacement won't take too long time on larger message dumps"
             echo "  -u or -U or --reupload: reupload attachments in source channel into another channel given"
             echo "    -s or -S or --store <location>: downloaded attachments would be renamed and stored into local folder instead of bein' deleted"
             echo
