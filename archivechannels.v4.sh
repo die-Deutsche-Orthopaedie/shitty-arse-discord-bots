@@ -75,21 +75,96 @@ function praseconf {
         # [ "$processes" -gt "$threadlimit" ] && processes="$threadlimit"
         # echo -e "so... the actual thread limit was set to \e[36m$processes\e[0m"
     # fi
-    # for processid in `seq 0 $processes`
-    # do
-        # [ "${webhookurl["$processid"]}" ] && echo "${webhookurl["$processid"]} ${username["$processid"]} ${avatarurl["$processid"]} " || echo "${auth["$processid"]}"
-    # done
-}
-
-function stage2 {
-    praseconf
-    
     for processid in `seq 0 $processes`
     do
         [ "${webhookurl["$processid"]}" ] && echo "${webhookurl["$processid"]} ${username["$processid"]} ${avatarurl["$processid"]}" || echo "${auth["$processid"]} ${channelid["$processid"]} ${purechannelid["$processid"]}"
     done
+}
+
+function upload_subprocess { # $1 = process id
+    local processid="$1"
+    local line
+    for line in `cat "$tmpdir/metadata$processid"`
+    do
+        local messageid=`echo $line | cut -f1 -d\|`
+        local attachmenturl=`echo $line | cut -f3 -d\|`
+        local attachmentproxyurl=`echo $line | cut -f4 -d\|`
+        cd "$tmpdir.$processid"
+        rm "$tmpdir.$processid"/* -f
+        aria2c -x 16 -s 16 -k 1M -R -c --auto-file-renaming=false "$attachmenturl"
+        local files
+        for files in `ls "$tmpdir.$processid"`
+        do
+            if [ "${webhookurl["$processid"]}" ]
+            then
+                local response=`curl -F "payload_json={\"content\":\"attachment for message id $messageid\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "filename=@$files" "$swebhookurl"`
+                sleep 2
+            else
+                local response=`curl "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"attachment for message id $messageid\",\"tts\":false}" -F "filename=@$files"`
+                sleep 2
+            fi
+            local newattachmenturl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+            local newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+            echo "$newattachmenturl" >> "$tmpdir/aria2$processid"
+            echo " dir=${filename%.*}.attachments" >> "$tmpdir/aria2$processid"
+            echo " out=$messageid.$file" >> "$tmpdir/aria2$processid"
+            echo "$attachmenturl|$newattachmenturl" >> "$tmpdir/results$processid"
+            echo "$attachmentproxyurl|$newattachmentproxyurl" >> "$tmpdir/results$processid"
+        done
+        rm "$tmpdir.$processid"/* -f
+    done
+}
+
+
+function scheduler {
+    for bruh in `seq 0 $processes`
+    do
+        mkdir "$tmpdir.$bruh"
+        rm "$tmpdir.$bruh"/* -f
+    done
     
-    exit
+    totalfiles=0
+    for line in `cat "$currentdir/${filename%.*}.metadata"`
+    do
+        messageid=`echo $line | cut -f1 -d\|`
+        filesize=`echo $line | cut -f2 -d\|`
+        attachmenturl=`echo $line | cut -f3 -d\|`
+        attachmentproxyurl=`echo $line | cut -f4 -d\|`
+        if [ "$filesize" -lt "$maxfilesize" ]
+        then
+            echo "$line" > "$tmpdir/metadata0"
+        else
+            echo "$line" >> "$tmpdir/metadata$((totalfiles%(process)+1))"
+            let totalfiles++
+        fi
+    done
+    
+    for processid in `seq 0 $processes`
+    do
+    {
+        upload_subprocess "$processid"
+    } &
+    done
+    wait
+    
+    for processid in `seq 0 $processes`
+    do
+        cat "$tmpdir/results$processid" >> "$currentdir/${filename%.*}.sedresult"
+        cat "$tmpdir/aria2$processid" >> "$currentdir/${filename%.*}.aria2"
+    done
+    
+    cp -p "$currentdir/$filename" "$currentdir/$filename.replaced"
+    for line in `cat "$currentdir/${filename%.*}.sedresult"`
+    do
+        before=`echo $line | cut -f1 -d\|`
+        after=`echo $line | cut -f2 -d\|`
+        sed -i "s/${before//\//\\\/}/${after//\//\\\/}/g" "$currentdir/$filename.replaced"
+    done
+}
+
+function stage2 {
+    praseconf
+    scheduler
 }
 
 
@@ -143,6 +218,7 @@ function stage1 {
                         echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
                         echo " out=$messageid.${attachmenturl##*/}" >> "$currentdir/${filename%.*}.aria2.original"
                         cd "$tmpdir"
+                        rm "$tmpdir"/* -f
                         # wget "$attachmenturl"
                         aria2c -x 16 -s 16 -k 1M -R -c --auto-file-renaming=false "$attachmenturl"
                         for file in `ls "$tmpdir"`
