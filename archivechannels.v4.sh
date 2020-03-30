@@ -152,16 +152,20 @@ function scheduler {
     
     for processid in `seq 0 $processes`
     do
-        cat "$tmpdir/results$processid" >> "$currentdir/${filename%.*}.sedresult"
+        cat "$tmpdir/results$processid" >> "$currentdir/${filename%.*}.sedresults"
         cat "$tmpdir/aria2$processid" >> "$currentdir/${filename%.*}.aria2"
     done
     
     cp -p "$currentdir/$filename" "$currentdir/${filename%.*}.replaced.${filename##*.}"
-    for line in `cat "$currentdir/${filename%.*}.sedresult"`
+    totalbruh=`cat "$currentdir/${filename%.*}.sedresults" | wc -l`
+    bruh=0
+    for line in `cat "$currentdir/${filename%.*}.sedresults"`
     do
+        let bruh++
         before=`echo $line | cut -f1 -d\|`
         after=`echo $line | cut -f2 -d\|`
         sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$currentdir/${filename%.*}.replaced.${filename##*.}"
+        echo -e "replaced \e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m line(s) in original dumps"
     done
 }
 
