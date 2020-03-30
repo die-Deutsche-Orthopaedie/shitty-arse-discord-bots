@@ -161,7 +161,7 @@ function scheduler {
     do
         before=`echo $line | cut -f1 -d\|`
         after=`echo $line | cut -f2 -d\|`
-        sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$currentdir/$filename.replaced"
+        sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$currentdir/${filename%.*}.replaced.${filename##*.}"
     done
 }
 
