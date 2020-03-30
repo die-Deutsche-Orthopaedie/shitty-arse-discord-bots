@@ -146,9 +146,15 @@ function analysis_subprcess { # $1 = process id
                 then
                     echo "$messageid|$filesize|$attachmenturl|$attachmentproxyurl" >> "$tmpdir/metadata0"
                     echo -e "detected attachment (again? ) and distributed to \e[36nitro process\e[0, url: \e[32m$attachmenturl\e[0m"
+                    echo "$attachmenturl" >> "$tmpdir/aria2original0"
+                    echo " dir=${filename%.*}.attachments.original" >> "$tmpdir/aria2original0"
+                    echo " out=$messageid.${attachmenturl##*/}" >> "$tmpdir/aria2original0"
                 else
                     echo "$messageid|$filesize|$attachmenturl|$attachmentproxyurl" >> "$tmpdir/metadata$processid"
                     echo -e "detected attachment (again? ) and distributed to \e[36process $processid\e[0, url: \e[32m$attachmenturl\e[0m"
+                    echo "$attachmenturl" >> "$tmpdir/aria2original$processid"
+                    echo " dir=${filename%.*}.attachments.original" >> "$tmpdir/aria2original$processid"
+                    echo " out=$messageid.${attachmenturl##*/}" >> "$tmpdir/aria2original$processid"
                 fi
             done
         fi
@@ -261,7 +267,8 @@ function scheduler2 {
     for processid in `seq 0 $processes`
     do
         cat "$tmpdir/results$processid" >> "$currentdir/${filename%.*}.sedresults"
-        # cat "$tmpdir/aria2$processid" >> "$currentdir/${filename%.*}.aria2"
+        cat "$tmpdir/aria2$processid" >> "$currentdir/${filename%.*}.aria2"
+        cat "$tmpdir/aria2original$processid" >> "$currentdir/${filename%.*}.aria2.original"
     done
     
     for processid in `seq 1 $processes`
@@ -384,7 +391,8 @@ function stage1 {
                 cd "$currentdir"
                 echo "$singlemessage" >> "$currentdir/$filename"
                 echo
-            else
+            elif [ ! "$optimized" ]
+            then
                 echo "$singlemessage" >> "$currentdir/$filename"
                 if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
                 then
@@ -392,7 +400,7 @@ function stage1 {
                     do
                         attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
                         attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
-                        if [ "$multithreading" ] && [ ! "$optimized" ]
+                        if [ "$multithreading" ]
                         then
                             filesize=`echo $singleattachment | grep -Eo '"size": [0-9]*,' | grep -Eo "[0-9]*"`
                             echo "$messageid|$filesize|$attachmenturl|$attachmentproxyurl" >> "$currentdir/${filename%.*}.metadata"
@@ -404,6 +412,8 @@ function stage1 {
                     done
                 fi
                 echo
+            else
+                echo "$singlemessage" >> "$currentdir/$filename"
             fi
         done
         
