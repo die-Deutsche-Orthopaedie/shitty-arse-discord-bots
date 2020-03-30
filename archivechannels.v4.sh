@@ -27,7 +27,7 @@ function gretajoke {
 }
 
 function praseconf {
-    processes=1 # process 0 is nitro process, and other process(es) start with 1
+    processes=0 # process 0 is nitro process, and other process(es) start with 1
     if [ ! -s "$configfilepath" ]
     then
         echo "Houston, we have an arsefockin' problem: CONFIG FILE IS EMPTY" >&2
@@ -39,6 +39,7 @@ function praseconf {
         temp=`echo $templine | cut -f1 -d\|`
         if [ "$temp" = "-W" ]
         then
+            let processes+=1
             webhookurl[$processes]=`echo $templine | cut -f2 -d\|`
             username[$processes]=`echo $templine | cut -f3 -d\|`
             avatarurl[$processes]=`echo $templine | cut -f4 -d\|`
@@ -50,13 +51,13 @@ function praseconf {
             then
                 avatarurl[$processes]="$avatarurl_defaults"
             fi
-            let processes+=1
         elif [ "$temp" = "-N" ]
         then # process 0 is nitro process, and other process(es) start with 1
             auth[0]=`echo $templine | cut -f2 -d\|`
             channelid[0]=`echo $templine | cut -f3 -d\|`
             purechannelid[0]=`echo "${channelid[0]}" | cut -d/ -f2`
         else
+            let processes+=1
             auth[$processes]=`echo $templine | cut -f1 -d\|`
             channelid[$processes]=`echo $templine | cut -f2 -d\|`
             if ! [ "${channelid["$processes"]}" != "${auth["$processes"]}" ]
@@ -64,8 +65,6 @@ function praseconf {
                 channelid[$processes]="${channelid[0]}"
             fi
             purechannelid[$processes]=`echo "${channelid["$processes"]}" | cut -d/ -f2`
-            echo "bruh ${auth["$processes"]} ${purechannelid["$processes"]}"
-            let processes+=1
         fi
     done
     echo -e "found \e[36m$processes\e[0m process(es)"
@@ -75,10 +74,10 @@ function praseconf {
         # [ "$processes" -gt "$threadlimit" ] && processes="$threadlimit"
         # echo -e "so... the actual thread limit was set to \e[36m$processes\e[0m"
     # fi
-    for processid in `seq 0 $processes`
-    do
-        [ "${webhookurl["$processid"]}" ] && echo "${webhookurl["$processid"]} ${username["$processid"]} ${avatarurl["$processid"]}" || echo "${auth["$processid"]} ${channelid["$processid"]} ${purechannelid["$processid"]}"
-    done
+    # for processid in `seq 0 $processes`
+    # do
+        # [ "${webhookurl["$processid"]}" ] && echo "${webhookurl["$processid"]} ${username["$processid"]} ${avatarurl["$processid"]}" || echo "${auth["$processid"]} ${channelid["$processid"]} ${purechannelid["$processid"]}"
+    # done
 }
 
 function upload_subprocess { # $1 = process id
@@ -89,6 +88,7 @@ function upload_subprocess { # $1 = process id
         local messageid=`echo $line | cut -f1 -d\|`
         local attachmenturl=`echo $line | cut -f3 -d\|`
         local attachmentproxyurl=`echo $line | cut -f4 -d\|`
+        echo -e "processin' \e[36m$attachmenturl\e[0m from message id \e[36m$messageid\e[0m by process \e[32m$processid\e[0m"
         cd "$tmpdir.$processid"
         rm "$tmpdir.$processid"/* -f
         aria2c -x 16 -s 16 -k 1M -R -c --auto-file-renaming=false "$attachmenturl"
@@ -97,19 +97,22 @@ function upload_subprocess { # $1 = process id
         do
             if [ "${webhookurl["$processid"]}" ]
             then
-                local response=`curl -F "payload_json={\"content\":\"attachment for message id $messageid\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "filename=@$files" "$swebhookurl"`
+                local response=`curl -F "payload_json={\"content\":\"attachment for message id $messageid\",\"username\":\"${username["$processid"]}\",\"avatar_url\":\"${avatarurl["$processid"]}\"}" -F "filename=@$files" "${webhookurl["$processid"]}"`
+                # echo "$response"
                 sleep 2
             else
                 local response=`curl "https://discordapp.com/api/v6/channels/${purechannelid["$processid"]}/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/${channelid["$processid"]}" -H "Authorization: ${auth["$processid"]}" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"attachment for message id $messageid\",\"tts\":false}" -F "filename=@$files"`
+                # echo "$response"
                 sleep 2
             fi
             local newattachmenturl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
             local newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
             echo "$newattachmenturl" >> "$tmpdir/aria2$processid"
             echo " dir=${filename%.*}.attachments" >> "$tmpdir/aria2$processid"
-            echo " out=$messageid.$file" >> "$tmpdir/aria2$processid"
+            echo " out=$messageid.$files" >> "$tmpdir/aria2$processid"
             echo "$attachmenturl|$newattachmenturl" >> "$tmpdir/results$processid"
             echo "$attachmentproxyurl|$newattachmentproxyurl" >> "$tmpdir/results$processid"
+            echo -e "\e[36m$attachmenturl\e[0m from message id \e[36m$messageid\e[0m by process \e[32m$processid\e[0m done processin', new, url: \e[36m$newattachmenturl\e[0m"
         done
         rm "$tmpdir.$processid"/* -f
     done
@@ -130,11 +133,11 @@ function scheduler {
         filesize=`echo $line | cut -f2 -d\|`
         attachmenturl=`echo $line | cut -f3 -d\|`
         attachmentproxyurl=`echo $line | cut -f4 -d\|`
-        if [ "$filesize" -lt "$maxfilesize" ]
+        if [ "$filesize" -gt "$maxfilesize" ]
         then
-            echo "$line" > "$tmpdir/metadata0"
+            echo "$line" >> "$tmpdir/metadata0"
         else
-            echo "$line" >> "$tmpdir/metadata$((totalfiles%(process)+1))"
+            echo "$line" >> "$tmpdir/metadata$((totalfiles%(processes)+1))"
             let totalfiles++
         fi
     done
@@ -153,12 +156,12 @@ function scheduler {
         cat "$tmpdir/aria2$processid" >> "$currentdir/${filename%.*}.aria2"
     done
     
-    cp -p "$currentdir/$filename" "$currentdir/$filename.replaced"
+    cp -p "$currentdir/$filename" "$currentdir/${filename%.*}.replaced.${filename##*.}"
     for line in `cat "$currentdir/${filename%.*}.sedresult"`
     do
         before=`echo $line | cut -f1 -d\|`
         after=`echo $line | cut -f2 -d\|`
-        sed -i "s/${before//\//\\\/}/${after//\//\\\/}/g" "$currentdir/$filename.replaced"
+        sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$currentdir/$filename.replaced"
     done
 }
 
@@ -166,7 +169,6 @@ function stage2 {
     praseconf
     scheduler
 }
-
 
 function stage1 {
     if [ "$messageid" ]
@@ -470,7 +472,7 @@ then
     totalresults=`curl "https://discordapp.com/api/v6/guilds/$rguildid/messages/search?channel_id=$rpurechannelid&include_nsfw=true" -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0' -H 'Accept: */*' -H 'Accept-Language: en-US' --compressed -H "Authorization: $rauth" -H 'Connection: keep-alive' -H "Referer: https://discordapp.com/channels/$rchannelid" -H 'Cookie: __cfduid=d440293169c3730ee2beff170518c1cb31565407611; locale=en-US; __cfruid=cd69440a7f7f42175065bc6d8aaeaf9e61ec8171-1585334844' -H 'TE: Trailers' | grep -Eo '"total_results": [0-9]*,' | grep -Eo "[0-9]*"`
 fi
 
-# stage1
+stage1
 
 [ "$multithreading" ] && stage2
 
