@@ -14,9 +14,10 @@ function sourceguilddump {
 
 function changeguild {
     # slim metadata until it could just be put into requests to change overall metadata
-    metadata=`cat "$guildfilename.metadata.json" | sed 's/"emojis": \[.*\], "banner"/"banner"/g' | sed 's/"roles": \[.*\], //g'`
+    metadata=`cat "$guildfilename.metadata.json" | sed 's/"emojis": \[.*\], "banner"/"banner"/g' | sed 's/"roles": \[.*\], //g' | sed 's/"features": \[.*\], //g'`
+    
     sourceguildname=`echo $metadata | grep -Po '"name": ".*", "icon"' | sed 's/"name": "//g' | sed 's/", "icon"//g'`
-
+    
     # change temp guild's metadata into $guildfilename's
     curl "https://discordapp.com/api/v6/guilds/$targetguildid" -X PATCH -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0' -H 'Accept: */*' -H 'Accept-Language: en-US' --compressed -H 'Content-Type: application/json' -H "Authorization: $targetauth" -H 'Origin: https://discordapp.com' -H 'Connection: keep-alive' -H "Referer: https://discordapp.com/channels/$targetguildid" -H 'Cookie: __cfduid=d5a33608e55b75b1fc02781bd0757b7bb1584254754; locale=en-US; __cfruid=ab4456c57ce54d16c8074476942497279958d6fd-1586022017' -H 'TE: Trailers' --data "$metadata"
 }
