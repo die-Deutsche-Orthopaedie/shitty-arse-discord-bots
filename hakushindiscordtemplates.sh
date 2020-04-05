@@ -102,8 +102,8 @@ function reuploademojis { # reupload emojis (optional
 
 function template { # use discord's own template fearture to create a template:wiebitte:
     [ "$templatename" ] || templatename="$sourceguildname (hakushin"
-    [ "$templatedescription" ] || templatedescription="hakushin template of \"$sourceguildname\" (guild id: $sourceguildid)"
-    curl "https://discordapp.com/api/v6/guilds/$targetguildid/templates" -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0' -H 'Accept: */*' -H 'Accept-Language: en-US' --compressed -H 'Content-Type: application/json' -H "Authorization: $targetauth" -H 'Origin: https://discordapp.com' -H 'Connection: keep-alive' -H 'Referer: https://discordapp.com/channels/@me' -H 'Cookie: __cfduid=df41e8118768333089a09c6d25a75d6171584154593; locale=en-US; __cfruid=98f8f406fed3a550169dd14af8d568b3a8cf0c04-1586067677' -H 'TE: Trailers' --data '{"name":"$templatename","description":"$templatedescription"}'
+    [ "$templatedescription" ] || templatedescription="hakushin template of \\\"$sourceguildname\\\" (guild id: $sourceguildid)"
+    curl "https://discordapp.com/api/v6/guilds/$targetguildid/templates" -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0' -H 'Accept: */*' -H 'Accept-Language: en-US' --compressed -H 'Content-Type: application/json' -H "Authorization: $targetauth" -H 'Origin: https://discordapp.com' -H 'Connection: keep-alive' -H 'Referer: https://discordapp.com/channels/@me' -H 'Cookie: __cfduid=df41e8118768333089a09c6d25a75d6171584154593; locale=en-US; __cfruid=98f8f406fed3a550169dd14af8d568b3a8cf0c04-1586067677' -H 'TE: Trailers' --data '{"name":"'"$templatename"'","description":"'"$templatedescription"'"}'
 }
 
 OLD_IFS=$IFS
@@ -117,7 +117,7 @@ do
 done
 
 currentdir=`pwd`
-parameters=`getopt -o tT -a -l template, template-title:,template-description: -- "$@"`
+parameters=`getopt -o tThH -a -l template,help,template-title:,template-description: -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -157,7 +157,7 @@ do
             echo "./hakushindiscordtemplates.sh [options] guildfile sourceauth sourceguildid targetauth [targetguildid]"
             echo
             echo "Options: "
-            echo "  -t or -T or --template <filename>: use discord's template feature to make a template for replicated guild"
+            echo "  -t or -T or --template: use discord's template feature to make a template for replicated guild"
             echo "    --template-title <filename>: custom template title"
             echo "    --template-description <filename>: custom template description"
             echo
@@ -171,6 +171,7 @@ do
             sourceguildid="$4"
             targetauth="$5"
             [ "$6" ] && targetguildid="$6" || targetguildid=`curl 'https://discordapp.com/api/v6/guilds' -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0' -H 'Accept: */*' -H 'Accept-Language: en-US' --compressed -H 'Content-Type: application/json' -H "Authorization: $targetauth" -H 'Origin: https://discordapp.com' -H 'Connection: keep-alive' -H 'Referer: https://discordapp.com/channels/@me' -H 'Cookie: __cfduid=d5a33608e55b75b1fc02781bd0757b7bb1584254754; locale=en-US; __cfruid=88aeb55eb0a8d28a41017b02ece60520142c92f8-1586063772' -H 'TE: Trailers' --data '{"name":"Gretaganger Chat Central","region":"us-south","icon":null,"channels":null}' | grep -o '^{"id": "[0-9]*"' | grep -Eo "[0-9]*"`
+            break
             ;;
         *)
             echo "Internal error!"
