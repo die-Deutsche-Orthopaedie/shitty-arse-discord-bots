@@ -3,7 +3,9 @@
 # a fegelscript to get metadata of a guild and automatically analyze which channels can be dumped and generate sh files to call archivechannels.v5.sh to do the channel archivin' jobs
 
 # constants
-archivechannelsparameters="/path/to/your/archivechannels.v5.sh -E -m -o \"$sourceguildid/[insert_channel_id_here]\" \"$sourceauth\" /path/to/your/conf/file.conf \"[insert_guild_name_here].[insert_channel_name_here].$(date +%y.%m.%d).json\"" # just an example, you need to change it to fit your own needs
+function acp {
+    archivechannelsparameters="/path/to/your/archivechannels.v5.sh -E -m -o \"$sourceguildid/[insert_channel_id_here]\" \"$sourceauth\" /path/to/your/conf/file.conf \"$guildfilename.[insert_channel_name_here].$(date +%y.%m.%d).json\"" # just an example, you need to change it to fit your own needs
+}
 
 function sourceguilddump {
     # dump source guild's metadata
@@ -28,7 +30,6 @@ function processchannels {
             then
                 echo -e "\033[36maddin' this channel into archive queue...\033[0m"
                 output="${archivechannelsparameters/\[insert_channel_id_here\]/$id}"
-                output="${output/\[insert_guild_name_here\]/$guildfilename}"
                 output="${output/\[insert_channel_name_here\]/$name}"
                 echo "$output"
                 echo "$output" >> "$guildfilename.queue.sh"
@@ -52,7 +53,7 @@ then
     echo "./archiveguild.sh sourceauth sourceguildid [guildfilename]"
     echo
     echo "if you don't add a guild file name, it would name it after guild's name (might be a long arse one)"
-    echo "you need to fill or change the $archivechannelsparameters as you see fit, the generated sh file would use this template for commands of each channel; use [insert_channel_id_here] for the script to insert channel id, use [insert_guild_name_here] to insert guild name and use [insert_channel_name_here] to insert channel name"
+    echo "you need to fill or change the $archivechannelsparameters as you see fit, the generated sh file would use this template for commands of each channel; use [insert_channel_id_here] for the script to insert channel id, and use [insert_channel_name_here] to insert channel name"
     exit
 fi
 
@@ -60,6 +61,7 @@ sourceauth="$1"
 sourceguildid="$2"
 [ "$3" ] && guildfilename="$3"
 sourceguilddump
+acp
 processchannels
 
 IFS=$OLD_IFS
