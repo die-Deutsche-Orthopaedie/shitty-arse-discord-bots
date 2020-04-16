@@ -38,13 +38,13 @@ function praseconf {
 
     for templine in `cat "$configfilepath"`
     do
-        temp=`echo $templine | cut -f1 -d\|`
+        temp=`echo "$templine" | cut -f1 -d\|`
         if [ "$temp" = "-W" ]
         then
             let processes+=1
-            webhookurl[$processes]=`echo $templine | cut -f2 -d\|`
-            username[$processes]=`echo $templine | cut -f3 -d\|`
-            avatarurl[$processes]=`echo $templine | cut -f4 -d\|`
+            webhookurl[$processes]=`echo "$templine" | cut -f2 -d\|`
+            username[$processes]=`echo "$templine" | cut -f3 -d\|`
+            avatarurl[$processes]=`echo "$templine" | cut -f4 -d\|`
             if [ ! "${username["$processes"]}" ]
             then
                 username[$processes]="$username_defaults $processes"
@@ -55,13 +55,13 @@ function praseconf {
             fi
         elif [ "$temp" = "-N" ]
         then # process 0 is nitro process, and other process(es) start with 1
-            auth[0]=`echo $templine | cut -f2 -d\|`
-            channelid[0]=`echo $templine | cut -f3 -d\|`
+            auth[0]=`echo "$templine" | cut -f2 -d\|`
+            channelid[0]=`echo "$templine" | cut -f3 -d\|`
             purechannelid[0]=`echo "${channelid[0]}" | cut -d/ -f2`
         else
             let processes+=1
-            auth[$processes]=`echo $templine | cut -f1 -d\|`
-            channelid[$processes]=`echo $templine | cut -f2 -d\|`
+            auth[$processes]=`echo "$templine" | cut -f1 -d\|`
+            channelid[$processes]=`echo "$templine" | cut -f2 -d\|`
             if ! [ "${channelid["$processes"]}" != "${auth["$processes"]}" ]
             then
                 channelid[$processes]="${channelid[0]}"
@@ -90,9 +90,9 @@ function reupload_subprocess { # $1 = process id
     for line in `cat "$tmpdir/metadata$processid"`
     do
         let bruh++
-        local messageid=`echo $line | cut -f1 -d\|`
-        local attachmenturl=`echo $line | cut -f3 -d\|`
-        local attachmentproxyurl=`echo $line | cut -f4 -d\|`
+        local messageid=`echo "$line" | cut -f1 -d\|`
+        local attachmenturl=`echo "$line" | cut -f3 -d\|`
+        local attachmentproxyurl=`echo "$line" | cut -f4 -d\|`
         echo -e "processin' \e[36m$attachmenturl\e[0m from message id \e[36m$messageid\e[0m by process \e[32m$processid\e[0m"
         cd "$tmpdir.$processid"
         rm "$tmpdir.$processid"/* -f
@@ -110,8 +110,8 @@ function reupload_subprocess { # $1 = process id
                 # echo "$response"
                 sleep 2
             fi
-            local newattachmenturl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
-            local newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+            local newattachmenturl=`echo "$response" | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+            local newattachmentproxyurl=`echo "$response" | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
             echo "$newattachmenturl" >> "$tmpdir/aria2$processid"
             echo " dir=${filename%.*}.attachments" >> "$tmpdir/aria2$processid"
             echo " out=$messageid.$files" >> "$tmpdir/aria2$processid"
@@ -132,15 +132,15 @@ function analysis_subprcess { # $1 = process id
     for singlemessage in `cat "$tmpdir/$filename.part$processid"`
     do
         let bruh++
-        local messageid=`echo $singlemessage | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
-        if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
+        local messageid=`echo "$singlemessage" | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
+        if [ `echo "$singlemessage" | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
         then
             local singleattachment
-            for singleattachment in `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
+            for singleattachment in `echo "$singlemessage" | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
             do
-                local attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
-                local attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
-                local filesize=`echo $singleattachment | grep -Eo '"size": [0-9]*,' | grep -Eo "[0-9]*"`
+                local attachmenturl=`echo "$singleattachment" | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                local attachmentproxyurl=`echo "$singleattachment" | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                local filesize=`echo "$singleattachment" | grep -Eo '"size": [0-9]*,' | grep -Eo "[0-9]*"`
                 
                 if [ "$filesize" -gt "$maxfilesize" ]
                 then
@@ -169,8 +169,8 @@ function replace_subprocess {
     for line in `cat "$tmpdir/results$processid"`
     do
         let bruh++
-        local before=`echo $line | cut -f1 -d\|`
-        local after=`echo $line | cut -f2 -d\|`
+        local before=`echo "$line" | cut -f1 -d\|`
+        local after=`echo "$line" | cut -f2 -d\|`
         sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$tmpdir/$filename.part$processid"
         echo -e "replaced \e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m line(s) in original dumps for process \e[32m$processid\e[0m"
     done
@@ -193,8 +193,8 @@ function s1p2 {
     for line in `cat "$currentdir/${filename%.*}.sedresults"`
     do
         let bruh++
-        before=`echo $line | cut -f1 -d\|`
-        after=`echo $line | cut -f2 -d\|`
+        before=`echo "$line" | cut -f1 -d\|`
+        after=`echo "$line" | cut -f2 -d\|`
         sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$currentdir/${filename%.*}.replaced.${filename##*.}"
         echo -e "replaced \e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m line(s) in original dumps"
     done
@@ -210,10 +210,10 @@ function scheduler {
     totalfiles=0
     for line in `cat "$currentdir/${filename%.*}.metadata"`
     do
-        messageid=`echo $line | cut -f1 -d\|`
-        filesize=`echo $line | cut -f2 -d\|`
-        attachmenturl=`echo $line | cut -f3 -d\|`
-        attachmentproxyurl=`echo $line | cut -f4 -d\|`
+        messageid=`echo "$line" | cut -f1 -d\|`
+        filesize=`echo "$line" | cut -f2 -d\|`
+        attachmenturl=`echo "$line" | cut -f3 -d\|`
+        attachmentproxyurl=`echo "$line" | cut -f4 -d\|`
         if [ "$filesize" -gt "$maxfilesize" ]
         then
             echo "$line" >> "$tmpdir/metadata0"
@@ -277,8 +277,8 @@ function s2p3 {
     for line in `cat "$tmpdir/results0"`
     do
         let bruh++
-        before=`echo $line | cut -f1 -d\|`
-        after=`echo $line | cut -f2 -d\|`
+        before=`echo "$line" | cut -f1 -d\|`
+        after=`echo "$line" | cut -f2 -d\|`
         sed -i "s/${before//\//\\/}/${after//\//\\/}/g" "$currentdir/${filename%.*}.replaced.${filename##*.}"
         echo -e "replaced \e[36m$bruh\e[0m outta \e[36m$totalbruh\e[0m line(s) in original dumps for \e[32mnitro process\e[0m"
     done
@@ -343,6 +343,7 @@ function stage1 {
     if [ "$messageid" ]
     then
         url="https://discordapp.com/api/v6/channels/$rpurechannelid/messages?before=$messageid&limit=50"
+        echo $url
     else
         url="https://discordapp.com/api/v6/channels/$rpurechannelid/messages?limit=50"
     fi
@@ -354,14 +355,15 @@ function stage1 {
     done
     
     [ "$finished" ] && bruh2="$finished" || bruh2=0
+    echo "$original"
     while [ "$original" != "[]" ]
     do
         local bruh=0
-        for singlemessage in `echo $original | sed 's/^\[//g' | sed 's/\]$//g' | sed 's/}, {"id": "\([0-9]*\)", "type"/}\n{"id": "\1", "type"/g'`
+        for singlemessage in `echo "$original" | sed 's/^\[//g' | sed 's/\]$//g' | sed 's/}, {"id": "\([0-9]*\)", "type"/}\n{"id": "\1", "type"/g'`
         do
             let bruh++
             let bruh2++
-            messageid=`echo $singlemessage | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
+            messageid=`echo "$singlemessage" | grep -Eo '{"id": "[0-9]*", "type"' | grep -Eo '[0-9]*'`
             if [ "$messageid" -eq "$lastmessageid" ] 
             then
                 echo -e "\e[33mcurrent message id \e[36m$messageid\e[33m equals the latest message id of base dumps, stoppin'\e[0m"
@@ -378,12 +380,12 @@ function stage1 {
             
             if [ "$reupload" ]
             then
-                if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
+                if [ `echo "$singlemessage" | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
                 then
-                    for singleattachment in `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
+                    for singleattachment in `echo "$singlemessage" | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
                     do
-                        attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
-                        attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                        attachmenturl=`echo "$singleattachment" | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                        attachmentproxyurl=`echo "$singleattachment" | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
                         echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
                         echo "$attachmenturl" >> "$currentdir/${filename%.*}.aria2.original"
                         echo " dir=${filename%.*}.attachments.original" >> "$currentdir/${filename%.*}.aria2.original"
@@ -404,9 +406,9 @@ function stage1 {
                                 response=`curl "https://discordapp.com/api/v6/channels/$nitropurechannelid/messages" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0" -H "Accept: */*" -H "Accept-Language: en-US" --compressed -H "Referer: https://discordapp.com/channels/$nitrochannelid" -H "Authorization: $nitroauth" -H "Content-Type: multipart/form-data; boundary=---------------------------32345443330436" -H "Cookie: __cfduid=d7be2f6bf6a3c09f82cd952f554ea2cb31531625199" -H "DNT: 1" -H "Connection: keep-alive" -F "payload_json={\"content\":\"attachment for message id $messageid\",\"tts\":false}" -F "filename=@$file"`
                                 sleep 2
                             fi
-                            newattachmenturl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                            newattachmenturl=`echo "$response" | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
                             echo -e "\e[36mreuploaded, new url: \e[32m$newattachmenturl\e[0m"
-                            newattachmentproxyurl=`echo $response | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                            newattachmentproxyurl=`echo "$response" | grep -Eo '"attachments": \[.{1,}\], "embeds"' | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
                             singlemessage=${singlemessage/$attachmenturl/$newattachmenturl}
                             singlemessage=${singlemessage/$attachmentproxyurl/$newattachmentproxyurl}
                             echo "$newattachmenturl" >> "$currentdir/${filename%.*}.aria2"
@@ -426,15 +428,15 @@ function stage1 {
             elif [ ! "$optimized" ]
             then
                 echo "$singlemessage" >> "$currentdir/$filename"
-                if [ `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
+                if [ `echo "$singlemessage" | grep -Eo '"attachments": \[.{1,}\], "embeds"'` ]
                 then
-                    for singleattachment in `echo $singlemessage | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
+                    for singleattachment in `echo "$singlemessage" | grep -Eo '"attachments": \[.{1,}\], "embeds"' | sed 's/"attachments": \[//g' | sed 's/\], "embeds"//g' | sed 's/}, {/}\n{/g'`
                     do
-                        attachmenturl=`echo $singleattachment | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
-                        attachmentproxyurl=`echo $singleattachment | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
+                        attachmenturl=`echo "$singleattachment" | grep -Eo '"url": ".{1,}", "proxy_url"' | sed 's/"/\n/g' | grep "http"`
+                        attachmentproxyurl=`echo "$singleattachment" | grep -Eo '"proxy_url": ".{1,}"' | sed 's/"/\n/g' | grep "http"`
                         if [ "$multithreading" ]
                         then
-                            filesize=`echo $singleattachment | grep -Eo '"size": [0-9]*,' | grep -Eo "[0-9]*"`
+                            filesize=`echo "$singleattachment" | grep -Eo '"size": [0-9]*,' | grep -Eo "[0-9]*"`
                             echo "$messageid|$filesize|$attachmenturl|$attachmentproxyurl" >> "$currentdir/${filename%.*}.metadata"
                         fi
                         echo -e "\e[36mdetected attachment, url: \e[32m$attachmenturl\e[0m"
