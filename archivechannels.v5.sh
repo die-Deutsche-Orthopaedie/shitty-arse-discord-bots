@@ -343,7 +343,6 @@ function stage1 {
     if [ "$messageid" ]
     then
         url="https://discordapp.com/api/v6/channels/$rpurechannelid/messages?before=$messageid&limit=50"
-        echo $url
     else
         url="https://discordapp.com/api/v6/channels/$rpurechannelid/messages?limit=50"
     fi
@@ -355,7 +354,6 @@ function stage1 {
     done
     
     [ "$finished" ] && bruh2="$finished" || bruh2=0
-    echo "$original"
     while [ "$original" != "[]" ]
     do
         local bruh=0
