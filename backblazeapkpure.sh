@@ -17,10 +17,12 @@ function init() {
     unzip rclone-current-linux-amd64.zip
     for file in `ls | grep "rclone-v"`
     do
+        # alias rclone="~/$file/rclone"
         rclonecmd="$(pwd)/$file/rclone"
     done
     wget https://github.com/q3aql/aria2-static-builds/releases/download/v1.35.0/aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2
     tar -xvjf aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2
+    # alias aria2c="~/aria2-1.35.0-linux-gnu-64bit-build1/aria2c"
     aria2cmd="$(pwd)/aria2-1.35.0-linux-gnu-64bit-build1/aria2c"
     rcloneconf=`"$rclonecmd" config file | grep ".conf"`
     echo "[$remotename]" > "$rcloneconf"
@@ -28,8 +30,20 @@ function init() {
     echo "account = $b2id" >> "$rcloneconf"
     echo "key = $b2key" >> "$rcloneconf"
     echo "hard_delete = true" >> "$rcloneconf"
-    "$rclonecmd" ls "$remotename:$bucketname"
+    # "$rclonecmd" lsd "$remotename:$bucketname"
     cd "$currentdir"
+}
+
+function reupload() {
+    [ ! -d "$tmpdir" ] && mkdir $tmpdir; cd $tmpdir; rm $tmpdir/* -f
+    [ "$aria2" ] && "$aria2cmd" -R -s 16 -x 16 -k 1M --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$resurl" -o "$resfilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$resurl" -O "$resfilename"
+                
+    for file in `ls`
+    do
+        "$rclonecmd" -vv copy "$file" "$remotename:$bucketname/$foldername"
+        echo "$anticsite/file/$bucketname/$foldername/$file" >> "$currentdir/results.$foldername.txt"
+        rm "$file" -f
+    done
 }
 
 function apkpure() { # $1 = apkpure search term, $2 = foldername
@@ -37,6 +51,7 @@ function apkpure() { # $1 = apkpure search term, $2 = foldername
     aria2="JAJAJA"
     keyword="$1"
     author="a certain short haired cutie with glasses and blue eyes lover that you all know:wiebitte:"
+    "$rclonecmd" -vv purge "$remotename:$bucketname/$foldername"
     
     starttime=`date +%s%N`
     OLD_IFS=$IFS
@@ -52,19 +67,11 @@ function apkpure() { # $1 = apkpure search term, $2 = foldername
         for link in `curl "https://apkpure.com/search-page?q=$keyword&t=app&begin=$jajaja" | grep ' <p class="search-title">' | grep -Eo 'href=.*">' | sed 's/href="//g' | sed 's/">//g' `
         do
             damn=`curl "https://apkpure.com$link/download?from=details"`
-            apkfilename=`echo "$damn" | grep -Eo 'span class="file".*<span class="fsize"' | sed 's/span class="file">//g' | sed 's/ <span class="fsize"//g'`
-            apklink=`echo "$damn" | grep 'iframe id="iframe_download"' | sed 's/"/\n/g' | grep "http"`
-            if [ "$apklink" ]
+            resfilename=`echo "$damn" | grep -Eo 'span class="file".*<span class="fsize"' | sed 's/span class="file">//g' | sed 's/ <span class="fsize"//g'`
+            resurl=`echo "$damn" | grep 'iframe id="iframe_download"' | sed 's/"/\n/g' | grep "http"`
+            if [ "$resurl" ]
             then
-                [ ! -d "$tmpdir" ] && mkdir $tmpdir; cd $tmpdir; rm $tmpdir/* -f
-                [ "$aria2" ] && "$aria2cmd" -R -s 16 -x 16 -k 1M --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$apklink" -o "$apkfilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$apklink" -O "$apkfilename"
-                
-                for file in `ls`
-                do
-                    "$rclonecmd" -vv copy "$file" "$remotename:$bucketname/$foldername"
-                    echo "$anticsite/file/$bucketname/$foldername/$file" >> "$currentdir/results.$foldername.txt"
-                    rm "$file" -f
-                done
+                reupload
             fi
         done
     done
@@ -79,10 +86,106 @@ function apkpure() { # $1 = apkpure search term, $2 = foldername
     IFS=$OLD_IFS
 }
 
+function loop() {
+    OLD_IFS=$IFS
+    IFS=$'\n'
+    toilet_chan_has_smol_dicc="JAJAJAJAJA"
+    while [ "$toilet_chan_has_smol_dicc" ]
+    do
+        x=`cat "$listenfile"`
+        if [ "$x" ]
+        then
+            kw=`echo "$x" | cut -f1 -d\|`
+            folder=`echo "$x" | cut -f2 -d\|`
+            # reads parameter from file that's written by perhaps php
+            # echo "$kw" "$folder"
+            apkpure "$kw" "$folder"
+            cat /dev/null > "$listenfile"
+        else
+            echo "What you got, file? You got NOTHIN'! ----ava"
+        fi
+        sleep 2
+    done
+    IFS=$OLD_IFS
+}
 
-b2id="$1"
-b2key="$2"
-bucketname="$3"
+OLD_IFS=$IFS
+IFS=$'\n'
+
+original_parameters="$0"
+
+for parameter in "$@"
+do
+    original_parameters="$original_parameters '$parameter'"
+done
+
 currentdir=`pwd`
-init
-[ "$5" ] && apkpure "$4" "$5" || apkpure "$4" "$4"
+rm "$tmpdir"/* -f
+parameters=`getopt -o l:L:hH -a -l loop:,help -- "$@"`
+
+if [ $? != 0 ]
+then
+    echo "Houston, we have an arsefockin' problem: Unrecognized Option Detected, Terminating....." >&2
+    exit 2
+fi
+
+if [ $# -eq 0 ]
+then
+    echo "Houston, we have an arsefockin' problem: You MUST at least provide a parameter" >&2
+    exit 1
+fi
+
+eval set -- "$parameters"
+
+while true
+do
+    echo $@
+    case "$1" in
+        -l | -L | --loop)
+            loop="JAJAJAJAJA"
+            listenfile="$2"
+            shift 2
+            ;;
+        -h | -H | --help)
+            echo "copyrekt die deutsche Orthopädiespezialist 2020"
+            echo "backblaze antics script, to use ibm cloud and backblaze to collect all of apkpure's apk under a certain search term and reupload them (and link file about them) into backblaze"
+            echo "so perhaps you don't need to spend a futabruhin' cent for it"
+            echo "just sign up ibm cloud and backblaze today! :wiebitte:"
+            echo "required: a B2 id and key in backblaze's app key, a bucket name that's previously created, remote name can be anythin'"
+            echo 'parameters: bash backblazeapkpure.sh "$b2id" "$b2key" "$bucketname" "$keyword" "$folder_in_backblaze" (optional'
+            echo
+            echo "Usage: "
+            echo "bash backblazeapkpure.sh [options] b2id b2key bucketname keyword [folder_in_backblaze]"
+            echo
+            echo "Options: "
+            echo "  -l or -L or --loop <listenfile>: it would summon an infinite loop to detect a certain file every 2 seconds to receive keyword and perhaps folder_in_backblaze, which can be modified by php or whatever you'll deploy into ibm cloud"
+            echo "    the listened file shall be empty without input and shall be filled with \"keyword|folder_in_backblaze\" only when inputted"
+            echo
+            echo "channel id should be <chatroom id/channel id> format"
+            echo "picarchive_channel_id is the channel to reupload pics from source channel"
+            echo "by default it shall use a webhook to upload smol pics, but big pics shall be uploaded by a nitro account"
+            exit
+            shift
+            ;;
+        --)
+            b2id="$2"
+            b2key="$3"
+            bucketname="$4"
+            currentdir=`pwd`
+            init
+            break
+            ;;
+        *)
+            echo "Internal error!"
+            exit 255
+            ;;
+    esac
+done
+
+echo "$loop"
+if [ "$loop" ]
+then
+    loop
+else
+    [ "$6" ] && apkpure "$5" "$6" || apkpure "$5" "$5"
+fi
