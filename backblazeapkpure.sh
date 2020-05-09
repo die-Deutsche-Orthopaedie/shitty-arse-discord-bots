@@ -10,6 +10,14 @@ remotename="wiebitte"
 anticsite="https://kawaii.toiletchan.xyz"
 tmpdir="/tmp/wiebitte"
 
+function avajoke() {
+    a1=("What you got" "What's up")
+    a2=("file" "script" "IBM" "Backblaze" "apkpure")
+    bruh1=${a1[$((RANDOM%${#a1[@]}))]}
+    bruh2=${a2[$((RANDOM%${#a2[@]}))]}
+    echo "$bruh1, $bruh2? You got NOTHIN'! ----Ava"
+}
+
 function init() {
     cd
     rm rclone* aria2* -rf
@@ -77,6 +85,7 @@ function apkpure() { # $1 = apkpure search term, $2 = foldername
     done
     cd "$currentdir"
     "$rclonecmd" -vv copy "$currentdir/results.$foldername.txt" "$remotename:$bucketname/$foldername"
+    rm "$currentdir/results.$foldername.txt" -f
     
     finaltime=`date +%s%N`
     # usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
@@ -90,6 +99,12 @@ function loop() {
     OLD_IFS=$IFS
     IFS=$'\n'
     toilet_chan_has_smol_dicc="JAJAJAJAJA"
+    cat /dev/null > "$listenfile" # to ignore the last unfinished job
+    rm backblazeapkpure.php -f
+    wget "https://github.com/die-Deutsche-Orthopaedie/shitty-arse-discord-bots/raw/master/backblazeapkpure.php" # time for the bootstrappin' antics
+    sed -i "s/\[insert your listenfile name here\]/${listenfile##*/}/g" backblazeapkpure.php
+    sed -i "s/\[insert your antics domain name here\]/${anticsite//\//\\/}/g" backblazeapkpure.php
+    sed -i "s/\[insert your bucket name here\]/$bucketname/g" backblazeapkpure.php
     while [ "$toilet_chan_has_smol_dicc" ]
     do
         x=`cat "$listenfile"`
@@ -99,10 +114,10 @@ function loop() {
             folder=`echo "$x" | cut -f2 -d\|`
             # reads parameter from file that's written by perhaps php
             # echo "$kw" "$folder"
-            apkpure "$kw" "$folder"
+            apkpure "$kw" "$folder" > "log.$folder.txt" 2>&1
             cat /dev/null > "$listenfile"
         else
-            echo "What you got, file? You got NOTHIN'! ----ava"
+            avajoke
         fi
         sleep 2
     done
