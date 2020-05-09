@@ -1,7 +1,7 @@
 <?php
-    // constants
-    $listenfilepath="bruh.txt";
-    $url="https://kawaii.toiletchan.xyz/file/[insert your bucket name here]/";
+    // constants that would be filled by the bash script
+    $listenfilepath="[insert your listenfile name here]";
+    $url="[insert your antics domain name here]/file/[insert your bucket name here]/";
     // btw this is one of the most :futabruh:in' borin' thing i've ever done in my life; so you can drive your little shitty ibm cloud to dump apks from apkpure for you even when you're outside and have no access to ibm cloud console
     // find your app url in ibm cloud console and add "backblazeapkpure.php?futabruh=[insert keyword here or add a | followin' folder you want]"
     echo 'whatever the :futabruh: you inputted is: ' . htmlspecialchars($_GET["futabruh"]) . ';';
@@ -21,6 +21,8 @@
         echo "the current prossin' parameter is: " . $futabruh;
         echo "<br />";
         $futabruh = preg_replace('/.*\|/', '', $futabruh);
+        echo "and the log file could be accessed from <a href=\"log." . $futabruh. ".txt\">here<a>";
+        echo "<br />";
         echo "and the current prosessin' results could be accessed from <a href=\"results." . $futabruh. ".txt\">here<a>";
         echo "<br />";
         echo "and the final prosessin' results would be uploaded into <a href=\"" . $url . $futabruh . "/results." . $futabruh . ".txt\">here<a>";
