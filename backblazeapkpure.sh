@@ -17,20 +17,18 @@ function init() {
     unzip rclone-current-linux-amd64.zip
     for file in `ls | grep "rclone-v"`
     do
-        alias rclone="~/$file/rclone"
-        # rclonecmd="~/$file/rclone"
+        rclonecmd="$(pwd)/$file/rclone"
     done
     wget https://github.com/q3aql/aria2-static-builds/releases/download/v1.35.0/aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2
     tar -xvjf aria2-1.35.0-linux-gnu-64bit-build1.tar.bz2
-    alias aria2c="~/aria2-1.35.0-linux-gnu-64bit-build1/aria2c"
-    # aria2cmd="~/aria2-1.35.0-linux-gnu-64bit-build1/aria2c"
-    rcloneconf=`rclone config file | grep ".conf"`
+    aria2cmd="$(pwd)/aria2-1.35.0-linux-gnu-64bit-build1/aria2c"
+    rcloneconf=`"$rclonecmd" config file | grep ".conf"`
     echo "[$remotename]" > "$rcloneconf"
     echo "type = b2" >> "$rcloneconf"
     echo "account = $b2id" >> "$rcloneconf"
     echo "key = $b2key" >> "$rcloneconf"
     echo "hard_delete = true" >> "$rcloneconf"
-    rclone ls "$remotename:$bucketname"
+    "$rclonecmd" ls "$remotename:$bucketname"
     cd "$currentdir"
 }
 
@@ -59,11 +57,11 @@ function apkpure() { # $1 = apkpure search term, $2 = foldername
             if [ "$apklink" ]
             then
                 [ ! -d "$tmpdir" ] && mkdir $tmpdir; cd $tmpdir; rm $tmpdir/* -f
-                [ "$aria2" ] && aria2c -R -s 16 -x 16 -k 1M --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$apklink" -o "$apkfilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$apklink" -O "$apkfilename"
+                [ "$aria2" ] && "$aria2cmd" -R -s 16 -x 16 -k 1M --header="User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$apklink" -o "$apkfilename" || wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$apklink" -O "$apkfilename"
                 
                 for file in `ls`
                 do
-                    rclone -vv copy "$file" "$remotename:$bucketname/$foldername"
+                    "$rclonecmd" -vv copy "$file" "$remotename:$bucketname/$foldername"
                     echo "$anticsite/file/$bucketname/$foldername/$file" >> "$currentdir/results.$foldername.txt"
                     rm "$file" -f
                 done
@@ -71,7 +69,7 @@ function apkpure() { # $1 = apkpure search term, $2 = foldername
         done
     done
     cd "$currentdir"
-    rclone -vv copy "$currentdir/results.$foldername.txt" "$remotename:$bucketname/$foldername"
+    "$rclonecmd" -vv copy "$currentdir/results.$foldername.txt" "$remotename:$bucketname/$foldername"
     
     finaltime=`date +%s%N`
     # usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
