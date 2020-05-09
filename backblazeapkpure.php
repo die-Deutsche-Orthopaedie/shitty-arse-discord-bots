@@ -1,7 +1,9 @@
 <?php
     // constants
     $listenfilepath="bruh.txt";
-    $url="https://kawaii.toiletchan.xyz/file//";
+    $url="https://kawaii.toiletchan.xyz/file/[insert your bucket name here]/";
+    // btw this is one of the most :futabruh:in' borin' thing i've ever done in my life; so you can drive your little shitty ibm cloud to dump apks from apkpure for you even when you're outside and have no access to ibm cloud console
+    // find your app url in ibm cloud console and add "backblazeapkpure.php?futabruh=[insert keyword here or add a | followin' folder you want]"
     echo 'whatever the :futabruh: you inputted is: ' . htmlspecialchars($_GET["futabruh"]) . ';';
     echo "<br />";
     $listenfile=fopen($listenfilepath,"a+");
