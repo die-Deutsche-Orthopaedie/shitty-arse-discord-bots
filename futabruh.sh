@@ -13,7 +13,7 @@ tmpdir="/tmp/wiebitte"
 
 function avajoke() {
     a1=("What you got" "What's up")
-    a2=("file" "script" "IBM" "Backblaze" "apkpure")
+    a2=("file" "script" "IBM" "Backblaze" "apkpure" "yande.re")
     bruh1=${a1[$((RANDOM%${#a1[@]}))]}
     bruh2=${a2[$((RANDOM%${#a2[@]}))]}
     echo "$bruh1, $bruh2? You got NOTHIN'! ----Ava"
