@@ -51,10 +51,7 @@ function yandere() { # $1 = tag
     url="https://yande.re/post?tags=$keyword"
     url=${url// /%20}
     totalresults=`curl "$url" | grep -Eo "[0-9]*</a> <a class=\"next_page" | grep -Eo "[0-9]*"`
-    if [ ! $totalresults ]
-    then
-        totalresults=1
-    fi
+    [ "$totalresults" ] || totalresults=1
 
     preprocess
     
