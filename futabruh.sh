@@ -117,7 +117,7 @@ function preprocess() {
 }
 
 function postprocess() {
-    "$rclonecmd" --low-level-retries=666 -vv --checksum copy "$currentdir/results.$sitename.$foldername.txt" "$remotename:$bucketname/$sitename.$foldername"
+    "$rclonecmd" --low-level-retries=666 -vv copy "$currentdir/results.$sitename.$foldername.txt" "$remotename:$bucketname/$sitename.$foldername"
     rm "$currentdir/results.$sitename.$foldername.txt" -f
     finaltime=`date +%s%N`
     # usedtime=`echo "scale=3;($finaltime - $starttime)/1000000000" | bc`
@@ -175,8 +175,8 @@ function loop() {
                 echo "$sitename" "$kw" "$folder"
                 process "$sitename" "$kw" "$folder" > "log.$sitename.$folder.txt" 2>&1 && "$rclonecmd" -vv 
                 log2html
-                "$rclonecmd" --low-level-retries=666 -vv --checksum copy "$currentdir/log.$sitename.$folder.txt" "$remotename:$bucketname/$sitename.$foldername"
-                "$rclonecmd" --low-level-retries=666 -vv --checksum copy "$currentdir/log.$sitename.$folder.html" "$remotename:$bucketname/$sitename.$foldername"
+                "$rclonecmd" --low-level-retries=666 -vv copy "$currentdir/log.$sitename.$folder.txt" "$remotename:$bucketname/$sitename.$foldername"
+                "$rclonecmd" --low-level-retries=666 -vv copy "$currentdir/log.$sitename.$folder.html" "$remotename:$bucketname/$sitename.$foldername"
                 rm "log.$sitename.$folder.*" -f
             fi
             cat /dev/null > "$listenfile"
@@ -207,7 +207,7 @@ function reupload() { #$1 = url, $2 = filename
                 
     for file in `ls "$tmpdir"`
     do
-        "$rclonecmd" --low-level-retries=666 -vv --checksum copy "$file" "$remotename:$bucketname/$sitename.$foldername"
+        "$rclonecmd" --low-level-retries=666 -vv copy "$file" "$remotename:$bucketname/$sitename.$foldername"
         echo "$anticsite/file/$bucketname/$sitename.$foldername/$file" >> "$currentdir/results.$sitename.$foldername.txt"
         rm "$file" -f
     done
