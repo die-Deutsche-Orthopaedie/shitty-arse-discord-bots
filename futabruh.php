@@ -39,6 +39,8 @@
         echo "<br />";
         echo "and the final prosessin' results would be uploaded into <a href=\"" . $url . $sitename . "." . $foldername . "/results." . $sitename . "." . $foldername . ".txt\">here<a>";
         echo "<br />";
-        echo "and the log file would be uploaded into <a href=\"" . $url . $sitename . "." . $foldername . "/log." . $sitename . "." . $foldername . ".txt\">here<a>";
+        echo "and the log file (raw) would be uploaded into <a href=\"" . $url . $sitename . "." . $foldername . "/log." . $sitename . "." . $foldername . ".txt\">here<a>";
+        echo "<br />";
+        echo "and the log file (formatted into html) would be uploaded into <a href=\"" . $url . $sitename . "." . $foldername . "/log." . $sitename . "." . $foldername . ".html\">here<a>";
     }
 ?>
