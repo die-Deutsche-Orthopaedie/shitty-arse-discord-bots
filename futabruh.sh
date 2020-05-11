@@ -25,11 +25,11 @@ function apkpure() { # $1 = apkpure search term, $2 = foldername
     keyword="$1"
     foldername="$2"
     aria2="JAJAJA"
-    finalfish=`curl "https://apkpure.com/search?q=$keyword" | grep "<span>[0-9]*</span> search results found" | grep -Eo "[0-9]*"`
+    totalresults=`curl "https://apkpure.com/search?q=$keyword" | grep "<span>[0-9]*</span> search results found" | grep -Eo "[0-9]*"`
     
     preprocess
     
-    for jajaja in `seq 0 15 $finalfish`
+    for jajaja in `seq 0 15 $totalresults`
     do 
         for link in `curl "https://apkpure.com/search-page?q=$keyword&t=app&begin=$jajaja" | grep ' <p class="search-title">' | grep -Eo 'href=.*">' | sed 's/href="//g' | sed 's/">//g' `
         do
@@ -50,15 +50,15 @@ function yandere() { # $1 = tag
     aria2="JAJAJA"
     url="https://yande.re/post?tags=$keyword"
     url=${url// /%20}
-    finalfish=`curl "$url" | grep -Eo "[0-9]*</a> <a class=\"next_page" | grep -Eo "[0-9]*"`
-    if [ ! $totalfish ]
+    totalresults=`curl "$url" | grep -Eo "[0-9]*</a> <a class=\"next_page" | grep -Eo "[0-9]*"`
+    if [ ! $totalresults ]
     then
-        finalfish=1
+        totalresults=1
     fi
 
     preprocess
     
-    for fish in `seq 1 $finalfish`
+    for fish in `seq 1 $totalresults`
     do
         url="https://yande.re/post?page=$fish&tags=$keyword"
         url=${url// /%20}
@@ -108,10 +108,10 @@ function preprocess() {
     echo -e "\033[31mLegal Disclaimer\033[0m: this bot's result is completely generated from the target site, so either the author or users of this bot has \033[31mABSOLUTELY NO LIABILITY\033[0m for its behaviors, or \033[31mWOULD YOU JUST KINDLY GO DIDDLE YOURSELF YOU SOCIAL JUSTICE ARSE:FUTABRUH:IN' WORRIORS\033[0m? "
     case "$restype" in
         pages)
-            echo -e "FYI, the search term is \033[36m$keyword\033[0m, and it has \033[36m$finalfish\033[0m pages(s), so enjoy your :futabruh:in' $bitte"
+            echo -e "FYI, the search term is \033[36m$keyword\033[0m, and it has \033[36m$totalresults\033[0m pages(s), so enjoy your :futabruh:in' $bitte"
             ;;      
         results)
-            echo -e "FYI, the search term is \033[36m$keyword\033[0m, and it has \033[36m$finalfish\033[0m search result(s), so enjoy your :futabruh:in' $bitte"
+            echo -e "FYI, the search term is \033[36m$keyword\033[0m, and it has \033[36m$totalresults\033[0m search result(s), so enjoy your :futabruh:in' $bitte"
             ;;      
         *)
             echo "futabruh"
