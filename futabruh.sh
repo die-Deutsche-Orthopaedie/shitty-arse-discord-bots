@@ -75,18 +75,24 @@ function yandere() { # $1 = tag
 
 ######## auxiliary functions start here
 
+function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+
 function process() { # site registry (hakushin
     case "$1" in
         yandere)
             fullsitename="yande.re"
             restype="pages"
             bitte="cuties"
+            threshold=256
+            transfer=10
             yandere "$2" "$3"
             ;;
         apkpure)
             fullsitename="apkpure.com"
             restype="results"
             bitte="apk"
+            threshold=128
+            transfer=2
             apkpure "$2" "$3"
             ;;
         *)
@@ -117,6 +123,12 @@ function preprocess() {
 }
 
 function postprocess() {
+    "$rclonecmd" --low-level-retries=666 -vv --transfers="$transfer" copy "$tmpdir" "$remotename:$bucketname/$sitename.$foldername"
+    for file in `ls "$tmpdir"`
+    do
+        echo "$anticsite/file/$bucketname/$sitename.$foldername/$file" >> "$currentdir/results.$sitename.$foldername.txt"
+    done
+    rm "$tmpdir"/* -rf
     "$rclonecmd" --low-level-retries=666 -vv copy "$currentdir/results.$sitename.$foldername.txt" "$remotename:$bucketname/$sitename.$foldername"
     rm "$currentdir/results.$sitename.$foldername.txt" -f
     finaltime=`date +%s%N`
@@ -194,9 +206,9 @@ function reupload() { #$1 = url, $2 = filename
         local resfilename="$2"
     else
         local resfilename=${resurl##*/}
-        resfilename=${resfilename//%20/ }
+        resfilename=`urldecode "$resfilename"`
     fi
-    [ ! -d "$tmpdir" ] && mkdir $tmpdir; cd $tmpdir; rm $tmpdir/* -rf
+    [ ! -d "$tmpdir" ] && mkdir "$tmpdir"; cd "$tmpdir";
     
     if [ "$aria2" ]
     then
@@ -205,12 +217,23 @@ function reupload() { #$1 = url, $2 = filename
         wget --user-agent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0" "$resurl" -O "$resfilename"
     fi
                 
-    for file in `ls "$tmpdir"`
-    do
-        "$rclonecmd" --low-level-retries=666 -vv copy "$file" "$remotename:$bucketname/$sitename.$foldername"
-        echo "$anticsite/file/$bucketname/$sitename.$foldername/$file" >> "$currentdir/results.$sitename.$foldername.txt"
-        rm "$file" -f
-    done
+    tempdirsize=`du -s "$tmpdir" | grep -Eo "[0-9]*\s" | grep -Eo "[0-9]*"`
+    if [ "$((tempdirsize-threshold*1024))" -gt 0 ]
+    then
+        "$rclonecmd" --low-level-retries=666 -vv --transfers="$transfer" copy "$tmpdir" "$remotename:$bucketname/$sitename.$foldername"
+        for file in `ls "$tmpdir"`
+        do
+            echo "$anticsite/file/$bucketname/$sitename.$foldername/$file" >> "$currentdir/results.$sitename.$foldername.txt"
+        done
+        rm "$tmpdir"/* -rf
+    fi
+    
+    # for file in `ls "$tmpdir"`
+    # do
+        # "$rclonecmd" --low-level-retries=666 -vv copy "$file" "$remotename:$bucketname/$sitename.$foldername"
+        # echo "$anticsite/file/$bucketname/$sitename.$foldername/$file" >> "$currentdir/results.$sitename.$foldername.txt"
+        # rm "$file" -f
+    # done
 }
 
 function log2html() {
