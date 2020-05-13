@@ -74,9 +74,10 @@ function uploadfile { # $1 = message, #2 = filepath, #3 = processid (probably us
             
             if [ "$sha5121" == "$sha5122" ]
             then
-                echo -e "\e[36mchecksum for \e[32m$2\e[36 passed[0m" 1>&2
+                # echo -e "\e[36mchecksum for \e[32m$2\e[36 passed[0m" 1>&2
+                echo -e "\e[36mchecksum for \e[32m$2\e[36m passed\e[0m" 1>&2
             else
-                echo -e "\e[31mchecksum for \e[32m$2\e[31m failed[0m, will reupload" 1>&2
+                echo -e "\e[31mchecksum for \e[32m$2\e[31m failed\e[0m, will reupload" 1>&2
                 discordlink=""
             fi
             rm "$tmpdir/${discordlink##*/}.checksumtemp.$3" -f
@@ -636,6 +637,7 @@ fi
 if [ "$uber2" ]
 then
     processid=0
+    sleeptime=1
     discordlink=`uploadfile "link file **$exportfilename** ready to fire$leftfunny$rightfunny" "$exportfilename" "$processid"`
     echo -e "your link file's link: \e[36m$discordlink\e[0m"
     cp -p "${exportfilename%.*}.bat" "direct.download.bat"
@@ -662,6 +664,7 @@ fi
 if [ "$uber" ]
 then
     processid=0
+    sleeptime=1
     discordlink=`uploadfile "link file **$exportfilename** ready to fire$leftfunny$rightfunny" "$exportfilename" "$processid"`
     echo -e "your link file's link: \e[36m$discordlink\e[0m"
     cp -p "${exportfilename%.*}.bat" "direct.download.bat"
