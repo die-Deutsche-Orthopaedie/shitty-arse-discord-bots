@@ -162,7 +162,6 @@ function upload_subprocess {  # upload a single file into discord, where $1 = ab
     local basepath="$1"
     local processid="$2"
     local fullpath="$3"
-    local processedfile=0
     if [ ! -d "$fullpath" ]
     then
         local relativepath="${fullpath#$basepath}"
@@ -202,8 +201,8 @@ function upload_subprocess {  # upload a single file into discord, where $1 = ab
                 mv "$basepath/$dir/$file" "$basepath/$dir/$file2"
                 local discordlink=""
                 [ "$dir" ] && discordlink=`uploadfile "$rightfunny**$dir**/$file$leftfunny" "$basepath/$dir/$file2" "$processid"` || discordlink=`uploadfile "$rightfunny$file$leftfunny" "$basepath/$file2" "$processid"`
-                let processedfile++
-                echo -e "\e[36m$discordlink\e[0m uploaded by process \e[32m$processid\e[0m, file \e[36m$processedfile\e[0m/\e[32m${filesinprocess["$processid"]}\e[0m"
+                let processedfiles[$processid]++
+                echo -e "\e[36m$discordlink\e[0m uploaded by process \e[32m$processid\e[0m, file \e[36m${processedfiles["$processid"]}\e[0m/\e[32m${filesinprocess["$processid"]}\e[0m"
                 echo "$discordlink" >> "$tmpdir/$exportfilename.part$processid"
                 [ "$dir" ] && echo " dir=downloaded/$dir" >> "$tmpdir/$exportfilename.part$processid" || echo " dir=downloaded" >> "$tmpdir/$exportfilename.part$processid"
                 echo " out=$file" >> "$tmpdir/$exportfilename.part$processid"
@@ -232,8 +231,8 @@ function upload_subprocess {  # upload a single file into discord, where $1 = ab
             else
                 discordlink=""
                 [ "$dir" ] && discordlink=`uploadfile "$rightfunny**$dir**/$file$leftfunny" "$basepath/$dir/$file" "$processid"` || discordlink=`uploadfile "$rightfunny$file$leftfunny" "$basepath/$file" "$processid"`
-                let processedfile++
-                echo -e "\e[36m$discordlink\e[0m uploaded by process \e[32m$processid\e[0m, file \e[36m$processedfile\e[0m/\e[32m${filesinprocess["$processid"]}\e[0m"
+                let processedfiles[$processid]++
+                echo -e "\e[36m$discordlink\e[0m uploaded by process \e[32m$processid\e[0m, file \e[36m${processedfiles["$processid"]}\e[0m/\e[32m${filesinprocess["$processid"]}\e[0m"
                 echo "$discordlink" >> "$tmpdir/$exportfilename.part$processid"
                 [ "$dir" ] && echo " dir=downloaded/$dir" >> "$tmpdir/$exportfilename.part$processid" || echo " dir=downloaded" >> "$tmpdir/$exportfilename.part$processid"
                 echo " out=$file" >> "$tmpdir/$exportfilename.part$processid"
@@ -349,6 +348,10 @@ function scheduler2 { # muptiple threads for local files
     for processid in `seq 0 $[processes-1]`
     do
         filesinprocess[$processid]=0
+    done
+    for processid in `seq 0 $[processes-1]`
+    do
+        processedfiles[$processid]=0
     done
     
     for fullpath in `find "$basedir"`
