@@ -71,7 +71,7 @@ function getfilelist() {
         if [ "$dirsign" -eq 0 ]
         then
             echo -e "detected file: \e[36m$resultpath\e[0m"
-            dllink=`getdllink $fsid`
+            dllink=`getdllink $fsid | sed 's/\r//g'`
             echo "# file name: $filename" >> "download.$shareurl.sh"
             echo "# file path: $resultpath" >> "download.$shareurl.sh"
             echo "# file size: $filesize" >> "download.$shareurl.sh"
@@ -109,7 +109,7 @@ function getdir() { # recrusive function, $1 = path
         if [ "$dirsign" -eq 0 ]
         then
             echo -e "detected file: \e[36m$resultpath\e[0m"
-            dllink=`getdllink $fsid`
+            dllink=`getdllink $fsid | sed 's/\r//g'`
             echo "# file name: $filename" >> "download.$shareurl.sh"
             echo "# file path: $resultpath" >> "download.$shareurl.sh"
             echo "# file size: $filesize" >> "download.$shareurl.sh"
