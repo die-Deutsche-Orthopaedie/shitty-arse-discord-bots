@@ -12,8 +12,10 @@ let maxfilesize=8*1024*1024-114514 # discord's filesize limit is as barbarian as
 let maxfilesize2=50*1024*1024-114514 # discord's filesize limit is as barbarian as yajuu senpai, so i used 114514 to limit filesize:wiebitte:
 rate="0.8"
 
-function gretajoke {
-    cuties=("Ann" "Chie" "Marie" "Yukari" "Fuuka" "Futaba" "Hifumi" "Riley" "Cosette" "Alice")
+function gretajoke_v2 {
+    cuties=("Ann" "Chie" "Marie" "Yukari" "Fuuka" "Futaba" "Hifumi" "Riley" "Cosette" "Ryza" "Alice" "Barbara" "Jean" "Sucrose" "Fischl")
+    villains=("Greta Thunberg" "Lea chan" "Toilet chan" "Jono chan" "Yajuu senpai" "Paimon")
+    villainquotes=("How dare you fucking call me Greta Chan! " "Don't fucking call me Lea Chan. " "@everyone Don't call me Toilet Chan, pls. " "posting UCC \\\"chan\\\" will result in a suitable punishment. " "Iiyo! Koiyo! No! Humph! Humph! AAAAAAAAAAAAAAAAA! AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA! " "Wiebit te nandayo! ")
     cutie1="Cosette"
     cutie2="Cosette"
     while [ "$cutie1" = "$cutie2" ]
@@ -21,7 +23,9 @@ function gretajoke {
         cutie1=${cuties[$((RANDOM%${#cuties[@]}))]}
         cutie2=${cuties[$((RANDOM%${#cuties[@]}))]}
     done
-    echo "$cutie1 chan, $cutie2 chan, and Greta Thunberg were all lost in the desert. They found a lamp and rubbed it. A genie popped out and granted them each one wish. $cutie1 chan wished to be back home. Poof! She was back home. $cutie2 chan wished to be at home with her family. Poof! She was back home with her family. Greta Thunberg said, \\\"How dare you fucking call me Greta Chan! \\\""
+    villain="$((RANDOM%${#villains[@]}))"
+    echo $villian
+    echo "$cutie1 chan, $cutie2 chan, and ${villains["$villian"]} were all lost in the desert. They found a lamp and rubbed it. A genie popped out and granted them each one wish. $cutie1 chan wished to be back home. Poof! She was back home. $cutie2 chan wished to be at home with her family. Poof! She was back home with her family. ${villains["$villian"]} said, \\\"${villainquotes["$villian"]}\\\""
 }
 
 function praseconf {
@@ -152,7 +156,7 @@ function m3u8generation() {
     do 
         [ -d /cygdrive ] && time=`ffprobe -i "$(cygpath -w "$m3u8dir/$filebase.split.$file.ts")" -show_entries format=duration -v quiet -of csv="p=0"`  || time=`ffprobe -i "$m3u8dir/$filebase.split.$file.ts" -show_entries format=duration -v quiet -of csv="p=0"`
         echo "#EXTINF:$time," | sed 's/\r//g;s/\n//g' >> "$m3u8dir/$videotitle.m3u8"
-        echo "00000.split.$file.ts" >> "$m3u8dir/$videotitle.m3u8"
+        echo "$filebase.split.$file.ts" >> "$m3u8dir/$videotitle.m3u8"
     done
 
     echo "#EXT-X-ENDLIST" >> "$m3u8dir/$videotitle.m3u8"
