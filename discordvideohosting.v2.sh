@@ -2,7 +2,6 @@
 # copyrekt die deutsche Orthopädiespezialist 2021
 # discord "video hostin'" bot (sarcastic
 # split a mp4 video via HLS methods, and upload splited video clips into discord, then replace m3u8 file into one full of discord links, and upload it into discord too
-# meanwhile i found a better way to split videos via tsMuxeR, too bad its command line version just does not implement this function; that means it needed to be half-arsed, instead of full-arsed in one single script:barbruh:
 
 tmpdir="/tmp/discordtubeantics"
 [ -d /cygdrive ] && tmpdir_cygwin=`cygpath -w "$tmpdir"` # ffprobe and ffmpeg for windows only accept windows style path
@@ -11,13 +10,10 @@ username_defaults="kawaii yukari chan"
 avatarurl_defaults="https://cdn.discordapp.com/attachments/524633631012945922/693099262237736960/yukari_v3.png"
 let maxfilesize=8*1024*1024-114514 # discord's filesize limit is as barbarian as yajuu senpai, so i used 114514 to limit filesize:wiebitte:
 let maxfilesize2=50*1024*1024-114514 # discord's filesize limit is as barbarian as yajuu senpai, so i used 114514 to limit filesize:wiebitte:
-ratiolimit="0.15"
 rate="0.8"
 
-function gretajoke_v2 {
-    cuties=("Ann" "Chie" "Marie" "Yukari" "Fuuka" "Futaba" "Hifumi" "Riley" "Cosette" "Ryza" "Alice" "Barbara" "Jean" "Sucrose" "Fischl")
-    villains=("Greta Thunberg" "Lea chan" "Toilet chan" "Jono chan" "Yajuu senpai" "Paimon")
-    villainquotes=("How dare you fucking call me Greta Chan! " "Don't fucking call me Lea Chan. " "@everyone Don't call me Toilet Chan, pls. " "posting UCC \\\"chan\\\" will result in a suitable punishment. " "Iiyo! Koiyo! No! Humph! Humph! AAAAAAAAAAAAAAAAA! AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA! " "Wiebit te nandayo! ")
+function gretajoke {
+    cuties=("Ann" "Chie" "Marie" "Yukari" "Fuuka" "Futaba" "Hifumi" "Riley" "Cosette" "Alice")
     cutie1="Cosette"
     cutie2="Cosette"
     while [ "$cutie1" = "$cutie2" ]
@@ -25,9 +21,7 @@ function gretajoke_v2 {
         cutie1=${cuties[$((RANDOM%${#cuties[@]}))]}
         cutie2=${cuties[$((RANDOM%${#cuties[@]}))]}
     done
-    villain="$((RANDOM%${#villains[@]}))"
-    echo $villian
-    echo "$cutie1 chan, $cutie2 chan, and ${villains["$villian"]} were all lost in the desert. They found a lamp and rubbed it. A genie popped out and granted them each one wish. $cutie1 chan wished to be back home. Poof! She was back home. $cutie2 chan wished to be at home with her family. Poof! She was back home with her family. ${villains["$villian"]} said, \\\"${villainquotes["$villian"]}\\\""
+    echo "$cutie1 chan, $cutie2 chan, and Greta Thunberg were all lost in the desert. They found a lamp and rubbed it. A genie popped out and granted them each one wish. $cutie1 chan wished to be back home. Poof! She was back home. $cutie2 chan wished to be at home with her family. Poof! She was back home with her family. Greta Thunberg said, \\\"How dare you fucking call me Greta Chan! \\\""
 }
 
 function praseconf {
@@ -72,6 +66,9 @@ function praseconf {
         fi
     done
     echo -e "found \e[36m$[processes+1]\e[0m process(es)"
+    
+    [ "$ratiolimit" ] || ratiolimit=`awk 'BEGIN{printf "%.10f\n",(1/(1+'$processes'))}'`
+    
     # if [ "$threadlimit" ]
     # then
         # echo -e "but you set a thread limit of \e[36m$threadlimit\e[0m"
@@ -159,6 +156,8 @@ function m3u8generation() {
     done
 
     echo "#EXT-X-ENDLIST" >> "$m3u8dir/$videotitle.m3u8"
+    
+    [ "$directdir" ] || exit
 }
 
 function videoanalysis() { # videopath was already given
@@ -293,7 +292,7 @@ function scheduler { # muptiple threads
     done
     
     mv "$tmpdir/$videotitle.m3u8" "$currentdir/$videotitle.m3u8"
-    m3u8link=`uploadfile "`gretajoke_v2`" "$currentdir/$videotitle.m3u8" 1`
+    m3u8link=`uploadfile "$videotitle" "$currentdir/$videotitle.m3u8" 1`
     echo "$m3u8link"
     [ "$outputfilename" ] && echo "$m3u8link" >> outputfilename || echo "$m3u8link" >> results.bruh
     rm "$tmpdir" -rf
@@ -311,7 +310,7 @@ done
 
 currentdir=`pwd`
 rm "$tmpdir"/* -f
-parameters=`getopt -o c:C:o:O:t:T:hH -a -l customratio:,output:,decreaseratio:,videotime:,m3u8generation:,directdir:,help -- "$@"`
+parameters=`getopt -o c:C:o:O:t:T:hH -a -l customratio:,output:,decreaseratio:,videotime:,m3u8generation:,directdir:,tsmuxer-antics:,help -- "$@"`
 
 if [ $? != 0 ]
 then
@@ -342,13 +341,14 @@ do
             echo
             echo "Options: "
             echo "  -t or -T or --videotime <vtime>: manually set the clip time instead of automated calculations"
-            echo "  -c or -C or --customratio <ratio>: custom ratio of big clips that exceeds 8MB but not exceeds 50MB outta all clips, default: 0.15"
+            echo "  -c or -C or --customratio <ratio>: custom ratio of big clips that exceeds 8MB but not exceeds 50MB outta all clips, default: 1/(1+processs)"
             echo "      --decreaseratio <rate>: custom rate of clip time decreasing if clips are too big, default: 0.8"
             echo "  -o or -O or --output <filename>: output the generated m3u8 links into a file, in non-overwrite style"
             echo
             echo "tsMuxeR antics: "
             echo "  --m3u8generation <dir>: generate m3u8 from an already tsMuxeR-splited folder"
-            echo "  --directdir <dir>: use when video clips and m3u8 was already present, like"
+            echo "  --directdir <dir>: use when video clips and m3u8 was already present, like processed by --m3u8generation"
+            echo "  --tsmuxer-antics <dir>: equals --m3u8generation <dir> --directdir <dir>, dealin' both of them on the same computer"
             echo
             echo "by default it shall use webhooks to upload smol clips, but big clips would be uploaded by a nitro account"
             exit
@@ -377,6 +377,11 @@ do
             directdir="$2"
             shift 2
             ;;
+        --tsmuxer-antics)
+            m3u8dir="$2"
+            directdir="$2"
+            shift 2
+            ;;
         --)
             videotitle="$2"
             videopath="$3"
@@ -390,13 +395,10 @@ do
     esac
 done
 
-if [ "$m3u8dir" ]
-then
-    m3u8generation
-else
-    exportfilename="$videotitle.discordlinks.txt"
-    praseconf
-    scheduler
-fi
+[ "$m3u8dir" ] && m3u8generation
+
+exportfilename="$videotitle.discordlinks.txt"
+praseconf
+scheduler
 
 IFS=$OLD_IFS
