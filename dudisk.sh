@@ -5,9 +5,9 @@
 # parse svip link of all files in a share link, and export them into a download.sharelink.sh, then you can just bash download.sharelink.sh to download all files and they will be in the same directory hierarchy as share link
 # svip links only have 8 hours before expiration
 
-BDUSS='' # any dudisk account shall be fine
-STOKEN='' # any dudisk account shall be fine
-SVIP_BDUSS='' # svip account only
+# BDUSS='' # any dudisk account shall be fine
+# STOKEN='' # any dudisk account shall be fine
+# SVIP_BDUSS='' # svip account only
 APP_ID='250528'
 
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
@@ -42,17 +42,20 @@ function getdllink() { # $1 = fsid
     result=`curl "https://pan.baidu.com/api/sharedownload?app_id=$APP_ID&channel=chunlei&clienttype=12&sign=$sign&timestamp=$timestamp&web=1" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36" -H "Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;BDCLND=$randsk" -H "Referer: https://pan.baidu.com/disk/home" --data "encrypt=0&extra=$sekey&fid_list=[$fsid]&primaryid=$shareid&uk=$uk&product=share&type=nolimit" 2>/dev/null`
     dlink=`echo $result | grep -Po '"dlink":".*?"' | sed 's/"dlink":"//g;s/"$//g'`
     dlink="${dlink//\\/}"
-    curl -s -I -X POST  "$dlink" -H "User-Agent: LogStatistic" -H "Cookie: BDUSS=$SVIP_BDUSS" 2>/dev/null | grep "Location:" | sed 's/^Location: //g' 
+    curl -s -I -X POST  "$dlink" -H "User-Agent: LogStatistic" -H "Cookie: BDUSS=$SVIP_BDUSS" 2>/dev/null | grep "Location:" | sed 's/^Location: //g' | tr -d "\n"
 }
 
 function getfilelist() { 
-    result=`curl "https://pan.baidu.com/s/$shareurl" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36" -H "Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;BDCLND=$randsk" 2>/dev/null | grep -Eo "yunData.setData\((\{.*?\})\)" | sed 's/^yunData.setData(//g;s/)$//g'`
-    uk=`echo $result | grep -Eo '"uk":[0-9]*' | grep -Eo '[0-9]*'`
+    result=`curl "https://pan.baidu.com/s/$shareurl" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36" -H "Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;BDCLND=$randsk" 2>/dev/null | grep "locals.mset"`
+    # echo $result
+    uk=`echo $result | grep -Eo '"share_uk":"[0-9]*"' | grep -Eo '[0-9]*'`
+    # grep -Po '(?<=[0-9]/).*?(?=.rar$)'
     shareid=`echo $result | grep -Eo '"shareid":[0-9]*' | grep -Eo '[0-9]*'`
-    timestamp=`echo $result | grep -Eo '"timestamp":[0-9]*' | grep -Eo '[0-9]*'`
-    sign=`echo $result | grep -Po '"sign":".*?"' | sed 's/"sign":"//g;s/"$//g'`
+    result114514=`curl "https://pan.baidu.com/share/tplconfig?shareid=$shareid&uk=$uk&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0"`
+    timestamp=`echo $result114514 | grep -Eo '"timestamp":[0-9]*' | grep -Eo '[0-9]*'`
+    sign=`echo $result114514 | grep -Po '"sign":".*?"' | sed 's/"sign":"//g;s/"$//g'`
     
-    for line in `echo $result | grep -Po '"list":\[.*?\]' | sed 's/^"list":\[//g;s/\]$//g' | sed 's/},{/},\n{/g'`
+    for line in `echo $result | grep -Po '(?<="file_list":\[).*?(?=\])' | sed 's/},{/},\n{/g'`
     do
         # echo "$line"
         local dirsign=`echo "$line" | grep -Eo '"isdir":[0-9]*' | grep -Eo '[0-9]*'`
@@ -92,9 +95,9 @@ function getfilelist() {
 
 function getdir() { # recrusive function, $1 = path
     dir="$1"
-    for line in `curl "https://pan.baidu.com/share/list?shareid=$shareid&uk=$uk&dir=$dir" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36" -H "Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;BDCLND=$randsk" 2>/dev/null | grep -Po '"list":\[.*?\]' | sed 's/^"list":\[//g;s/\]$//g' | sed 's/},{/},\n{/g'`
+    for line in `curl "https://pan.baidu.com/share/list?shareid=$shareid&uk=$uk&order=other&desc=1&showempty=0&web=1&page=1&num=100&dir=$dir" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36" -H "Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;BDCLND=$randsk" 2>/dev/null | grep -Po '(?<="list":\[).*?(?=\])' | sed 's/},{/},\n{/g'`
     do
-        # echo "$line"
+        echo "$line"
         local dirsign=`echo "$line" | grep -Eo '"isdir":[0-9]*' | grep -Eo '[0-9]*'`
         local fsid=`echo "$line" | grep -Eo '"fs_id":[0-9]*' | grep -Eo '[0-9]*'`
         local filepath=`urldecode echo "$line" | grep -Po '"path":".*?"' | sed 's/"path":"//g;s/"$//g'`
